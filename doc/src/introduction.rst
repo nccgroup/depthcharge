@@ -405,6 +405,33 @@ How do I get started?
 
 If you're reading this documentation, then you're in the right place!
 
+The repository can be cloned as follows.
+
+.. code-block:: text
+
+    $ git clone https://github.com/nccgroup/depthcharge
+    $ cd depthcharge
+
+
+Once in the Depthcharge directory, install Python module can be installed in a
+virtual environment (`venv`_):
+
+.. code-block:: text
+
+    $ cd python
+    $ python3 -m venv venv
+    $ source venv/bin/activate
+    $ pip install .
+
+If you plan to make changes to the code or documention, replace the last command with:
+
+
+.. code-block:: text
+
+    $ pip install -e .[docs]
+
+.. _venv: https://docs.python.org/3/library/venv.html
+
 We recommend you kick the tires on Depthcharge using the :ref:`scripts` and a
 device with a permissive U-Boot configuration, just to get a baseline sense of
 the toolkit. From there, one can leverage these scripts and other examples in

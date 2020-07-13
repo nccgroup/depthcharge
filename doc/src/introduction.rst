@@ -419,8 +419,8 @@ virtual environment (`venv`_):
 .. code-block:: text
 
     $ cd python
-    $ python3 -m venv venv
-    $ source venv/bin/activate
+    $ python3 -m venv ./venv
+    $ source ./venv/bin/activate
     $ pip install .
 
 If you plan to make changes to the code or documention, replace the last command with:

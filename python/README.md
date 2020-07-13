@@ -33,8 +33,8 @@ First, ensure you have installed `python3-venv`. For apt-based distros:
 $ sudo apt install python3-venv
 ```
 
-If you planning to use, but not modify, Depthcharge, create a venv and install
-into it using the commands. Note that there are `activate.csh` and
+Next, create a virtual environment and install Depthcharge
+and its dependencies in it. Note that there are `activate.csh` and
 `activate.fish` scripts for users of those shells.
 
 ```
@@ -43,19 +43,18 @@ $ source ./venv/bin/activate
 $ pip install .
 ```
 
-If you plan on building the documentation, add the extra ``[docs]`` option in
+If you plan on modifying the source code or documentation, add the ``-e,
+--editable`` flag to the pip command and specify the extra ``[docs]`` option in
 order to include the necessary *Sphinx* and *sphinx_rtd_theme* dependencies:
 
 ```
-$ pip install .[docs]
+$ pip install -e .[docs]
 ```
 
-However, if you are planning to modify the module or scripts, it is recommended that 
-you instead run pip with the `-e, --editable` flag. If you will be modifying the
-Depthcharge scripts, you may also want to symlink items in `venv/bin/` to the
-corresponding files in `scripts/` using `dev/symlink_scripts.py`
+If you will be modifying the Depthcharge scripts, you may also want to symlink
+items in `venv/bin/` to the corresponding files in `scripts/` using
+`dev/symlink_scripts.py`
 
 ```
-$ pip install -e .
 $ ./dev/symlink_scripts.py
 ```

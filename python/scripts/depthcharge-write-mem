@@ -1,0 +1,120 @@
+#!/usr/bin/env python3
+#
+# SPDX-License-Identifier: BSD-3-Clause
+# Depthcharge: <https://github.com/nccgroup/depthcharge>
+#
+# Suppress complaints that don't add much value this script
+#   pylint: disable=missing-module-docstring,missing-function-docstring
+#   pylint: disable=invalid-name,redefined-outer-name
+#
+import sys
+import traceback
+
+from argparse import RawDescriptionHelpFormatter
+from os.path import basename
+
+import depthcharge
+from depthcharge.cmdline import ArgumentParser, create_depthcharge_ctx
+
+
+_SCRIPT = basename(__file__)
+
+_USAGE = """
+{script:s} [options] -c <device config> -a <address> -f <file>
+{script:s} [options] -c <device config> -a <address> -d <hex data>
+{script:s} [options] -c <device config> -a <address> -s <stratagem>
+\r
+""".format(script=_SCRIPT)
+
+_DESCRIPTION = 'Write data to a specified memory address.'
+
+_EPILOG = """
+notes:
+    The following address suffixes are supported:
+
+        * kB = 1000
+        * K or kiB = 1024
+        * MB = 1000 * 1000
+        * M or MiB = 1024 * 1024
+        * GB = 1000 * 1000 * 1000
+        * G or GiB = 1024 * 1024 * 1024
+
+    While optional, the use of the -c, --config option is STRONGLY ENCOURAGED.
+    This will greatly speed up the execution time of this script, if it will
+    be used multiple times for a given target.
+
+examples:
+    Write the contents of "data.bin" to address 0x87f00000:
+
+      depthcharge-write-mem -c dev.cfg -a 0x87f00000 -f data.bin
+
+    Write the bytes [0x01, 0x00, 0xa0, 0xe3] to 0x87f014a0:
+
+      depthcharge-write-mem -c dev.cfg -a 0x87f00000 -d 0100a0e3
+
+    Write data to address 0x87f01400 using depthcharge.memory.CRC32MemoryWriter
+    and the Stratagem conteind within "stratagem.json".
+
+      depthcharge-write-mem -c dev.cfg -a 0x87f01400 -s stratagem.json
+
+    Request Depthcharge to use the depthcharge.memory.LoadbMemoryWriter class
+    to memory. Note that the `MemoryWriter` suffix can be omitted, and
+    that this argument is case-insensitve.
+
+      depthcharge-write-mem -c dev.cfg --op loadb -a 0x8200_0000 -f data.bin
+\r
+"""
+
+
+def handle_cmdline():
+    supported = ArgumentParser.DEFAULT_ARGS + ['address', 'file', 'data', 'stratagem', 'op']
+    parser = ArgumentParser(init_args=supported,
+                            formatter_class=RawDescriptionHelpFormatter,
+                            usage=_USAGE, description=_DESCRIPTION, epilog=_EPILOG,
+                            address_default=None,
+                            address_help='Target memory address',
+                            data_help='Data to write as a hexadecimal string',
+                            file_help='File containing data to write',
+                            stratagem_help='Stratagem needed to write payload')
+
+    return parser.parse_args()
+
+
+if __name__ == '__main__':
+    args = handle_cmdline()
+
+    # Only one of the following my be provided
+    count = 0
+    for op in (args.data, args.file, args.stratagem):
+        if op is not None:
+            count += 1
+
+    if count == 0:
+        err = 'One of the following must be specified: -f/--file, -d/--data, -s/--stratagem'
+        print(err, file=sys.stderr)
+        sys.exit(1)
+    elif count > 1:
+        err = 'Only one of the following can be specified: -f/--file, -d/--data, -s/--stratagem'
+        print(err, file=sys.stderr)
+        sys.exit(1)
+
+    if args.file is not None:
+        with open(args.file, 'rb') as infile:
+            data = infile.read()
+    elif args.data is not None:
+        data = bytes.fromhex(args.data)
+    else:
+        data = b''
+
+    if args.stratagem is not None:
+        stratagem = depthcharge.Stratagem.from_json_file(args.stratagem)
+    else:
+        stratagem = None
+
+    try:
+        ctx = create_depthcharge_ctx(args)
+        ctx.write_memory(args.address, data, impl=args.op, stratagem=stratagem)
+    except Exception as error:  # pylint: disable=broad-except
+        depthcharge.log.debug(traceback.format_exc())
+        print('Error: ' + str(error), file=sys.stderr)
+        sys.exit(1)

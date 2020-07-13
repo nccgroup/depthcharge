@@ -1,0 +1,156 @@
+#!/usr/bin/env python3
+#
+# SPDX-License-Identifier: BSD-3-Clause
+# Depthcharge: <https://github.com/nccgroup/depthcharge>
+#
+# Ignore warnings that aren't particularly meaningful in this script:
+#   pylint: disable=missing-module-docstring,,invalid-name,redefined-outer-name
+#
+
+import os
+import sys
+
+from argparse import Action, RawDescriptionHelpFormatter
+from os.path import basename
+
+from depthcharge.cmdline import ArgumentParser
+from depthcharge.hunter  import CpHunter, ReverseCRC32Hunter, HunterResultNotFound
+
+_USAGE = '{:s} -a <address> -f <infile> -s <type> -P <payload file> -o <outfile>'.format(basename(__file__))
+
+_DESCRIPTION = """
+Create a Stratagem file, given a memory or flash dump and a desired payload.
+"""
+
+_EPILOG = """
+notes:
+    In Depthcharge parlance, a "Stratagem" is a sequence of meta-operations
+    used to perform a desired operation, such as writing a specific value to
+    a target region, abusing U-boot functionality not intended for this.
+
+    In general, a subset of Depthcharge "Hunter" implementations are used
+    to search for and produce these Stratagem.
+
+    The available Hunter-specific settings that can be specified using -X/--extra
+    can be found in the output of depthcharge-stratagem --list. Refer to the
+    corresponding depthcharge.hunter.Hunter subclass for more information
+    about these "extra" parameters, which correspond to the keyword arguments
+    (**kwargs) their constructors and methods support.
+
+    In general, use of this script will require an understanding of the
+    corresponding Depthcharge Hunter and Stratagem API items.
+
+example:
+    Create a Depthcharge Stratagem for use with a CRC32MemoryWriter:
+        depthcharge-stratagem -f dump.bin -s crc32 -P payload.bin -o stratagem.json
+
+    Consider a situation where the above command reports a failure to produce a
+    Stratagem. We can use the -X, --extra argument to both expend more memory when
+    searching for a result (via `revlut_maxlen`) and permit longer-running deploy-time
+    operations (via `max_iterations). Below is an example -X usage that would
+    increase the defaults used by Depthcharge's CRC32MemoryWriter:
+
+        -X revlut_maxlen=512,max_iterations=8192
+\r
+"""
+
+_SUPPORTED_TYPES = {
+    'crc32': {
+        'class': ReverseCRC32Hunter,
+        'desc': ('  Generates Stratagem for use with ReverseCRC32Writer.\n'
+                 '  See depthcharge.hunter.ReverseCRC32Hunter.\n\n'
+                 '  Supported -X,--extra arguments:\n'
+                 '    revlut_maxlen, max_iterations, num_procs, endianess\n')
+
+    },
+
+    'cp': {
+        'class': CpHunter,
+        'desc': ('  Generates Stratagem for use with CpWriter. See depthcharge.hunter.CpHunter\n')
+    }
+}
+
+
+class ListStratagem(Action):
+    """
+    Handler to list all available stratagem and exit
+    """
+
+    def __call__(self, parser, namespace, values, option_string=None):
+        print()
+        print('Supported Stratagem generators')
+        print('=' * 80)
+        print()
+        for s in _SUPPORTED_TYPES:
+            class_name = _SUPPORTED_TYPES[s]['class'].__name__
+            print(s + ': ' + class_name + os.linesep)
+            print(_SUPPORTED_TYPES[s]['desc'])
+            print()
+        sys.exit(0)
+
+
+def handle_cmdline():
+    """
+    Process and return command line arguments.
+    """
+
+    parser = ArgumentParser(init_args=['address', 'file', 'stratagem'],
+                            address_required=True, address_default=None,
+                            file_required=True,
+                            file_help='Input file containing memory or flash image',
+                            stratagem_required=True, stratagem_metavar='<type>',
+                            stratagem_help='Type of the Stratagem to produce',
+                            formatter_class=RawDescriptionHelpFormatter,
+                            usage=_USAGE, description=_DESCRIPTION, epilog=_EPILOG)
+
+    parser.add_argument('-P', '--payload', required=True,
+                        help='File containing desired binary payload')
+
+    parser.add_outfile_argument(required=True,
+                                help='Output file to store produced Stratagem in')
+
+    extra_help = 'Parameters passed to Hunter implementation used for Stratagem creation.'
+    parser.add_extra_argument(help=extra_help)
+
+    parser.add_argument('-l, --list', nargs=0, action=ListStratagem,
+                        help='List supported Stratagem types and their -X parameters.')
+
+    return parser.parse_args()
+
+
+if __name__ == '__main__':
+    retcode = 0
+    args = handle_cmdline()
+
+    try:
+        stratagem_type = _SUPPORTED_TYPES[args.stratagem]
+    except KeyError:
+        msg = 'Invalid or unsupported Stratagem type: ' + args.stratagem
+        print(msg, file=sys.stderr)
+        sys.exit(1)
+
+    with open(args.file, 'rb') as image_file:
+        image_data = image_file.read()
+
+    with open(args.payload, 'rb') as payload_file:
+        payload_data = payload_file.read()
+
+    # Confirm we can open and write to outfile
+    with open(args.outfile, 'w') as outfile:
+        hunter_constructor = stratagem_type['class']
+
+        try:
+            hunter = hunter_constructor(image_data, args.address, **args.extra)
+            stratagem = hunter.build_stratagem(payload_data, payload_name=args.payload, **args.extra)
+            outfile.write(stratagem.to_json())
+        except HunterResultNotFound as err:
+            print(err, file=sys.stderr)
+            retcode = 1
+        except KeyboardInterrupt:
+            print('Interrupted. Removing output file.', file=sys.stderr)
+            retcode = 2
+
+    if retcode == 2:
+        os.remove(args.outfile)
+
+    sys.exit(retcode)

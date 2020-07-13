@@ -1,0 +1,113 @@
+#!/usr/bin/env python3
+#
+# SPDX-License-Identifier: BSD-3-Clause
+# Depthcharge: <https://github.com/nccgroup/depthcharge>
+#
+# Ignore docstring and name complaints
+#   pylint: disable=missing-module-docstring,missing-function-docstring
+#   pylint: disable=redefined-outer-name,invalid-name
+#
+
+import sys
+
+from argparse import RawDescriptionHelpFormatter
+from os.path import basename
+
+from depthcharge import log
+from depthcharge.cmdline import ArgumentParser
+from depthcharge.hunter import FDTHunter
+
+_FILE_HELP = 'Binary image to search'
+
+_OUTFILE_HELP = (
+    'Filename prefix for output file(s). '
+    'No files are written if this is not provided. '
+    'A .dts or .dtb suffix will be added to each file.'
+)
+
+_ADDRESS_HELP = (
+    'Base address of the flash or memory dump. '
+    'Result are shown with respect to this address. '
+    'Use the default of 0 if interested in relative offsets.'
+)
+
+_NO_DTS_HELP = 'Do not save .dts files.'
+_NO_DTB_HELP = 'Do not save .dtb files.'
+
+_USAGE = '{:s} [options] -f <image file>'.format(basename(__file__))
+
+_DESCRIPTION = """
+Search for instances of Flattened Device Tree blobs in a flash or memory dump
+"""
+
+_EPILOG = """
+ examples:
+  Print locations and sizes of FDT (DTB) instances found within an image.
+
+    depthcharge-find-fdt -f image.bin
+
+  Extract FDT instances and save them to .dtb and .dts files named
+  "image_<address>.[dts|dtb]". Additionally, specify a base address
+  for the image.
+
+    depthcharge-find-fdt -a 0xa000 -f image.bin -o image
+
+  Same as the above, but only save .dts files.
+
+    depthcharge-find-fdt -a 0xa000 -f image.bin -o image --no-dtb
+
+\r
+"""
+
+
+def handle_cmdline():
+    parser = ArgumentParser(['file', 'address', 'arch', 'outfile'],
+                            file_required=True, file_help=_FILE_HELP,
+                            address_required=False, address_help=_ADDRESS_HELP,
+                            outfile_required=False, outfile_help=_OUTFILE_HELP,
+                            formatter_class=RawDescriptionHelpFormatter,
+                            usage=_USAGE, description=_DESCRIPTION, epilog=_EPILOG)
+
+    parser.add_argument('--no-dts', action='store_true', help=_NO_DTS_HELP)
+    parser.add_argument('--no-dtb', action='store_true', help=_NO_DTB_HELP)
+
+    return parser.parse_args()
+
+
+if __name__ == '__main__':
+    args = handle_cmdline()
+
+    log.debug('Loading ' + args.file)
+    with open(args.file, 'rb') as infile:
+        data = infile.read()
+
+    count = 0
+
+    hunter = FDTHunter(data, args.address, no_dts=args.no_dts)
+    for result in hunter.finditer(None):
+        addr = result['src_addr']
+        size = result['src_size']
+
+        dtb = result['dtb']
+        dts = result.get('dts', None)  # Will not be present if no_dts=True
+
+        print('Found DTB @ 0x{:08x}, size={:d} bytes'.format(addr, size))
+
+        if args.outfile:
+            if not args.no_dtb:
+                dtb_filename = args.outfile + '_0x{:08x}.dtb'.format(addr)
+                with open(dtb_filename, 'wb') as outfile:
+                    print('    Saving to: ' + dtb_filename)
+                    outfile.write(result['dtb'])
+
+            if not args.no_dts:
+                dts_filename = args.outfile + '_0x{:08x}.dts'.format(addr)
+                with open(dts_filename, 'w') as outfile:
+                    print('    Saving to: ' + dts_filename)
+                    outfile.write(result['dts'])
+
+        count += 1
+
+    if count < 1:
+        print('No Device Tree instances found.', file=sys.stderr)
+        sys.exit(2)

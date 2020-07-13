@@ -1,0 +1,48 @@
+usage: depthcharge-print -c <device config> -i <info>[:options]
+
+Pretty-print information in a device configuration file.
+
+options:
+  -h, --help            show this help message and exit
+  -c <cfg>, --config <cfg>
+                        Configuration file to print.
+  -i <item>, --item <item>
+                        Configuration item(s) to print.
+
+supported items:
+  all                   - All of the below items
+
+  arch                  - Device architecture
+
+  commands[:details]    - Console commands supported by a target, optionally
+                          with detailed help text, if the target provides it
+
+  env[:expand]          - Target's environment variables, optionally
+                          with all definitions expanded.
+
+  gd                    - U-Boot global data structure information, if known.
+
+  version               - Target's reported version information
+
+examples:
+  Print all information contained in a device configuration ("dev.cfg"):
+
+    depthcharge-print-config -c dev.cfg -i all
+
+  Print all commands supported by a device. Note that if you only
+  want a summary of the commands, the detail help text can be omitted
+  by not including '=details'
+
+    depthcharge-print-config -c dev.cfg -i commands=details
+
+  Print all environment variables, with all definitiions fully
+  expanded. To view these as they are on the device, omit '=expand'.
+
+    depthcharge-print-config -c dev.cfg -i env=expand
+
+  Print both the target's architechture, U-Boot version information,
+  and expanded environment variables. Both usages are acceptable.
+
+    depthcharge-print-config -c dev.cfg -i arch,version,env=expand
+    depthcharge-print-config -c dev.cfg -i arch -i version -i env=expand
+

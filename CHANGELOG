@@ -1,0 +1,16 @@
+Depthcharge 0.1.0, 2020-07-24
+----------------------------------------------------------------------------
+
+Initial public release.
+
+Current limitations:
+
+    - Supports ARM (32-bit) only. Additional architecture support can be
+        introduced via python/depthcharge/arch.py.
+
+    - The Companion Firmware currently acts only as an I2C peripheral.
+      This can certainly be expanded upon to also act as a SPI peripheral.
+
+    - GoExecutor is the only Executor implementation. Boot commands could also
+      be leveraged as such, provided that payloads are wrapped in appropriate
+      image formats, preferably automatically by Depthcharge.

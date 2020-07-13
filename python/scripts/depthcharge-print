@@ -1,0 +1,262 @@
+#!/usr/bin/env python3
+#
+# SPDX-License-Identifier: BSD-3-Clause
+# Depthcharge: <https://github.com/nccgroup/depthcharge>
+#
+# Ignore warnings that aren't particularly meaningful in this script:
+#   pylint: disable=missing-module-docstring,,invalid-name,redefined-outer-name
+#
+
+import json
+import sys
+
+from argparse import RawDescriptionHelpFormatter
+from os.path import basename
+
+from depthcharge.cmdline import ArgumentParser, KeyValListAction
+from depthcharge.uboot import expand_environment
+
+_USAGE = '{:s} -c <device config> -i <info>[:options]'.format(basename(__file__))
+_DESCRIPTION = 'Pretty-print information in a device configuration file.'
+
+_EPILOG = """
+supported items:
+  all                   - All of the below items
+
+  arch                  - Device architecture
+
+  commands[:details]    - Console commands supported by a target, optionally
+                          with detailed help text, if the target provides it
+
+  env[:expand]          - Target's environment variables, optionally
+                          with all definitions expanded.
+
+  gd                    - U-Boot global data structure information, if known.
+
+  version               - Target's reported version information
+
+
+examples:
+  Print all information contained in a device configuration ("dev.cfg"):
+
+    depthcharge-print-config -c dev.cfg -i all
+
+
+  Print all commands supported by a device. Note that if you only
+  want a summary of the commands, the detail help text can be omitted
+  by not including '=details'
+
+    depthcharge-print-config -c dev.cfg -i commands=details
+
+
+  Print all environment variables, with all definitiions fully
+  expanded. To view these as they are on the device, omit '=expand'.
+
+    depthcharge-print-config -c dev.cfg -i env=expand
+
+
+  Print both the target's architechture, U-Boot version information,
+  and expanded environment variables. Both usages are acceptable.
+
+    depthcharge-print-config -c dev.cfg -i arch,version,env=expand
+    depthcharge-print-config -c dev.cfg -i arch -i version -i env=expand
+\r
+"""
+
+
+def print_commands(config, details=False):
+    """
+    Print console commands supported by the device.
+
+    Set `detailed=True` to include detailed help text for
+    each command. (This only applies if the device provides it.)
+    """
+    print()
+    print('Supported Commands')
+    print('=' * 80)
+    for cmd in config['commands']:
+        entry = config['commands'][cmd]
+        if details and 'details' in entry:
+            lines = entry['details'].splitlines()
+            print(lines[0].rstrip())
+            for line in lines[1:]:
+                print('   ' + line)
+            print()
+        else:
+            print('{:24s}{:s}'.format(cmd, entry['summary']))
+
+
+def print_env(config, expanded):
+    """
+    Print the variables present in the target device's environment,
+    as they appear.
+    """
+    title = 'Environment Variables'
+    env = config.get('env_vars', {})
+    if expanded:
+        title = 'Expanded ' + title
+        env = expand_environment(env)
+
+    print()
+    print(title)
+    print('=' * 80)
+    for key, value in env.items():
+        print(key + '=' + value)
+    print()
+
+
+def print_gd(config):
+    """
+    Print as much information about the global data structure as we have.
+    """
+    print()
+    print('Global Data Structure information')
+    print('=' * 80)
+
+    try:
+        gd_addr = config['gd']['address']
+        print('Address: 0x{:08x}'.format(gd_addr))
+    except KeyError:
+        print('Address: Unknown')
+
+    print()
+
+    try:
+        print('Board Data (from bdinfo):')
+        bdinfo = config['gd']['bd']
+        for _, entry in bdinfo.items():
+            name = entry['name']
+            value = entry['value']
+            suffix = entry['suffix']
+
+            if isinstance(value, int):
+                if name in ('arch_number', 'baudrate'):
+                    desc = '  {:20s} {:d} {:s}'.format(name, value, suffix)
+                else:
+                    desc = '  {:20s} 0x{:08x} {:s}'.format(name, value, suffix)
+            else:
+                desc = '  {:20s} {:s} {:s}'.format(name, value, suffix)
+
+            print(desc)
+        print()
+
+    except KeyError:
+        print('Board Data (from bdinfo): Not available')
+
+    print()
+
+    try:
+        print('Board Data (found during Jump Table search):')
+        extra = config['gd']['jt']['extras']
+        for name, value in extra.items():
+            print('  {:20s} 0x{:08x}'.format(name, value))
+        print()
+
+
+        jt_addr = config['gd']['jt']['address']
+        print('Jump Table @ 0x{:08x}'.format(jt_addr))
+
+        jt_entries = config['gd']['jt']['entries']
+        for entry in jt_entries:
+            line  = ' ' * 2
+            line += '0x{:08x}'.format(entry['address'])
+            line += '  ' + entry['return_type']
+            line += ' ' + entry['name'] + '('
+            line += ', '.join(entry['arg_types'])
+            line += ')'
+            print(line)
+
+        print()
+
+    except KeyError:
+        print('Jump Table Pointer: Unknown')
+        print('Jump Table Entries: Unknown')
+
+    print()
+
+def print_version(config):
+    """
+    Print each line of version information obtained from the device.
+    """
+    print()
+    print('Version information')
+    print('=' * 80)
+    for line in config.get('version', []):
+        print(line)
+    print()
+
+
+def print_config_item(config, item_user, value):
+    """
+    Print the corresponding configuration item.
+
+    Both the item name and values are matched rather loosely in an effort
+    to make this less painful to use.
+    """
+
+    valid = False
+    item = item_user.lower()
+
+    if isinstance(value, str):
+        value = value.lower()
+    else:
+        # Ignore True bool set just for item being present
+        # (This is the expected behavior of the KeyValListAction)
+        value = ''
+
+    if item in ('all', 'arch', 'architecture'):
+        print('Architecture: ' + config['arch'])
+        valid = True
+
+    if item in ('all', 'cmd', 'cmds', 'commands'):
+        print_commands(config, value.startswith('d'))
+        valid = True
+
+    if item in ('all', 'env', 'environ', 'environment'):
+        print_env(config, value.startswith('e'))
+        valid = True
+
+    if item in ('all', 'gd', 'global', 'global_data'):
+        print_gd(config)
+        valid = True
+
+    if item in ('all', 'ver', 'version'):
+        print_version(config)
+        valid = True
+
+    if not valid:
+        print('Invalid item: ' + item_user, file=sys.stderr)
+        sys.exit(1)
+
+
+def handle_cmdline():
+    """
+    Parse command line and returned processed arguments.
+    """
+    parser = ArgumentParser(init_args=[], usage=_USAGE,
+                            formatter_class=RawDescriptionHelpFormatter,
+                            description=_DESCRIPTION, epilog=_EPILOG)
+
+    parser.add_config_argument(required=True, help='Configuration file to print.')
+
+    parser.add_argument('-i', '--item', metavar='<item>',
+                        required=True, action=KeyValListAction,
+                        help='Configuration item(s) to print.')
+
+    return parser.parse_args()
+
+
+if __name__ == '__main__':
+    args = handle_cmdline()
+
+    with open(args.config, 'r') as infile:
+        config = json.load(infile)
+
+    if 'all' in args.item:
+        print_config_item(config, 'all', None)
+    else:
+        # Sort just for consistent ordering...
+        keys = sorted(list(args.item.keys()))
+        for item in keys:
+            value = args.item[item]
+            print_config_item(config, item, value)

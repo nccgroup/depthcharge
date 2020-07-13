@@ -1,0 +1,59 @@
+usage: depthcharge-inspect [options] -c <device config>
+
+Inspect a device's console environment and create a device configuration file.
+
+options:
+  -h, --help            show this help message and exit
+  -c <cfg>, --config <cfg>
+                        Device configuration file to load and update. It will
+                        be created if it does not exist.
+  -i <console dev>[:baudrate], --iface <console dev>[:baudrate]
+                        Serial port interface connected to U-Boot console.
+  -C <device>[:setting=value,...], --companion <device>[:setting=value,...]
+                        Depthcharge companion device to use and its associated
+                        settings. See the depthcharge.Companion documentation
+                        for supported settings.
+  -m <type>[:options,...], --monitor <type>[:options,...]
+                        Attach a console monitor. Valid types: file, pipe,
+                        colorpipe
+  -X <key>[=<value>], --extra <key>[=<value>]
+                        Specify extra operation-specific parameters as a key-
+                        value pair. A value of True is implicit if a value is
+                        not explicitly provided. Multiple instances of this
+                        argument are permitted. See the documentation for
+                        subclasses of depthcharge.Operation for supported
+                        keyword arguments.
+  -P <prompt str>, --prompt <prompt str>
+                        Override expected U-Boot prompt string.
+  -D, --skip-deploy     Skip any payload deployments; assume they're already
+                        loaded.
+
+notes:
+  This is generally the first Depthcharge script one will want to run when
+  interacting with a new device.
+
+  The resulting configuration file can passed to other Depthcharge scripts,
+  alleviating the need to re-inspect the device each time a context object
+  is created. (See depthcharge.Depthcharge.load() documentation.)
+
+examples:
+  Save results to a "dev.cfg" file and use the default serial interface
+  settings (/dev/ttyUSB0 at 115200 baud).
+
+    depthcharge-inspect -c dev.cfg
+
+  Use the serial console located at /dev/ttyUSB2 at a speed of 19200 baud.
+
+    depthcharge-inspect -i /dev/ttyUSB2:19200 -c dev.cfg
+
+  Use a companion device attached to /dev/ttyACM1.  Configure the companion
+  to operate on the target's I2C bus #2, for a speed of 250kHz. (Here, -i is
+  omitted again to use the default settings.)
+
+    depthcharge-inspect -C /dev/ttyACM1:i2c_bus=2,i2c_speed=250000 -c dev.cfg
+
+  Supply a known prompt string to look for instead of having Depthcharge attempt
+  to determine it:
+
+    depthcharge-inspect --prompt "ACMEcorp >" -c my_config.cfg
+

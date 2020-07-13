@@ -1,0 +1,51 @@
+usage: depthcharge-stratagem -a <address> -f <infile> -s <type> -P <payload file> -o <outfile>
+
+Create a Stratagem file, given a memory or flash dump and a desired payload.
+
+options:
+  -h, --help            show this help message and exit
+  -a <value>, --address <value>
+                        Base address of image.
+  -f <path>, --file <path>
+                        Input file containing memory or flash image
+  -s <type>, --stratagem <type>
+                        Type of the Stratagem to produce
+  -P PAYLOAD, --payload PAYLOAD
+                        File containing desired binary payload
+  -o <path>, --outfile <path>
+                        Output file to store produced Stratagem in
+  -X <key>[=<value>], --extra <key>[=<value>]
+                        Parameters passed to Hunter implementation used for
+                        Stratagem creation.
+  -l, --list            List supported Stratagem types and their -X
+                        parameters.
+
+notes:
+    In Depthcharge parlance, a "Stratagem" is a sequence of meta-operations
+    used to perform a desired operation, such as writing a specific value to
+    a target region, abusing U-boot functionality not intended for this.
+
+    In general, a subset of Depthcharge "Hunter" implementations are used
+    to search for and produce these Stratagem.
+
+    The available Hunter-specific settings that can be specified using -X/--extra
+    can be found in the output of depthcharge-stratagem --list. Refer to the
+    corresponding depthcharge.hunter.Hunter subclass for more information
+    about these "extra" parameters, which correspond to the keyword arguments
+    (**kwargs) their constructors and methods support.
+
+    In general, use of this script will require an understanding of the
+    corresponding Depthcharge Hunter and Stratagem API items.
+
+example:
+    Create a Depthcharge Stratagem for use with a CRC32MemoryWriter:
+        depthcharge-stratagem -f dump.bin -s crc32 -P payload.bin -o stratagem.json
+
+    Consider a situation where the above command reports a failure to produce a
+    Stratagem. We can use the -X, --extra argument to both expend more memory when
+    searching for a result (via `revlut_maxlen`) and permit longer-running deploy-time
+    operations (via `max_iterations). Below is an example -X usage that would
+    increase the defaults used by Depthcharge's CRC32MemoryWriter:
+
+        -X revlut_maxlen=512,max_iterations=8192
+

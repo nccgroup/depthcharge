@@ -1,0 +1,218 @@
+#!/usr/bin/env python3
+#
+# SPDX-License-Identifier: BSD-3-Clause
+# Depthcharge: <https://github.com/nccgroup/depthcharge>
+#
+# Ignore docstring and name complaints
+#   pylint: disable=missing-module-docstring,missing-function-docstring
+#   pylint: disable=redefined-outer-name,invalid-name
+#
+
+import sys
+
+from argparse import RawDescriptionHelpFormatter
+from os import linesep
+from os.path import basename
+
+from depthcharge import Architecture
+from depthcharge.cmdline import ArgumentParser
+from depthcharge.hunter import EnvironmentHunter
+from depthcharge.uboot import expand_environment, save_environment
+
+_FILE_HELP = 'Binary image to search'
+
+_OUTFILE_HELP = (
+    'Filename prefix for output file(s). '
+    'No files are written if this is not provided. '
+    'A .txt or .bin suffix will be added to each file.'
+)
+
+_ADDRESS_HELP = (
+    'Base address of the flash or memory dump. '
+    'Result are shown with respect to this address. '
+    'Use the default of 0 if interested in relative offsets.'
+)
+
+_EXPAND_HELP = (
+    'Expand environment variable definitions, such that'
+    'all defined variable usages are resolved. Warning'
+    'will be printed for any unresolved variables.'
+)
+
+
+_SUMMARY_HELP = (
+    'Only print the summary of located environment(s). '
+    'Do not print environment contents.'
+)
+
+_BINARY_HELP = (
+    'When saving an output file, write the binary environment contents.'
+    'This will include the env_t metadata (CRC32 word, flags byte).'
+)
+
+_USAGE = '{:s} [options] -f <image file>'.format(basename(__file__))
+
+_DESCRIPTION = """
+Search for U-Boot environment data (env_t structures) in a flash or memory dump
+"""
+
+_EPILOG = """
+ examples:
+    Print all environment instances found in mtdblock0.bin:
+
+      depthcharge-find-env -f mtdblock0.bin
+
+    Expand environment variables, and save the printed text to
+    individual files named uboot_env_<address>_exp.txt.  The _exp
+    portion is only added when -E, --expand is used.
+
+      depthcharge-find-env -E -o uboot_env -f mtdblock0.bin
+
+    Save the raw binary environment instances, including metadata,
+    and print only a summary of the extracted items. Files will
+    be saved to individual files named uboot_env_<address>.bin
+
+      depthcharge-find-env -o uboot_env -S -B -f mtdblock0.bin
+\r
+"""
+
+
+def handle_cmdline():
+    parser = ArgumentParser(['file', 'address', 'arch', 'outfile'],
+                            file_required=True, file_help=_FILE_HELP,
+                            address_required=False, address_help=_ADDRESS_HELP,
+                            arch_required=False,
+                            outfile_required=False, outfile_help=_OUTFILE_HELP,
+                            formatter_class=RawDescriptionHelpFormatter,
+                            usage=_USAGE, description=_DESCRIPTION, epilog=_EPILOG)
+
+    parser.add_argument('-E', '--expand',  action='store_true', help=_EXPAND_HELP)
+    parser.add_argument('-B', '--binary',  action='store_true', help=_BINARY_HELP)
+    parser.add_argument('-S', '--summary', action='store_true', help=_SUMMARY_HELP)
+
+    return parser.parse_args()
+
+
+def env_summary(env_num, env, dup_str) -> str:
+    msg = '#{:d} {:s} @ 0x{:08x}{:s}'
+    msg = msg.format(env_num, env['type'], env['src_addr'], dup_str)
+
+    if 'crc' not in env and 'flags' not in env:
+        msg += ', '
+    else:
+        msg += linesep + '    '
+
+    msg += 'size: {:d} bytes'.format(env['src_size'])
+
+    if 'crc' in env:
+        msg += ', CRC32: 0x{:08x}'.format(env['crc'])
+
+    if 'flags' in env:
+        msg += ', Flags: 0x{:02x}'.format(env['flags'])
+
+    return msg
+
+
+def search_for_envs(data) -> list:
+    results = []
+    data_set = {}
+
+    hunter = EnvironmentHunter(data, args.address)
+    for result in hunter.finditer(''):
+        env_num = len(results) + 1
+
+        off = result['src_off']
+        size = result['src_size']
+
+        env_data = data[off:off+size]
+        result['data'] = env_data
+
+        dup_str = ''
+        if env_data in data_set:
+            dup_str = ' (duplicate of #{:d})'.format(data_set[env_data])
+        else:
+            data_set[env_data] = env_num
+
+        summary = env_summary(env_num, result, dup_str)
+        results.append((result, summary))
+
+    return results
+
+
+def print_results(results, args):
+    for result, summary in results:
+
+        print(summary)
+
+        if args.summary:  # Print summary only
+            continue
+
+        env = result['dict']
+        if args.expand:
+            env = expand_environment(env)
+
+        print('-' * 80)
+        for name, value in env.items():
+            print(name + '=' + value)
+
+        # Vertical whitespace before next env
+        print()
+
+
+def create_filename(args, address):
+    expanded = '_exp' if args.expand and not args.binary else ''
+    ext = '.bin' if args.binary else 'txt'
+
+    suffix = '_0x{:08x}{:s}.{:s}'.format(address, expanded, ext)
+    return args.outfile + suffix
+
+
+def save_text_results(args, results):
+    for result, _ in results:
+        env = result['dict']
+        if args.expand:
+            env = expand_environment(env, quiet=True)
+
+        filename = create_filename(args, result['src_addr'])
+        save_environment(filename, env)
+
+
+def save_binary_results(args, results):
+    arch = None
+    for result, _ in results:
+        arch = arch or Architecture.get(result['arch'])
+
+        suffix = '_0x{:08x}.bin'.format(result['src_addr'])
+        filename = args.outfile + suffix
+        with open(filename, 'wb') as outfile:
+
+            # Reconstruct the env_t metadata, if present
+            if 'crc' in result:
+                crc32_bytes = result['crc'].to_bytes(4, arch.endianness)
+                outfile.write(crc32_bytes)
+
+            if 'flags' in result:
+                flag_byte = result['flags'].to_bytes(1, 'big')
+                outfile.write(flag_byte)
+
+            outfile.write(result['raw'])
+
+
+if __name__ == '__main__':
+    args = handle_cmdline()
+
+    with open(args.file, 'rb') as infile:
+        data = infile.read()
+        results = search_for_envs(data)
+
+    if not results:
+        print('No environment data found.', file=sys.stderr)
+        sys.exit(1)
+
+    print_results(results, args)
+
+    if args.outfile:
+        if args.binary:
+            save_binary_results(args, results)
+        else:
+            save_text_results(args, results)

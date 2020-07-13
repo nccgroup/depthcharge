@@ -1,0 +1,77 @@
+#!/usr/bin/env python3
+#
+# SPDX-License-Identifier: BSD-3-Clause
+# Depthcharge: <https://github.com/nccgroup/depthcharge>
+#
+# Ignore module and "constant" name complaints
+#   pylint: disable=missing-module-docstring,invalid-name
+#
+
+import sys
+import traceback
+
+from argparse import RawDescriptionHelpFormatter
+from os.path import basename
+
+import depthcharge
+from depthcharge.cmdline import ArgumentParser, create_depthcharge_ctx
+
+_USAGE = '{:s} [options] -c <device config>'.format(basename(__file__))
+
+_DESCRIPTION = "Inspect a device's console environment and create a device configuration file."
+
+_EPILOG = """
+notes:
+  This is generally the first Depthcharge script one will want to run when
+  interacting with a new device.
+
+  The resulting configuration file can passed to other Depthcharge scripts,
+  alleviating the need to re-inspect the device each time a context object
+  is created. (See depthcharge.Depthcharge.load() documentation.)
+
+examples:
+  Save results to a "dev.cfg" file and use the default serial interface
+  settings (/dev/ttyUSB0 at 115200 baud).
+
+    depthcharge-inspect -c dev.cfg
+
+  Use the serial console located at /dev/ttyUSB2 at a speed of 19200 baud.
+
+    depthcharge-inspect -i /dev/ttyUSB2:19200 -c dev.cfg
+
+  Use a companion device attached to /dev/ttyACM1.  Configure the companion
+  to operate on the target's I2C bus #2, for a speed of 250kHz. (Here, -i is
+  omitted again to use the default settings.)
+
+    depthcharge-inspect -C /dev/ttyACM1:i2c_bus=2,i2c_speed=250000 -c dev.cfg
+
+  Supply a known prompt string to look for instead of having Depthcharge attempt
+  to determine it:
+
+    depthcharge-inspect --prompt "ACMEcorp >" -c my_config.cfg
+\r
+"""
+
+if __name__ == '__main__':
+    parser = ArgumentParser(usage=_USAGE,
+                            formatter_class=RawDescriptionHelpFormatter,
+                            description=_DESCRIPTION, epilog=_EPILOG,
+                            config_required=True)
+
+    args = parser.parse_args()
+
+    try:
+        ctx = None
+
+        # Kick off the inspect inherent in context creation
+        ctx = create_depthcharge_ctx(args, detailed_help=True)
+
+    except Exception as e:  # pylint: disable=broad-except
+        depthcharge.log.debug(traceback.format_exc())
+        print('Error: ' + str(e), file=sys.stderr)
+        sys.exit(1)
+    finally:
+        # Try to be neighborly and save what we were able to find, even if
+        # something tanked unexpectedly.
+        if ctx:
+            ctx.save(args.config)

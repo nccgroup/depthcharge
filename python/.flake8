@@ -1,0 +1,7 @@
+[flake8]
+
+extend-ignore=E221,E222,E272,E241 # I prefer to align assignments along operators.
+
+# It's 2020 and we have wide screens. 
+# Shoot for 80 chars, but I'd rather see a longer line if it's clearer to read.
+max_line_length = 120

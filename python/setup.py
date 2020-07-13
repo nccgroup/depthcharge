@@ -1,0 +1,83 @@
+#!/usr/bin/env python3
+"""
+Depthcharge installation script
+"""
+
+import os
+import re
+
+from os.path import dirname, join, realpath
+from setuptools import setup, find_packages
+
+THIS_DIR = realpath(dirname(__file__))
+
+VERSION_REGEX = re.compile(
+    r"__version__\s*=\s*'(?P<version>[0-9]+\.[0-9]+\.[0-9]+)'"
+)
+
+
+def get_version() -> str:
+    version_file = join(THIS_DIR, 'depthcharge', 'version.py')
+    with open(version_file, 'r') as infile:
+        version_info = infile.read()
+        match = VERSION_REGEX.search(version_info)
+        if match:
+            return match.group('version')
+
+    raise ValueError('Failed to find version info')
+
+
+def get_scripts() -> list:
+    ret = []
+    for root, _, files in os.walk(join(THIS_DIR, 'scripts')):
+        for filename in files:
+            if filename.startswith('.') or filename.endswith('.swp'):
+                continue
+
+            ret.append(join(root, filename))
+    return ret
+
+
+setup(
+    name='depthcharge',
+    version=get_version(),
+    description='A U-Boot toolkit for security researchers and tinkerers',
+
+    license='BSD 3-Clause License',
+    author='Jon Szymaniak (NCC Group)',
+    author_email='jon.szymaniak.foss@gmail.com',
+    url='https://github.com/nccgroup/depthcharge',
+
+    packages=find_packages(),
+    scripts=get_scripts(),
+
+    install_requires=['pyserial >= 3.4', 'tqdm >= 4.30.0'],
+
+    python_requires='>=3.6, <4',
+
+    extras_require={
+        'docs': ['sphinx>=3.0.0', 'sphinx_rtd_theme>=0.4.0']
+    },
+
+    zip_safe=False,
+
+    classifiers=[
+        'Development Status :: 3 - Alpha',
+        'Environment :: Console',
+        'Intended Audience :: Other Audience',
+        'License :: OSI Approved :: BSD License',
+        'Operating System :: POSIX :: Linux',
+        'Programming Language :: Python :: 3 :: Only',
+        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
+        'Topic :: Security',
+        'Topic :: System :: Boot',
+        'Topic :: System :: Hardware',
+    ],
+
+    project_urls={
+        'Source': 'https://github.com/nccgroup/depthcharge',
+        'Issue Tracker': 'https://github.com/nccgroup/depthcharge/issues',
+    },
+)

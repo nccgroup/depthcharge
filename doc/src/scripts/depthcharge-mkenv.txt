@@ -1,0 +1,38 @@
+usage: depthcharge-mkenv [options] -f <infile> -o <outfile>
+
+Make an environment that can be inserted into a target devices' NV storage
+
+options:
+  -h, --help            show this help message and exit
+  -f <path>, --file <path>
+                        Input file containing environment in text form.
+  -A <architecture>, --arch <architecture>
+                        CPU architecture. Default: ARM
+  -o <path>, --outfile <path>
+                        Output file for binary environment.
+  -S SIZE, --size SIZE  Environment size. Must match target's CONFIG_ENV_SIZE.
+  -F FLAGS, --flags FLAGS
+                        Set a value for the flags bytes. It is not included
+                        otherwise.
+  -H, --no-hdr          Do not include header metadata (CRC word, flag).
+
+ examples:
+
+    Create an environment for a target whose U-Boot image was not built with
+    CONFIG_SYS_REDUNDAND_ENV, and CONFIG_ENV_SIZE=0x2000.
+
+        depthcharge-mkenv -S 0x2000 -f env.txt -o env.bin
+
+    Create an environment for use on a target device whose U-Boot image
+    was built with CONFIG_SYS_REDUNDAND_ENV and CONFIG_ENV_SIZE=0x10000.
+    Note that the flags value must be greater than or equal to that of the
+    active environment that is being replaced.
+
+        depthcharge-mkenv -S 0x10000 -F 0x5 -f env.txt -o env.bin
+
+    Convert 2 KiB environment, but do not prepend a CRC32
+    checksum (nor a flag word).
+
+        depthcharge-mkenv -S 2K -H -f env.txt -o env.bin
+
+

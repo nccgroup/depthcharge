@@ -1,0 +1,38 @@
+usage: depthcharge-find-fdt [options] -f <image file>
+
+Search for instances of Flattened Device Tree blobs in a flash or memory dump
+
+options:
+  -h, --help            show this help message and exit
+  -f <path>, --file <path>
+                        Binary image to search
+  -a <value>, --address <value>
+                        Base address of the flash or memory dump. Result are
+                        shown with respect to this address. Use the default of
+                        0 if interested in relative offsets. Default:
+                        0x00000000
+  -A <architecture>, --arch <architecture>
+                        CPU architecture. Default: ARM
+  -o <path>, --outfile <path>
+                        Filename prefix for output file(s). No files are
+                        written if this is not provided. A .dts or .dtb suffix
+                        will be added to each file.
+  --no-dts              Do not save .dts files.
+  --no-dtb              Do not save .dtb files.
+
+ examples:
+  Print locations and sizes of FDT (DTB) instances found within an image.
+
+    depthcharge-find-fdt -f image.bin
+
+  Extract FDT instances and save them to .dtb and .dts files named
+  "image_<address>.[dts|dtb]". Additionally, specify a base address
+  for the image.
+
+    depthcharge-find-fdt -a 0xa000 -f image.bin -o image
+
+  Same as the above, but only save .dts files.
+
+    depthcharge-find-fdt -a 0xa000 -f image.bin -o image --no-dtb
+
+

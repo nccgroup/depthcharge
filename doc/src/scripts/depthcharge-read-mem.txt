@@ -1,0 +1,81 @@
+usage: 
+depthcharge-read-mem [options] -c <device config> -a <address> -l <length>
+depthcharge-read-mem [options] -c <device config> -a <address> -l <length> -f <file>
+
+
+Read memory contents to a file or display them in a hex dump.
+
+options:
+  -h, --help            show this help message and exit
+  -c <cfg>, --config <cfg>
+                        Device configuration file to load and update. It will
+                        be created if it does not exist.
+  -i <console dev>[:baudrate], --iface <console dev>[:baudrate]
+                        Serial port interface connected to U-Boot console.
+  -C <device>[:setting=value,...], --companion <device>[:setting=value,...]
+                        Depthcharge companion device to use and its associated
+                        settings. See the depthcharge.Companion documentation
+                        for supported settings.
+  -m <type>[:options,...], --monitor <type>[:options,...]
+                        Attach a console monitor. Valid types: file, pipe,
+                        colorpipe
+  -X <key>[=<value>], --extra <key>[=<value>]
+                        Specify extra operation-specific parameters as a key-
+                        value pair. A value of True is implicit if a value is
+                        not explicitly provided. Multiple instances of this
+                        argument are permitted. See the documentation for
+                        subclasses of depthcharge.Operation for supported
+                        keyword arguments.
+  -P <prompt str>, --prompt <prompt str>
+                        Override expected U-Boot prompt string.
+  -D, --skip-deploy     Skip any payload deployments; assume they're already
+                        loaded.
+  -f <path>, --file <path>
+                        Optional file to store data in.
+  -a <value>, --address <value>
+                        Target address to read from Default: 0x00000000
+  -l <n>, --length <n>  Number of bytes to read
+  --op <name>[,name,...]
+                        Request that one of the specified
+                        depthcharge.Operation implementations be used.
+                        Depthcharge will attempt to choose the best available
+                        option if this is not provided.
+
+notes:
+    If a filename is not provided, a textual hex dump will be printed.
+
+    The following address and length suffixes are supported:
+
+        * kB = 1000
+        * K or kiB = 1024
+        * MB = 1000 * 1000
+        * M or MiB = 1024 * 1024
+        * GB = 1000 * 1000 * 1000
+        * G or GiB = 1024 * 1024 * 1024
+
+    While optional, the use of the -c, --config option is STRONGLY ENCOURAGED.
+    This will greatly speed up the execution time of this script, if it will
+    be used multiple times for a given target. Similarly, once any payloads
+    needed by a reader have been deployed to RAM, the -D, --skip-deploy
+    option can be used to further speed up execution.
+
+examples:
+    Read 16384 bytes from 0x82000000 and display a hex dump:
+
+      depthcharge-read-mem -c dev.cfg -a 0x82000000 -l 16384
+
+    The following example is equivalent, but uses supported suffixes:
+
+      depthcharge-read-mem -c dev.cfg -a 2080M  -l 16K
+
+    This example instead reads data to a file. Note that Python's underscore
+    syntax for readability is supported.
+
+      depthcharge-read-mem -c dev.cfg -a 0x8200_0000 -l 16K -f data.bin
+
+    Request Depthcharge to use the depthcharge.memory.SetexprMemoryReader class
+    to read memory. Note that the `MemoryReader` suffix can be omitted, and
+    that this argument is case-insensitve.
+
+      depthcharge-read-mem -c dev.cfg -a 0x8200_0000 -l 1M -f data.bin --op setexpr
+

@@ -1,0 +1,88 @@
+#!/usr/bin/env python3
+#
+# SPDX-License-Identifier: BSD-3-Clause
+# Depthcharge: <https://github.com/nccgroup/depthcharge>
+#
+# Ignore docstring and name complaints
+#   pylint: disable=missing-module-docstring,missing-function-docstring
+#   pylint: disable=redefined-outer-name,invalid-name
+#
+
+import sys
+
+from argparse import RawDescriptionHelpFormatter
+from os.path import basename
+
+from depthcharge.cmdline import ArgumentParser, LengthAction
+from depthcharge.string import to_positive_int
+from depthcharge.uboot import load_environment, save_raw_environment
+
+
+_FILE_HELP = 'Input file containing environment in text form.'
+
+_OUTFILE_HELP = 'Output file for binary environment.'
+
+_SIZE_HELP = "Environment size. Must match target's CONFIG_ENV_SIZE."
+
+_FLAGS_HELP = 'Set a value for the flags bytes. It is not included otherwise.'
+
+_NO_HDR_HELP = 'Do not include header metadata (CRC word, flag).'
+
+_USAGE = '{:s} [options] -f <infile> -o <outfile>'.format(basename(__file__))
+
+_DESCRIPTION = """\
+Make an environment that can be inserted into a target devices' NV storage\
+"""
+
+_EPILOG = """\
+ examples:
+
+    Create an environment for a target whose U-Boot image was not built with
+    CONFIG_SYS_REDUNDAND_ENV, and CONFIG_ENV_SIZE=0x2000.
+
+        depthcharge-mkenv -S 0x2000 -f env.txt -o env.bin
+
+    Create an environment for use on a target device whose U-Boot image
+    was built with CONFIG_SYS_REDUNDAND_ENV and CONFIG_ENV_SIZE=0x10000.
+    Note that the flags value must be greater than or equal to that of the
+    active environment that is being replaced.
+
+        depthcharge-mkenv -S 0x10000 -F 0x5 -f env.txt -o env.bin
+
+    Convert 2 KiB environment, but do not prepend a CRC32
+    checksum (nor a flag word).
+
+        depthcharge-mkenv -S 2K -H -f env.txt -o env.bin
+
+\r
+"""
+
+
+def handle_cmdline():
+    parser = ArgumentParser(['file', 'arch', 'outfile'],
+                            file_required=True, file_help=_FILE_HELP,
+                            arch_required=False,
+                            outfile_required=True, outfile_help=_OUTFILE_HELP,
+                            formatter_class=RawDescriptionHelpFormatter,
+                            usage=_USAGE, description=_DESCRIPTION, epilog=_EPILOG)
+
+    parser.add_argument('-S', '--size', required=True, action=LengthAction,  help=_SIZE_HELP)
+    parser.add_argument('-F', '--flags',  default=None, help=_FLAGS_HELP)
+    parser.add_argument('-H', '--no-hdr', default=False, action='store_true', help=_NO_HDR_HELP)
+
+    args = parser.parse_args()
+
+    if args.flags:
+        args.flags = to_positive_int(args.flags, 'flags')
+        if args.flags > 255:
+            print('Flags must be in the the range [0x00, 0xff]', file=sys.stderr)
+            sys.exit(2)
+
+    return args
+
+
+if __name__ == '__main__':
+    args = handle_cmdline()
+
+    env = load_environment(args.file)
+    save_raw_environment(args.outfile, env, args.size, args.arch, args.flags, args.no_hdr)

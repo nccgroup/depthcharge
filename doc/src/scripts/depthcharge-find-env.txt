@@ -1,0 +1,45 @@
+usage: depthcharge-find-env [options] -f <image file>
+
+Search for U-Boot environment data (env_t structures) in a flash or memory dump
+
+options:
+  -h, --help            show this help message and exit
+  -f <path>, --file <path>
+                        Binary image to search
+  -a <value>, --address <value>
+                        Base address of the flash or memory dump. Result are
+                        shown with respect to this address. Use the default of
+                        0 if interested in relative offsets. Default:
+                        0x00000000
+  -A <architecture>, --arch <architecture>
+                        CPU architecture. Default: ARM
+  -o <path>, --outfile <path>
+                        Filename prefix for output file(s). No files are
+                        written if this is not provided. A .txt or .bin suffix
+                        will be added to each file.
+  -E, --expand          Expand environment variable definitions, such thatall
+                        defined variable usages are resolved. Warningwill be
+                        printed for any unresolved variables.
+  -B, --binary          When saving an output file, write the binary
+                        environment contents.This will include the env_t
+                        metadata (CRC32 word, flags byte).
+  -S, --summary         Only print the summary of located environment(s). Do
+                        not print environment contents.
+
+ examples:
+    Print all environment instances found in mtdblock0.bin:
+
+      depthcharge-find-env -f mtdblock0.bin
+
+    Expand environment variables, and save the printed text to
+    individual files named uboot_env_<address>_exp.txt.  The _exp
+    portion is only added when -E, --expand is used.
+
+      depthcharge-find-env -E -o uboot_env -f mtdblock0.bin
+
+    Save the raw binary environment instances, including metadata,
+    and print only a summary of the extracted items. Files will
+    be saved to individual files named uboot_env_<address>.bin
+
+      depthcharge-find-env -o uboot_env -S -B -f mtdblock0.bin
+

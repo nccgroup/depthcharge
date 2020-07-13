@@ -1,0 +1,32 @@
+usage: depthcharge-find-cmd [options] -f <image file>
+
+Search for U-Boot command tables within a memory or flash dump.
+
+options:
+  -h, --help            show this help message and exit
+  -a <value>, --address <value>
+                        Base address of image.
+  -A <architecture>, --arch <architecture>
+                        CPU architecture. Default: ARM
+  -f <path>, --file <path>
+                        Flash or memory image to inspect
+  --longhelp {Y,N}      Value of U-Boot CONFIG_SYS_LONGHELP setting.
+  --autocomplete {Y,N}  Value of U-Boot CONFIG_AUTO_COMPLETE setting.
+  --threshold THRESHOLD
+                        Minimum table size to report. Default: 5
+  --subcmds             Include sub-command tables in displayed results
+  --details             Display more detailed output
+
+notes:
+  If the --longhelp and --autocomplete options are not specified, Depthcharge
+  will attempt to infer the state of these compile-time configuration settings.
+
+  When --subcmds is specified, output will include any subcommand handler tables.
+  This may require a lower --threshold setting, which could yield false positives.
+
+example:
+  Search for command table entries provide detailed output, given an ARM
+  device and a memory dump taken from address 0x87800000.
+
+    depthcharge-find-cmd -A arm -a 0x8780000 -f dump.bin --details
+

@@ -10,7 +10,7 @@ Source code and releases can be found here:
 If you're new to the project, we recommend starting with the introduction section to get up to speed. For
 some additional context and inspiration, check out the corresponding `blog post`_.
 
-.. _blog post: https://research.nccgroup.com/TODO
+.. _blog post: https://research.nccgroup.com
 
 .. toctree::
    :maxdepth: 2

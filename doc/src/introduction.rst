@@ -83,7 +83,6 @@ info those old gadgets!
 .. _fault injection: https://media.defcon.org/DEF%20CON%2024/DEF%20CON%2024%20presentations/DEF%20CON%2024%20-%20Brad-Dixon-Pin2Pwn-How-to-Root-An-Embedded-Linux-Box-With-A-Sewing-Needle-UPDATED.pdf
 .. _licensed under GPL v2.0: https://www.denx.de/wiki/U-Boot/Licensing
 .. _right to repair, tinker with, and re-use: https://www.eff.org/issues/right-to-repair
-.. _blog post: https://research.nccgroup.com/TODO
 .. _device-specific environment modifications: https://colinoflynn.com/2016/07/getting-root-on-philips-hue-bridge-2-0
 .. _NXP's HABv4: https://www.nxp.com/docs/en/application-note/AN4581.pdf
 .. _upcycle: https://hackaday.com/tag/upcycle
@@ -270,7 +269,7 @@ build is half the battle!)
 Furthermore, the presence of multiple unique command tables can suggest that a
 platform vendor has implemented different operating modes or authorization
 levels. This is the case demonstrated in our `blog post
-<https://research.nccgroup.com/TODO>`_, where we show how this type of table
+<https://research.nccgroup.com>`_, where we show how this type of table
 can be patched to expose "hidden" commands.
 
 Depthcharge's :ref:`cmd` script (built atop of :py:class:`~depthcharge.hunter.CommandTableHunter`) can be used to locate these
@@ -447,5 +446,5 @@ Finally, refer to `this NCC Group blog post`_ for some additional examples and
 inspiration!
 
 .. _project documentation: https://depthcharge.readthedocs.io
-.. _This NCC Group blog post: https://research.nccgroup.com/TKTK
+.. _This NCC Group blog post: https://research.nccgroup.com
 .. _Ready, Set, Yocto!: https://github.com/jynik/ready-set-yocto

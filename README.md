@@ -48,7 +48,7 @@ Depthcharge uses a [Semantic versioning] scheme for each of its components.
 
 Currently, all components have an ["unstable"] number; API-breaking changes
 may occur within this minor version series, if deemed to be sufficiently
-beneficial for the future of the project. Be sure to the
+beneficial for the future of the project. Refer to the
 [CHANGELOG](./CHANGELOG) for guidance on handling any API changes.
 
 [Semantic versioning]: https://semver.org

@@ -3,6 +3,11 @@ Depthcharge 0.1.0, 2020-07-24
 
 Initial public release.
 
+Versions:
+
+    Python module (`depthcharge`): v0.1.0
+    Companion Firmware: v0.1.0
+
 Current limitations:
 
     - Supports ARM (32-bit) only. Additional architecture support can be

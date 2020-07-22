@@ -6,7 +6,7 @@ Introduction
 What is Depthcharge?
 --------------------
 
-Depthcharge is a toolkit designed to support vulnerability research and
+Depthcharge is a toolkit designed to support security research and
 "jailbreaking" of embedded platforms using the `Das U-Boot`_ bootloader,
 herein referred to only as *"U-Boot"*.
 

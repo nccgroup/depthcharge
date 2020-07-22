@@ -61,6 +61,9 @@ setup(
     author_email='jon.szymaniak.foss@gmail.com',
     url='https://github.com/nccgroup/depthcharge',
 
+    # I'm only supporting Linux at the moment,
+    platform='linux',
+
     packages=find_packages(),
     scripts=get_scripts(),
 

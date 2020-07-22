@@ -82,6 +82,7 @@ setup(
     ],
 
     project_urls={
+        'Documentation': 'https://depthcharge.readthedocs.io',
         'Source': 'https://github.com/nccgroup/depthcharge',
         'Issue Tracker': 'https://github.com/nccgroup/depthcharge/issues',
     },

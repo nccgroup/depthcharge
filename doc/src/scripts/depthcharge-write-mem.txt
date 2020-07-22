@@ -31,6 +31,8 @@ options:
                         Override expected U-Boot prompt string.
   -D, --skip-deploy     Skip any payload deployments; assume they're already
                         loaded.
+  -R, --no-reboot       Exclude operations that require crashing or rebooting
+                        the target.
   -a <value>, --address <value>
                         Target memory address
   -f <path>, --file <path>

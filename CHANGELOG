@@ -1,3 +1,15 @@
+2020-07-22: Depthcharge 0.1.1.post1
+----------------------------------------------------------------------------
+
+Post-release update to temporarily work around setup.py issue (#14)
+affecting RTD builds until proper fix is merged in a later release.
+
+Versions:
+
+    Python module (`depthcharge`): 0.1.1.post1
+    Companion Firmware: 0.1.0
+
+
 2020-07-22: Depthcharge Release 0.1.1 ("Burn No Bridges")
 ----------------------------------------------------------------------------
 

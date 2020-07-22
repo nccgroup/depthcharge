@@ -1,6 +1,6 @@
 # Depthcharge
 
-<img align="right" src="doc/images/depthcharge-500.png" height="265" width="265">
+<img align="right" src="https://raw.githubusercontent.com/nccgroup/depthcharge/master/doc/images/depthcharge-500.png" height="265" width="265">
 
 ## What is Depthcharge?
 
@@ -14,10 +14,10 @@ It consists of:
 * Some example ["helper" payload binaries] and build scripts to get you started with U-Boot "standalone" program-esque payloads.
 
 [U-Boot]: https://www.denx.de/wiki/U-Boot
-[depthcharge module]: ./python/depthcharge
-[Python scripts]: ./python/scripts
-[Depthcharge "Companion" firmware]: ./firmware/Arduino
-["helper" payload binaries]: ./payloads
+[depthcharge module]: https://github.com/nccgroup/depthcharge/tree/master/python/depthcharge
+[Python scripts]: https://github.com/nccgroup/depthcharge/tree/master/python/scripts
+[Depthcharge "Companion" firmware]: https://github.com/nccgroup/depthcharge/tree/master/firmware/Arduino
+["helper" payload binaries]: https://github.com/nccgroup/depthcharge/tree/master/payloads
 ["standalone"]: https://gitlab.denx.de/u-boot/u-boot/-/blob/v2020.01/doc/README.standalone
 
 
@@ -37,8 +37,9 @@ More information can be found in the [online documentation] for the Depthcharge 
 
 
 If you'd like to build this documentation for offline viewing, You can find the
-[Sphinx]-based documentation "source" in the [doc](./doc) directory.
+[Sphinx]-based documentation "source" in the [doc] directory.
 
+[doc]: https://github.com/nccgroup/depthcharge/tree/master/doc
 [online documentation]: https://depthcharge.readthedocs.io
 [Sphinx]: https://www.sphinx-doc.org/en/master/
 
@@ -46,19 +47,20 @@ If you'd like to build this documentation for offline viewing, You can find the
 
 Depthcharge uses a [Semantic versioning] scheme for both the Python API and the Companion Firmware.
 The version number for published releases will follow that of the Python API version.
-The [CHANGELOG](./CHANGELOG) shall document the current version state of both, along
+The [CHANGELOG] shall document the current version state of both, along
 with any compatibility information.
 
 Currently, this project uses ["unstable"] version numbers; API-breaking changes
 may occur within this minor version series, if deemed to be sufficiently
 beneficial for the future of the project. Refer to the
-[CHANGELOG](./CHANGELOG) for guidance on handling any API changes.
+CHANGELOG for guidance on handling any API changes.
 
 Each published release will have a "codename". This serves no real purpose,
 other than to amuse the author and add a little fun to preparing releases.
 (Maybe they'll even be useful to remember!) The codenames are song titles from
 punk bands, increasing alphabetically with each release.
 
+[CHANGELOG]: https://github.com/nccgroup/depthcharge/blob/master/CHANGELOG
 [Semantic versioning]: https://semver.org
 ["unstable"]: https://semver.org/#spec-item-4
 
@@ -69,5 +71,5 @@ found in the [License.txt] file. Project files use the corresponding
 [SPDX Identifier] to denote this.
 
 [BSD 3-Clause License]: https://opensource.org/licenses/BSD-3-Clause
-[LICENSE.txt]: ./LICENSE.txt
+[LICENSE.txt]: https://github.com/nccgroup/depthcharge/blob/master/LICENSE.txt
 [SPDX Identifier]: https://spdx.dev/ids

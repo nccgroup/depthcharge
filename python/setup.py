@@ -43,10 +43,18 @@ def get_scripts() -> list:
     return ret
 
 
+def get_description() -> str:
+    with open('../README.md', 'r') as infile:
+        return infile.read()
+
+
 setup(
     name='depthcharge',
     version=get_version(),
     description='A U-Boot toolkit for security researchers and tinkerers',
+
+    long_description=get_description(),
+    long_description_content_type='text/markdown',
 
     license='BSD 3-Clause License',
     author='Jon Szymaniak (NCC Group)',

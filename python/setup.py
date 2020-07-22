@@ -29,12 +29,17 @@ def get_version() -> str:
 
 def get_scripts() -> list:
     ret = []
-    for root, _, files in os.walk(join(THIS_DIR, 'scripts')):
+    for root, _, files in os.walk('scripts'):
         for filename in files:
             if filename.startswith('.') or filename.endswith('.swp'):
                 continue
 
-            ret.append(join(root, filename))
+            script_file = join(root, filename)
+            ret.append(script_file)
+
+    if not ret:
+        raise FileNotFoundError('Depthcharge scripts not found')
+
     return ret
 
 

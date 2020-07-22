@@ -54,6 +54,11 @@ may occur within this minor version series, if deemed to be sufficiently
 beneficial for the future of the project. Refer to the
 [CHANGELOG](./CHANGELOG) for guidance on handling any API changes.
 
+Each published release will have a "codename". This serves no real purpose,
+other than to amuse the author and add a little fun to preparing releases.
+(Maybe they'll even be useful to remember!) The codenames are song titles from
+punk bands, increasing alphabetically with each release.
+
 [Semantic versioning]: https://semver.org
 ["unstable"]: https://semver.org/#spec-item-4
 

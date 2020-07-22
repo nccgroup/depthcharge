@@ -4,7 +4,7 @@
 
 ## What is Depthcharge?
 
-Depthcharge is a toolkit designed to support vulnerability research and 
+Depthcharge is a toolkit designed to support security research and 
 "jailbreaking" of embedded platforms using the [U-Boot] bootloader.
 It consists of: 
 
@@ -44,9 +44,12 @@ If you'd like to build this documentation for offline viewing, You can find the
 
 ## Versioning
 
-Depthcharge uses a [Semantic versioning] scheme for each of its components.
+Depthcharge uses a [Semantic versioning] scheme for both the Python API and the Companion Firmware.  
+The version number for published releases will follow that of the Python API version. 
+The [CHANGELOG](./CHANGELOG) shall document the current version state of both, along
+with any compatibility information.
 
-Currently, all components have an ["unstable"] number; API-breaking changes
+Currently, this project uses ["unstable"] version numbers; API-breaking changes
 may occur within this minor version series, if deemed to be sufficiently
 beneficial for the future of the project. Refer to the
 [CHANGELOG](./CHANGELOG) for guidance on handling any API changes.

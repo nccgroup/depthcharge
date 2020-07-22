@@ -268,9 +268,10 @@ build is half the battle!)
 
 Furthermore, the presence of multiple unique command tables can suggest that a
 platform vendor has implemented different operating modes or authorization
-levels. This is the case demonstrated in our `blog post
-<https://research.nccgroup.com>`_, where we show how this type of table
-can be patched to expose "hidden" commands.
+levels. This is the case demonstrated in our `blog post`_, where we show how
+this type of table can be patched to expose "hidden" commands.
+
+.. _blog post: https://research.nccgroup.com/2020/07/22/depthcharge
 
 Depthcharge's :ref:`cmd` script (built atop of :py:class:`~depthcharge.hunter.CommandTableHunter`) can be used to locate these
 command tables. Below is an abridged example excerpt, when run with the ``--detail`` argument.
@@ -446,5 +447,5 @@ Finally, refer to `this NCC Group blog post`_ for some additional examples and
 inspiration!
 
 .. _project documentation: https://depthcharge.readthedocs.io
-.. _This NCC Group blog post: https://research.nccgroup.com
+.. _This NCC Group blog post: https://research.nccgroup.com/2020/07/22/depthcharge
 .. _Ready, Set, Yocto!: https://github.com/jynik/ready-set-yocto

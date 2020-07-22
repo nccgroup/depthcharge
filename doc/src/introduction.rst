@@ -77,7 +77,7 @@ vendors. These tools are also intended to support those wishing to exercise
 their `right to repair, tinker with, and re-use`_ the products that they own.
 Just because a product vendor is no longer running web services, shipping
 fixes, or distributing security patches for a product, does a perfectly good
-piece of hardware needs to become e-waste. Go forth, `upcycle`_, and breathe new life
+piece of hardware need to become e-waste. Go forth, `upcycle`_, and breathe new life
 info those old gadgets!
 
 .. _fault injection: https://media.defcon.org/DEF%20CON%2024/DEF%20CON%2024%20presentations/DEF%20CON%2024%20-%20Brad-Dixon-Pin2Pwn-How-to-Root-An-Embedded-Linux-Box-With-A-Sewing-Needle-UPDATED.pdf

@@ -1,12 +1,12 @@
-Depthcharge 0.1.0, 2020-07-24
+2020-07-21: Depthcharge Release 0.1.0 ("Against the Grain")
 ----------------------------------------------------------------------------
 
-Initial public release.
+Initial public release of Depthcharge.
 
 Versions:
 
-    Python module (`depthcharge`): v0.1.0
-    Companion Firmware: v0.1.0
+    Python module (`depthcharge`): 0.1.0
+    Companion Firmware: 0.1.0
 
 Current limitations:
 

@@ -12,7 +12,7 @@ from setuptools import setup, find_packages
 THIS_DIR = realpath(dirname(__file__))
 
 VERSION_REGEX = re.compile(
-    r"__version__\s*=\s*'(?P<version>[0-9]+\.[0-9]+\.[0-9]+)'"
+    r"__version__\s*=\s*'(?P<version>[0-9]+\.[0-9]+\.[0-9]+(\.[a-zA-Z0-9]+)?)'"
 )
 
 

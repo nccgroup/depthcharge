@@ -1,14 +1,14 @@
-# Depthcharge 
+# Depthcharge
 
 <img align="right" src="doc/images/depthcharge-500.png" height="265" width="265">
 
 ## What is Depthcharge?
 
-Depthcharge is a toolkit designed to support security research and 
+Depthcharge is a toolkit designed to support security research and
 "jailbreaking" of embedded platforms using the [U-Boot] bootloader.
-It consists of: 
+It consists of:
 
-* An extensible Python 3 [depthcharge module] 
+* An extensible Python 3 [depthcharge module]
 * [Python scripts] built atop of the `depthcharge` module API
 * [Depthcharge "Companion" firmware], which is used to perform attacks requiring a malicious peripheral device.
 * Some example ["helper" payload binaries] and build scripts to get you started with U-Boot "standalone" program-esque payloads.
@@ -44,8 +44,8 @@ If you'd like to build this documentation for offline viewing, You can find the
 
 ## Versioning
 
-Depthcharge uses a [Semantic versioning] scheme for both the Python API and the Companion Firmware.  
-The version number for published releases will follow that of the Python API version. 
+Depthcharge uses a [Semantic versioning] scheme for both the Python API and the Companion Firmware.
+The version number for published releases will follow that of the Python API version.
 The [CHANGELOG](./CHANGELOG) shall document the current version state of both, along
 with any compatibility information.
 

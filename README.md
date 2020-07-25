@@ -73,3 +73,7 @@ found in the [License.txt] file. Project files use the corresponding
 [BSD 3-Clause License]: https://opensource.org/licenses/BSD-3-Clause
 [LICENSE.txt]: https://github.com/nccgroup/depthcharge/blob/master/LICENSE.txt
 [SPDX Identifier]: https://spdx.dev/ids
+
+## Logo
+
+The Depthcharge logo was created by the incredibly talented [Juupiter](https://www.juupiter.com).

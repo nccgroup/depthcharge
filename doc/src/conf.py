@@ -11,7 +11,7 @@ import depthcharge
 # -- Project information -----------------------------------------------------
 
 project = 'Depthcharge'
-copyright = '2019-2020, NCC Group'
+copyright = '2019-2020, NCC Group.'
 author = 'Jon Szymaniak (NCC Group)'
 
 # The full version, including alpha/beta/rc tags

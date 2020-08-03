@@ -27,7 +27,7 @@ _OUTFILE_HELP = (
 
 _ADDRESS_HELP = (
     'Base address of the flash or memory dump. '
-    'Result are shown with respect to this address. '
+    'Results are shown with respect to this address. '
     'Use the default of 0 if interested in relative offsets.'
 )
 

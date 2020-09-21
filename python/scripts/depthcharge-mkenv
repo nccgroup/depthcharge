@@ -13,9 +13,9 @@ import sys
 from argparse import RawDescriptionHelpFormatter
 from os.path import basename
 
+from depthcharge import uboot
 from depthcharge.cmdline import ArgumentParser, LengthAction
 from depthcharge.string import to_positive_int
-from depthcharge.uboot import load_environment, save_raw_environment
 
 
 _FILE_HELP = 'Input file containing environment in text form.'
@@ -84,5 +84,5 @@ def handle_cmdline():
 if __name__ == '__main__':
     args = handle_cmdline()
 
-    env = load_environment(args.file)
-    save_raw_environment(args.outfile, env, args.size, args.arch, args.flags, args.no_hdr)
+    env = uboot.env.load(args.file)
+    uboot.env.save_raw(args.outfile, env, args.size, args.arch, args.flags, args.no_hdr)

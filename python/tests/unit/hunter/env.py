@@ -18,7 +18,7 @@ from ..test_utils import random_data
 
 # Fun test case from a U-boot sandbox build. Tast byte of the CRC is a printable
 # character, which causes our regex to match 1 char early.
-_ENV = uboot.parse_environment("""\
+_ENV = uboot.env.parse("""\
 arch=sandbox
 baudrate=115200
 board=sandbox
@@ -80,7 +80,7 @@ class TestEnvironmentHunter(TestCase):
     def setUpClass(cls):
         cls.blob = bytearray()
 
-        env_headerless = uboot.create_raw_environment(_ENV, _ENV_BIN_LEN, 'arm', no_header=True)
+        env_headerless = uboot.env.create_raw(_ENV, _ENV_BIN_LEN, 'arm', no_header=True)
 
         # Headerless copy #1 at start of image
         cls.blob += env_headerless
@@ -93,14 +93,14 @@ class TestEnvironmentHunter(TestCase):
         cls.blob += random_data(63, seed=1) + b'\0'
 
         # Environment with a CRC32 header, but no flags byte. Exact fit.
-        cls.blob += uboot.create_raw_environment(_ENV, 4096, 'arm')
+        cls.blob += uboot.env.create_raw(_ENV, 4096, 'arm')
         cls.env_size = 4092
 
         cls.blob += random_data(255, seed=2)
 
         # Redundant envs
-        cls.blob += uboot.create_raw_environment(_ENV, 4096, 'arm', flags=0x5)
-        cls.blob += uboot.create_raw_environment(_ENV, 4096, 'arm', flags=0x4)
+        cls.blob += uboot.env.create_raw(_ENV, 4096, 'arm', flags=0x5)
+        cls.blob += uboot.env.create_raw(_ENV, 4096, 'arm', flags=0x4)
 
         cls.blob += random_data(55, seed=2)
 

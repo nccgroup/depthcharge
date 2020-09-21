@@ -13,8 +13,8 @@ import sys
 from argparse import RawDescriptionHelpFormatter
 from os.path import basename
 
+from depthcharge import uboot
 from depthcharge.cmdline import ArgumentParser, KeyValListAction
-from depthcharge.uboot import expand_environment
 
 _USAGE = '{:s} -c <device config> -i <info>[:options]'.format(basename(__file__))
 _DESCRIPTION = 'Pretty-print information in a device configuration file.'
@@ -95,7 +95,7 @@ def print_env(config, expanded):
     env = config.get('env_vars', {})
     if expanded:
         title = 'Expanded ' + title
-        env = expand_environment(env)
+        env = uboot.env.expand(env)
 
     print()
     print(title)

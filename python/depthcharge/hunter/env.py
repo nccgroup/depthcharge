@@ -40,7 +40,7 @@ class EnvironmentHunter(Hunter):
         min_entries = kwargs.get('min_entries', 5)
         max_entries = kwargs.get('max_entries', None)
 
-        self._env = uboot.raw_environment_regex(min_entries, max_entries)
+        self._env = uboot.env.raw_regex(min_entries, max_entries)
 
     def _expected_crc(self, offset, redundant_env):
         if redundant_env:
@@ -176,7 +176,7 @@ class EnvironmentHunter(Hunter):
                 extra_info['type'] = 'Built-in environment'
 
             extra_info['raw']  = self._data[actual_off:actual_off + actual_size]
-            extra_info['dict'] = uboot.parse_raw_environment(extra_info['raw'])
+            extra_info['dict'] = uboot.env.parse_raw(extra_info['raw'])
             extra_info['arch'] = self._arch.name
 
             # User is looking for an environment containg a specific item.

@@ -152,7 +152,6 @@ def print_gd(config):
             print('  {:20s} 0x{:08x}'.format(name, value))
         print()
 
-
         jt_addr = config['gd']['jt']['address']
         print('Jump Table @ 0x{:08x}'.format(jt_addr))
 
@@ -173,6 +172,7 @@ def print_gd(config):
         print('Jump Table Entries: Unknown')
 
     print()
+
 
 def print_version(config):
     """

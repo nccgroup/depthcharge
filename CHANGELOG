@@ -1,3 +1,87 @@
+<Date TBD>: Depthcharge Release 0.2.0 ("Clatter and Hiss")
+----------------------------------------------------------------------------
+
+Summary:
+
+* API breaking change: Migrated uboot.py submodule to a uboot subpackage
+
+Versions:
+
+    Python module (`depthcharge`): 0.2.0
+    Companion Firmware: 0.1.0
+
+Details:
+
+  The migration of the uboot.py submodule to a uboot subpackage was
+  performed in order to allow new additions to be introduced in a more
+  organized manner. 
+
+  The uboot.py submodule has been converted to a subpackage organized as
+  follows:
+
+     * depthcharge.uboot.board:      Platform and "board" configuration data
+     * depthcharge.uboot.cmd_table:  Console command handler table inspection
+     * depthcharge.uboot.env:        Environment (variable) functionality
+     * depthcharge.uboot.jump_table: Exported jump table definitions
+
+   This breaks the (unstable) v0.1.x API. Below is a summary of the v0.1.x
+   items that have been removed, along with their corresponding replacements in
+   the (also unstable) v0.2.x API.
+
+   depthcharge.uboot.board:
+    v0.1.x: depthcharge.uboot.bdinfo_dict()
+
+                        Replaced by:
+
+    v0.2.x: depthcharge.uboot.board.bdinfo_dict()
+
+
+   depthcharge.uboot.cmd_table:
+    v0.1.x: depthcharge.uboot.cmdtbl_entry_to_bytes()
+
+                        Replaced by:
+
+    v0.2.x: depthcharge.uboot.cmd_table.entry_to_bytes()
+
+
+   depthcharge.uboot.env:
+    v0.1.x: depthcharge.uboot.raw_environment_regex()
+            depthcharge.uboot.raw_env_var_regex()
+            depthcharge.uboot.expand_environment()
+            depthcharge.uboot.expand_variable()
+            depthcharge.uboot.parse_raw_environment()
+            depthcharge.uboot.load_raw_environment()
+            depthcharge.uboot.save_raw_environment()
+            depthcharge.uboot.create_raw_environment()
+            depthcharge.uboot.parse_environment()
+            depthcharge.uboot.load_environment()
+            depthcharge.uboot.save_environment()
+
+                        Replaced by:
+
+    v0.2.x: depthcharge.uboot.env.raw_regex()
+            depthcharge.uboot.env.raw_var_regex()
+            depthcharge.uboot.env.expand()
+            depthcharge.uboot.env.expand_variable()
+            depthcharge.uboot.env.parse_raw()
+            depthcharge.uboot.env.load_raw()
+            depthcharge.uboot.env.save_raw()
+            depthcharge.uboot.env.create_raw()
+            depthcharge.uboot.env.load()
+            depthcharge.uboot.env.save()
+
+
+   depthcharge.uboot.jump_table:
+    v0.1.x: depthcharge.uboot.jump_table_exports()  
+            depthcharge.uboot.find_jump_table()
+
+                        Replaced by:
+
+    v0.2.x: depthcharge.uboot.jump_table.exports()
+            depthcharge.uboot.jump_table.find()
+
+
+
 2020-07-22: Depthcharge 0.1.1.post1
 ----------------------------------------------------------------------------
 

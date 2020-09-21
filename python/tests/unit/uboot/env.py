@@ -7,9 +7,8 @@
 #
 
 """
-Unit tests for depthcharge.uboot
+Unit tests for depthcharge.uboot.env
 """
-# TODO: Implement test cases for remainder of module.
 
 import os
 
@@ -69,23 +68,23 @@ serverip=192.168.0.10
 """
 
 
-class TestEnvFns(TestCase):
+class TestUbootEnvFns(TestCase):
     """
-    Test depthcharge.uboot functions focused on environment data.
+    Test depthcharge.uboot.env functions focused on environment data.
     """
 
     def test_parse(self):
-        env = uboot.parse_environment(_ENV_TEXT)
+        env = uboot.env.parse(_ENV_TEXT)
         self.assertEqual(env, _ENV_DICT)
 
     def test_expand(self):
-        env = uboot.expand_environment(_ENV_DICT)
+        env = uboot.env.expand(_ENV_DICT)
         self.assertEqual(env, _ENV_DICT_EXP)
 
     def test_save_load(self):
         filename = 'depthcharge.uboot.env_save_load.test'
-        uboot.save_environment(filename, _ENV_DICT)
-        env = uboot.load_environment(filename)
+        uboot.env.save(filename, _ENV_DICT)
+        env = uboot.load(filename)
         self.assertEqual(env, _ENV_DICT)
         os.remove(filename)
 
@@ -98,14 +97,14 @@ class TestEnvFns(TestCase):
 
         with self.subTest('No header'):
             uboot.save_raw_environment(filename, _ENV_DICT, size, arch, no_header=True)
-            env, metadata = uboot.load_raw_environment(filename, arch, has_crc=False)
+            env, metadata = uboot.env.load_raw(filename, arch, has_crc=False)
 
             self.assertEqual(env, _ENV_DICT)
             self.assertEqual(metadata['size'], size)
 
         with self.subTest('CRC, no flags'):
             uboot.save_raw_environment(filename, _ENV_DICT, size, arch)
-            env, metadata = uboot.load_raw_environment(filename, arch)
+            env, metadata = uboot.env.load_raw(filename, arch)
 
             self.assertEqual(env, _ENV_DICT)
             self.assertEqual(metadata['size'], size - 4)
@@ -113,7 +112,7 @@ class TestEnvFns(TestCase):
 
         with self.subTest('CRC + flags'):
             uboot.save_raw_environment(filename, _ENV_DICT, size, arch, flags=flags)
-            env, metadata = uboot.load_raw_environment(filename, arch, has_flags=True)
+            env, metadata = uboot.env.load_raw(filename, arch, has_flags=True)
 
             self.assertEqual(env, _ENV_DICT)
             self.assertEqual(metadata['size'], size - 5)

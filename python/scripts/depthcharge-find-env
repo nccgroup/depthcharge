@@ -14,10 +14,9 @@ from argparse import RawDescriptionHelpFormatter
 from os import linesep
 from os.path import basename
 
-from depthcharge import Architecture
+from depthcharge import Architecture, uboot
 from depthcharge.cmdline import ArgumentParser
 from depthcharge.hunter import EnvironmentHunter
-from depthcharge.uboot import expand_environment, save_environment
 
 _FILE_HELP = 'Binary image to search'
 
@@ -149,7 +148,7 @@ def print_results(results, args):
 
         env = result['dict']
         if args.expand:
-            env = expand_environment(env)
+            env = uboot.env.expand(env)
 
         print('-' * 80)
         for name, value in env.items():
@@ -171,10 +170,10 @@ def save_text_results(args, results):
     for result, _ in results:
         env = result['dict']
         if args.expand:
-            env = expand_environment(env, quiet=True)
+            env = uboot.env.expand(env, quiet=True)
 
         filename = create_filename(args, result['src_addr'])
-        save_environment(filename, env)
+        uboot.env.save(filename, env)
 
 
 def save_binary_results(args, results):

@@ -17,6 +17,7 @@ from . import log
 from . import hunter
 from . import memory
 from . import register
+from . import uboot
 
 from .context   import Depthcharge
 from .console   import Console

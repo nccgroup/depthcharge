@@ -664,7 +664,7 @@ class Depthcharge:
         self.console.interrupt()
         env_text = self.send_command('printenv')
 
-        self._env = uboot.parse_environment(env_text)
+        self._env = uboot.env.parse(env_text)
         return self._env
 
     def env_var(self, name: str, expand=True, cached=True, convert_int=True, **kwargs):
@@ -688,7 +688,7 @@ class Depthcharge:
             self.environment(cached=False)
 
         if expand:
-            ret = uboot.expand_variable(self._env, name, **kwargs)
+            ret = uboot.env.expand_variable(self._env, name, **kwargs)
         else:
             ret = self._env[name]
 
@@ -1214,7 +1214,7 @@ class Depthcharge:
 
         if 'bdinfo' in self._cmds and not kwargs.get('skip_bdinfo', False):
             resp = self.console.send_command('bdinfo')
-            bdinfo = uboot.bdinfo_dict(resp)
+            bdinfo = uboot.board.bdinfo_dict(resp)
             if bdinfo:  # Don't insert any empty dict if things go awry
                 self._gd['bd'] = bdinfo
         else:
@@ -1279,5 +1279,5 @@ class Depthcharge:
         if memory_reader is None:
             memory_reader = self._memrd.default()
 
-        self._gd['jt'] = uboot.find_jump_table(self._gd['address'], memory_reader, self.arch)
+        self._gd['jt'] = uboot.jump_table.find(self._gd['address'], memory_reader, self.arch)
         return self._gd['jt']

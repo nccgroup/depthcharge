@@ -17,11 +17,10 @@ import time
 
 from argparse import RawDescriptionHelpFormatter
 
-from depthcharge         import log
+from depthcharge         import log, uboot
 from depthcharge.arch    import Architecture
 from depthcharge.cmdline import ArgumentParser, create_depthcharge_ctx
 from depthcharge.memory  import MemoryPatchList
-from depthcharge.uboot   import cmdtbl_entry_to_bytes
 
 # Resolve post-location addresses.
 #
@@ -44,7 +43,7 @@ _locked_cmds         = _reloc(0x8788a044).to_bytes(4, 'little')
 _locked_cmds_end     = _reloc(0x8788a258).to_bytes(4, 'little')
 
 # struct cmd_tbl_s entries. We'll swap out the help alias entry for bootm
-_help_alias_entry = cmdtbl_entry_to_bytes(Architecture.get('arm'), {
+_help_alias_entry = uboot.cmd_table.entry_to_bytes(Architecture.get('arm'), {
     'name':     _reloc(0x87863e2a),
     'maxargs':  0x20,
     'cmd_rep':  1,
@@ -54,7 +53,7 @@ _help_alias_entry = cmdtbl_entry_to_bytes(Architecture.get('arm'), {
     'complete': 0
 })
 
-_bootm_entry = cmdtbl_entry_to_bytes(Architecture.get('arm'), {
+_bootm_entry = uboot.cmd_table.entry_to_bytes(Architecture.get('arm'), {
     'name':     _reloc(0x87862078),
     'maxargs':  0x020,
     'cmd_rep':  1,

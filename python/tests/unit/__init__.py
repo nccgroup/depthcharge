@@ -22,5 +22,6 @@ from .string import (
     TestXxd
 )
 
-# TODO: Implement tests for the rest of this submodule
-from .uboot import TestEnvFns
+# TODO: Implement tests for the rest of this subpackage:
+#           board, cmd_table, jump_table
+from .uboot import env

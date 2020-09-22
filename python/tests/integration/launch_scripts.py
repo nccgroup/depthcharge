@@ -638,26 +638,25 @@ def test_read_mem__readback(state: dict, script: str):
 
     Writes data to a file whose name is stored in state['readback_file']
     """
-
     zeros_preceeding = state['write_append_addr'] - state['zeroized_addr']
     zeros_following  = state['zeroized_len'] - zeros_preceeding - len(state['stratagem_payload'])
 
-    expected  = state['write_data']
-    expected += b'\x00' * zeros_preceeding
-    expected += state['stratagem_payload']
-    expected += b'\x00' * zeros_following
-
+    expected = b'\x00' * zeros_preceeding + state['stratagem_payload'] + b'\x00' * zeros_following
     read_len = len(expected)
+
+    expected_file = os.path.join(state['test_dir'], 'readback.expected.bin')
+    with open(expected_file, 'wb') as outfile:
+        outfile.write(expected)
 
     state['readback_file'] = os.path.join(state['test_dir'], 'readback.bin')
 
-    loadaddr = int(state['config']['env_vars']['loadaddr'], 0)
+    addr = state['zeroized_addr']
 
     log.note('  Reading back data at $loadaddr.')
     args = [
         script,
         '-c', state['config_file'],
-        '-a', hex(loadaddr),
+        '-a', hex(addr),
         '-l', str(read_len),
         '-f', state['readback_file'],
         '-D',

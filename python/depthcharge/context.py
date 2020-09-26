@@ -654,6 +654,8 @@ class Depthcharge:
 
         Note that all values in the returned dictionary are strings. The caller is responsible for
         performing any necessary type conversions.
+
+        Upon failure, an error will be logged and an empty dictionary will be returned.
         """
 
         if self._env is not None and cached:
@@ -664,7 +666,12 @@ class Depthcharge:
         self.console.interrupt()
         env_text = self.send_command('printenv')
 
-        self._env = uboot.env.parse(env_text)
+        try:
+            self._env = uboot.env.parse(env_text)
+        except ValueError as e:
+            log.error('Failed to parse environment: ' + str(e))
+            self._env = {}
+
         return self._env
 
     def env_var(self, name: str, expand=True, cached=True, convert_int=True, **kwargs):

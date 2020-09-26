@@ -4,6 +4,7 @@
 Functionality for interacting with a U-Boot console.
 """
 
+import re
 import time
 
 import serial
@@ -40,8 +41,8 @@ class Console:
         if 'timeout' not in kwargs:
             kwargs = {'timeout': 0.050, **kwargs}
 
-        # Parse device string and insert entries into the kwargs passed onto
-        # the Serial constructor
+        # Parse device string and merge its entries into the provided kwargs,
+        # giving priority to the items in the device string.
         device, device_args = str_to_property_keyval(device)
         for arg in list(device_args.keys()):
 
@@ -60,9 +61,27 @@ class Console:
                 except ValueError:
                     kwargs[arg] = device_args[arg]
 
-        # Reboot if we land in a Linux shell.
-        self._no_reboot     = kwargs.pop('no_reboot', False)
-        self._reboot_prompt = kwargs.pop('bad_prompt', ('#', '$'))
+        # If, when Depthcharge is trying to detect a prompt at the console,
+        # we see a match for this regular expression, we will enter a
+        # loop in which we attempt to reboot the platform.
+        #
+        # It's a bit of "undocumented magic" that I use myself, but am not
+        # really sure about whether other people will find it useful.
+        #
+        # TODO: Document this as an opt-in behavior in API docs.
+        #       (More feedback and mulling over this required.)
+        #
+        self._reboot_re = kwargs.pop('reboot_re', None)
+        self._reboot_cmd = kwargs.pop('reboot_cmd', 'reboot || shutdown -r')
+
+        if self._reboot_re:
+            self._reboot_re = re.compile(self._reboot_re)
+            msg = (
+                'Using regular expression for reboot match trigger: '
+                + self._reboot_re.pattern + '\n'
+                + '    Will use this command: ' + self._reboot_cmd
+            )
+            log.info(msg)
 
         # We're going to pass this off to the Serial constructor in a moment.
         if 'baudrate' not in kwargs:
@@ -74,9 +93,6 @@ class Console:
         # Store Serial constructor arguments for later reopen()
         self._dev = device
         self._kwargs = kwargs
-
-        if not isinstance(self._reboot_prompt, (tuple, list)):
-            self._reboot_prompt = (self._reboot_prompt,)
 
         self._ser = serial.Serial(port=self._dev, **kwargs)
         self._encoding = 'latin-1'
@@ -199,14 +215,17 @@ class Console:
 
                 if candidate_count >= count:
                     # Is this prompt indicative of a state we don't want to be in?
+                    # (e.g. Linux shell)
+                    #
+                    # If so, attempt to issue 'reboot' command.
                     response_stripped = response.strip()
-                    for undesired in self._reboot_prompt:
-                        if response_stripped.endswith(undesired):
-                            candidate = ''
-                            candidate_count = 0
-                            self.write('reboot\n')
-                            self._ser.flush()
-                            log.info('Detected non-U-Boot state. Rebooting.')
+                    if self._reboot_re is not None and self._reboot_re.match(response_stripped):
+                        candidate = ''
+                        candidate_count = 0
+                        msg = 'Attempting reboot. Matched reboot regex: ' + response_stripped
+                        log.info(msg)
+                        self.write(self._reboot_cmd + '\n')
+                        self._ser.flush()
 
                     if candidate_count > 0:
                         log.info('Identified prompt: ' + response)

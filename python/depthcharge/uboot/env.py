@@ -93,7 +93,11 @@ def parse(text: str) -> dict:
             if not line or line.startswith('Environment size: '):
                 continue
 
-            delim_idx = line.index('=')
+            try:
+                delim_idx = line.index('=')
+            except ValueError:
+                # Try to be resilient and ignore bizzare or malformed lines...
+                continue
 
             name  = line[:delim_idx]
             value = line[delim_idx+1:]

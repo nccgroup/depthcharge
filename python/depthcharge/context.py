@@ -130,8 +130,8 @@ class Depthcharge:
     :Payload Location: By default, payloads are staged 32 MiB beyond the
         target's ``$loadaddr`` location. To override this location, either
         alternative absolute address can be provided in a *payload_base*
-        keyword argument.  Alternatively, the offset from ``$loadaddr`` can be
-        provided via *payload_offset*.
+        keyword argument.  Alternatively, the offset from the payload base address can
+        be provided via *payload_offset*.
 
     :Crash/Reboot Behavior: Some operations, such as
         :py:class:`~depthcharge.register.DataAbortRegisterReader` subclasses,
@@ -218,10 +218,25 @@ class Depthcharge:
         # to collect information.
         self._gd = kwargs.get('_gd', {})
 
-        # PayloadMap and its base address initialization may depend upon
-        # information gathered on the target.
+        # Are we permitted to deploy executable payloads as-needed?
+        self._allow_deployment = kwargs.get('allow_deploy', False)
+
+        # Should we assume that payloads are alerady deployed?
+        self._skip_deployment = kwargs.get('skip_deploy', False)
+
+        # Our payload map will be initializde during the following active
+        # initialization portion of this constructor.
         self._payloads = None
-        self._payload_base = None
+
+        # Where should we place our payloads?
+        # If not specified, we'll used an offset from ${loadaddr} as to avoid
+        # stomping on stuff that we actively may wish to tamper wtih.
+        self._payload_base = kwargs.get('payload_base', 'loadaddr')
+        if 'payload_base' not in kwargs:  # We used the loadaddr default...
+            log.info('Using default payload base address: ${loadaddr} + 32MiB')
+            self._payload_off = 32 * 1024 * 1024
+        else:
+            self._payload_off = kwargs.get('payload_offset', 0)
 
         # Perform initializations involve interaction with the underlying
         # device. This has been split just to afford us an opportunity to
@@ -243,7 +258,10 @@ class Depthcharge:
 
         # Establish our payload base address by resolving either an environment
         # variable read from the target device or using a user-provided address
-        self._setup_payload_map(**kwargs)
+        self._resolve_payload_base()
+        self._payloads = PayloadMap(self.arch,
+                                    self._payload_base + self._payload_off,
+                                    skip_deploy=self._skip_deployment)
 
         # Retrieve and cache version information, if not provided earlier
         self.version()
@@ -265,33 +283,24 @@ class Depthcharge:
         except OperationNotSupported as error:
             log.warning(str(error))
 
-    def _setup_payload_map(self, **kwargs):
+    def _resolve_payload_base(self):
         """
-        Set up payload map using either:
-
-            * keyword argument: payload_base
-            * U-Boot target environment variable: loadaddr
+        Resolve self._payload_base string based upon environment vars, if needed.
         """
-        payload_base = kwargs.get('payload_base', 'loadaddr')
-        if isinstance(payload_base,  str):
-            if payload_base not in self._env:
-                msg = 'Did not find environment variable specified for payload_base ("{:s}")'
-                raise ValueError(msg.format(payload_base))
+        if isinstance(self._payload_base,  str):
+            try:
+                expanded = uboot.env.expand_variable(self._env, self._payload_base)
+                self._payload_base = int(expanded, 0)
+            except KeyError:
+                msg = 'Missing environment variable specified for payload_base: {:s}'
+                raise ValueError(msg.format(self._payload_base))
+            except ValueError:
+                msg = 'Encountered invalid environment variable expansion: ' + expanded
+                raise ValueError(msg)
 
-            # We are usually interested in (tampering with) what gets loaded @
-            # ${loadaddr}, so don't stage payloads there.
-            apply_offset = (payload_base == 'loadaddr')
-            payload_base = int(self._env[payload_base], 0)
-            if apply_offset:
-                payload_base += kwargs.get('payload_offset', 32 * 1024 * 1024)
-        else:
-            payload_base = int(payload_base)
-
-        # Set up payload memory map
-        skip_deploy = kwargs.get('skip_deploy', False)
-        self._payload_base = payload_base
-        log.note('Depthcharge PayloadMap base address: 0x{:08x}'.format(payload_base))
-        self._payloads = PayloadMap(self.arch, self._payload_base, skip_deploy=skip_deploy)
+        msg = 'Depthcharge payload base (0x{:08x}) + payload offset (0x{:08x}) => 0x{:08x}'
+        actual_base = self._payload_base + self._payload_off
+        log.info(msg.format(self._payload_base, self._payload_off, actual_base))
 
     @staticmethod
     def _log_not_supported(err):
@@ -450,13 +459,20 @@ class Depthcharge:
         previously created by :py:meth:`to_json()`.
         """
         ctx = json.loads(json_str)
+
+        # Allow these items to be overridden on load
+        if 'payload_base' not in kwargs and 'payload_base' in ctx:
+            kwargs['payload_base'] = ctx['payload_base']
+
+        if 'payload_offset' not in kwargs and 'payload_offset' in ctx:
+            kwargs['payload_offset'] = ctx['payload_offset']
+
         return cls(console,
                    arch=ctx['arch'],
                    _version=ctx['version'],
                    _cmds=ctx['commands'],
                    _env=ctx['env_vars'],
                    _prompt=ctx['prompt'],
-                   payload_base=ctx['payload_base'],
                    _gd=ctx['gd'],
                    **kwargs)
 
@@ -472,6 +488,7 @@ class Depthcharge:
             'commands': self._cmds,
             'env_vars': self._env,
             'payload_base': self._payload_base,
+            'payload_offset': self._payload_off,
             'gd': self._gd,
         }
 

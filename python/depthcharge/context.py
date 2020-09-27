@@ -121,6 +121,9 @@ class Depthcharge:
         keyword argument to the constructor or by making a later call to
         :py:meth:`commands()` with *detailed=True*.
 
+    :Allow Payload Deployment: If *allow_payload=True*, Depthcharge may attempt
+        to deploy and execute payloads in memory, when neccessary.
+
     :Skip Payload Deployment: When performing the same operations on a device repeatedly,
         the deployment of executable payloads may be redundant and waste time.
         This can be disabled by providing a *skip_deploy=True* keyword
@@ -221,8 +224,12 @@ class Depthcharge:
         # Are we permitted to deploy executable payloads as-needed?
         self._allow_deployment = kwargs.get('allow_deploy', False)
 
-        # Should we assume that payloads are alerady deployed?
-        self._skip_deployment = kwargs.get('skip_deploy', False)
+        # Should we assume that payloads are already deployed?
+        if not self._allow_deployment:
+            # Implied
+            self._skip_deployment = False
+        else:
+            self._skip_deployment = kwargs.get('skip_deploy', False)
 
         # Our payload map will be initializde during the following active
         # initialization portion of this constructor.
@@ -307,7 +314,7 @@ class Depthcharge:
         # Warn for situations where more functionality would be available if
         # the user had provided
         msg = '  Excluded:  ' + str(err)
-        if 'companion' in msg:
+        if 'companion' in msg or 'opt-in not specified' in msg:
             log.warning(msg)
         else:
             log.note(msg)
@@ -357,12 +364,21 @@ class Depthcharge:
             try:
                 impl = subclass(self, **kwargs)
                 required_payloads = impl.required['payloads']
-                if len(required_payloads) > 0 and len(self._memwr) == 0:
-                    msg = 'No MemoryWriter available to deploy required payload(s)'
-                    raise OperationNotSupported(impl, msg)
+                if len(required_payloads) > 0:
+                    if len(self._memwr) == 0:
+                        msg = 'No MemoryWriter available to deploy required payload(s)'
+                        raise OperationNotSupported(impl, msg)
+
+                    if not self._allow_deployment:
+                        msg = 'Payload deployment+execution opt-in not specified'
+                        raise OperationNotSupported(impl, msg)
 
                 for payload in required_payloads:
                     self._payloads.mark_required_by(payload, impl)
+
+                if issubclass(subclass, Executor) and not self._allow_deployment:
+                    msg = 'Payload deployment+execution opt-in not specified'
+                    raise OperationNotSupported(impl, msg)
 
                 op_set.add(impl)
                 log.note('  Available: ' + impl.name)
@@ -1074,6 +1090,9 @@ class Depthcharge:
 
         The keyword argument *force=True* can be used to force (re)deployment.
         """
+        if not self._allow_deployment:
+            log.note('Not performing payload deployment. (Requires opt-in.)')
+            return
 
         payload     = self._payloads[name]
         addr        = payload['address']
@@ -1109,6 +1128,10 @@ class Depthcharge:
         reading of response data, should the caller want to do so manually
         through raw console accesses. In this case, this method returns ``None``.
         """
+        if not self._allow_deployment:
+            msg = 'Not attempting payload execution. Requires opt-in of payload deployment and execution.'
+            raise OperationFailed(msg)
+
         payload = self._payloads[name]
 
         # Deploy payload as-needed. (No-op if already deployed.)

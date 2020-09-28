@@ -28,10 +28,13 @@ options:
                         keyword arguments.
   -P <prompt str>, --prompt <prompt str>
                         Override expected U-Boot prompt string.
-  -D, --skip-deploy     Skip any payload deployments; assume they're already
-                        loaded.
-  -R, --no-reboot       Exclude operations that require crashing or rebooting
-                        the target.
+  -A, --allow-deploy    Allow payloads to be deployed and executed.
+                        Functionality may be limited if this is not specified.
+  -S, --skip-deploy     Skip payload deployment but allow execution; assume
+                        payloads are already deployed and execute as-needed.
+                        This has no effect when -A, --allow-deploy is used.
+  -R, --allow-reboot    Allow operations that require crashing or rebooting
+                        the target to be performed.
   -f <path>, --file <path>
                         Optional file to store data in.
   -a <value>, --address <value>

@@ -514,7 +514,7 @@ class ArgumentParser(argparse.ArgumentParser):
         skipped in situations where a prior script or command has already
         done this. (They still want to execute payloads.)
         """
-        help_text = ('Skip payload deployment but allow execution. '
+        help_text = ('Skip payload deployment but allow execution; '
                      "assume payloads are already deployed and execute as-needed. "
                      'This has no effect when -A, --allow-deploy is used.')
 

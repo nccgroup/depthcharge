@@ -257,7 +257,7 @@ class Operation:
         # If so, is the user permitting this?
         s['crash_or_reboot'] = cls._required.get('crash_or_reboot', False)
         if s['crash_or_reboot'] and not ctx._allow_reboot:
-            err = 'Operation induces crash or reboot, but this is not permitted'
+            err = 'Operation requires crash or reboot, but opt-in not specified'
             raise OperationNotSupported(cls, err)
 
         # Required command check

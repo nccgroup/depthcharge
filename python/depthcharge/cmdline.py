@@ -41,7 +41,7 @@ def create_depthcharge_ctx(args, **kwargs):
     * *companion* - From :py:meth:`ArgumentParser.add_companion_argument()`
     * *allow_deploy* - From :py:meth:`ArgumentParser.add_allow_deploy_argument()`
     * *skip_deploy* - From :py:meth:`ArgumentParser.add_skip_deploy_argument()`
-    * *no_reboot* - From :py:meth:`ArgumentParser.add_no_reboot_argument()`
+    * *allow_reboot* - From :py:meth:`ArgumentParser.add_allow_reboot_argument()`
 
     """
     monitor = Monitor.create(args.monitor)
@@ -69,7 +69,7 @@ def create_depthcharge_ctx(args, **kwargs):
         kwargs = {**kwargs, **args.extra}
 
     # Insert the specified boolean flag items into kwargs if args contains corresponding keys
-    bool_flags = ('allow_deploy', 'skip_deploy', 'no_reboot')
+    bool_flags = ('allow_deploy', 'skip_deploy', 'allow_reboot')
 
     for key in bool_flags:
         if hasattr(args, key) and getattr(args, key):
@@ -202,7 +202,7 @@ class ArgumentParser(argparse.ArgumentParser):
         'prompt',
         'allow_deploy',
         'skip_deploy',
-        'no_reboot',
+        'allow_reboot',
     ]
 
     def _perform_arg_handler_init(self, init_args: list, kwargs_dict: dict):
@@ -456,11 +456,11 @@ class ArgumentParser(argparse.ArgumentParser):
                           required=required,
                           help='Attach a console monitor. Valid types: file, pipe, colorpipe')
 
-    def add_no_reboot_argument(self, help=None):
+    def add_allow_reboot_argument(self, help=None):
         if help is None:
-            help = 'Exclude operations that require crashing or rebooting the target.'
+            help = 'Allow operations that require crashing or rebooting the target to be performed.'
 
-        self.add_argument('-R', '--no-reboot',
+        self.add_argument('-R', '--allow-reboot',
                           default=False,
                           action='store_true',
                           help=help)

@@ -34,13 +34,14 @@ def create_depthcharge_ctx(args, **kwargs):
     * *iface* - From :py:meth:`ArgumentParser.add_interface_argument()`
     * *prompt* - From :py:meth:`ArgumentParser.add_prompt_argument()`
     * *extra* - From :py:meth:`ArgumentParser.add_extra_argument()`
-    * *skip_deploy* - From :py:meth:`ArgumentParser.add_skip_deploy_argument()`
 
     The following items are optional:
 
     * *config* - From :py:meth:`ArgumentParser.add_config_argument()`
     * *companion* - From :py:meth:`ArgumentParser.add_companion_argument()`
-
+    * *allow_deploy* - From :py:meth:`ArgumentParser.add_allow_deploy_argument()`
+    * *skip_deploy* - From :py:meth:`ArgumentParser.add_skip_deploy_argument()`
+    * *no_reboot* - From :py:meth:`ArgumentParser.add_no_reboot_argument()`
 
     """
     monitor = Monitor.create(args.monitor)
@@ -67,8 +68,12 @@ def create_depthcharge_ctx(args, **kwargs):
     if args.extra:
         kwargs = {**kwargs, **args.extra}
 
-    if hasattr(args, 'no_reboot'):
-        kwargs['allow_reboot'] = not args.no_reboot
+    # Insert the specified boolean flag items into kwargs if args contains corresponding keys
+    bool_flags = ('allow_deploy', 'skip_deploy', 'no_reboot')
+
+    for key in bool_flags:
+        if hasattr(args, key) and getattr(args, key):
+            kwargs[key] = getattr(args, key)
 
     if hasattr(args, 'config') and args.config:
         try:
@@ -76,7 +81,6 @@ def create_depthcharge_ctx(args, **kwargs):
             return Depthcharge.load(args.config,
                                     console,
                                     companion=companion,
-                                    skip_deploy=args.skip_deploy,
                                     **kwargs)
         except FileNotFoundError:
             # We'll create it when we call save()
@@ -84,7 +88,6 @@ def create_depthcharge_ctx(args, **kwargs):
 
     return Depthcharge(console,
                        companion=companion,
-                       skip_deploy=args.skip_deploy,
                        **kwargs)
 
 
@@ -197,6 +200,7 @@ class ArgumentParser(argparse.ArgumentParser):
         'monitor',
         'extra',
         'prompt',
+        'allow_deploy',
         'skip_deploy',
         'no_reboot',
     ]
@@ -490,17 +494,35 @@ class ArgumentParser(argparse.ArgumentParser):
                           required=required,
                           help=help)
 
+    def add_allow_deploy_argument(self, required=False):
+        """
+        Add an opt-in option to the ArgumentParser that specifies that the user
+        wants to allow payload deployment and execution.
+        """
+        help_text = ('Allow payloads to be deployed and executed. '
+                     'Functionality may be limited if this is not specified.')
+
+        self.add_argument('-A', '--allow-deploy',
+                          action='store_true',
+                          default=False,
+                          required=required,
+                          help=help_text)
+
     def add_skip_deploy_argument(self, required=False):
         """
         Add an option to the ArgumentParser to allow payload deployment to be
         skipped in situations where a prior script or command has already
-        done this.
+        done this. (They still want to execute payloads.)
         """
-        self.add_argument('-D', '--skip-deploy',
+        help_text = ('Skip payload deployment but allow execution. '
+                     "assume payloads are already deployed and execute as-needed. "
+                     'This has no effect when -A, --allow-deploy is used.')
+
+        self.add_argument('-S', '--skip-deploy',
                           action='store_true',
                           default=False,
                           required=required,
-                          help="Skip any payload deployments; assume they're already loaded.")
+                          help=help_text)
 
     def add_stratagem_argument(self, help=None, metavar='<file>', required=False):
         """

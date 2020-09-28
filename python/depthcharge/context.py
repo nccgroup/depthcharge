@@ -176,7 +176,7 @@ class Depthcharge:
         self.arch = Architecture.get(kwargs.get('arch', 'arm'))
 
         # Is the user allowing us to reboot or reset the platform?
-        self._allow_reboot = kwargs.get('allow_reboot', True)
+        self._allow_reboot = kwargs.get('allow_reboot', False)
 
         self._post_reboot_cb = kwargs.get('post_reboot_cb', None)
         self._post_reboot_cb_data = kwargs.get('post_reboot_cb_data', None)

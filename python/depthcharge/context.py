@@ -116,27 +116,34 @@ class Depthcharge:
 
     **Keyword Arguments:**
 
-    :Detailed Help: When inspecting a device, the Depthcharge constructor will not
+    :Retrieve detailed help text: When inspecting a device, the Depthcharge constructor will not
         read detailed help text. This can be achieved by passing a *detailed_help=True*
         keyword argument to the constructor or by making a later call to
         :py:meth:`commands()` with *detailed=True*.
 
-    :Allow Payload Deployment: If *allow_payload=True*, Depthcharge may attempt
-        to deploy and execute payloads in memory, when neccessary.
+    :Allow payload deployment & execution: If *allow_payload=True*, Depthcharge will attempt
+        to deploy and execute payloads in memory, when neccessary. Specifying
+        *allow_payload=True* will always force payloads to be deployed; this overrides
+        (and therefore ignores) whatever is set for the following *skip_deploy* parameter.
 
-    :Skip Payload Deployment: When performing the same operations on a device repeatedly,
-        the deployment of executable payloads may be redundant and waste time.
-        This can be disabled by providing a *skip_deploy=True* keyword
-        argument. Beware, however, that the target will crash if an attempt to
-        execute a payload that has not been previously deployed.
+    :Skip payload deployment, but allow execution: When performing the same operations on a device
+        repeatedly, the deployment of executable payloads may be redundant and waste time.  This can
+        be disabled by providing a *skip_deploy=True* keyword argument.
 
-    :Payload Location: By default, payloads are staged 32 MiB beyond the
+        **Important**, the target will crash if an attempt is made to execute a payload that has not
+        been previously deployed.
+
+        Specifying *skip_deploy=True` implies that one wishes to execute payloads.
+        If this is not true -- you want no payload deployment and no execution --
+        then *allow_payload=False* is what you're looking for.
+
+    :Payload location: By default, payloads are staged 32 MiB beyond the
         target's ``$loadaddr`` location. To override this location, either
         alternative absolute address can be provided in a *payload_base*
         keyword argument.  Alternatively, the offset from the payload base address can
         be provided via *payload_offset*.
 
-    :Crash/Reboot Behavior: Some operations, such as
+    :Crash/Reboot behavior: Some operations, such as
         :py:class:`~depthcharge.register.DataAbortRegisterReader` subclasses,
         need to crash platform (assuming it will automatically reboot) in order
         to perform their duty. If crashing or rebooting the platform is
@@ -222,14 +229,23 @@ class Depthcharge:
         self._gd = kwargs.get('_gd', {})
 
         # Are we permitted to deploy executable payloads as-needed?
-        self._allow_deployment = kwargs.get('allow_deploy', False)
+        self._allow_deploy_exec = kwargs.get('allow_deploy', False)
 
         # Should we assume that payloads are already deployed?
-        if not self._allow_deployment:
-            # Implied
+        self._skip_deployment = kwargs.get('skip_deploy', False)
+
+        # Reconcile desired behavior, based upon what was explicitly
+        # specified, implied, or being defaulted. See the function doc comments.
+
+        if 'allow_deploy' in kwargs:  # User specified, not default value
             self._skip_deployment = False
-        else:
-            self._skip_deployment = kwargs.get('skip_deploy', False)
+            # For any explicit usage, whether True or False, allow_deploy takes precendence and
+            # resuls in deployment + exec skip_deploy only has an effect when the user does not
+            # specify this param.
+
+        elif self._skip_deployment:
+            # Skipping deployment still implies exec
+            self._allow_deploy_exec = True
 
         # Our payload map will be initializde during the following active
         # initialization portion of this constructor.
@@ -369,14 +385,14 @@ class Depthcharge:
                         msg = 'No MemoryWriter available to deploy required payload(s)'
                         raise OperationNotSupported(impl, msg)
 
-                    if not self._allow_deployment:
+                    if not self._allow_deploy_exec:
                         msg = 'Payload deployment+execution opt-in not specified'
                         raise OperationNotSupported(impl, msg)
 
                 for payload in required_payloads:
                     self._payloads.mark_required_by(payload, impl)
 
-                if issubclass(subclass, Executor) and not self._allow_deployment:
+                if issubclass(subclass, Executor) and not self._allow_deploy_exec:
                     msg = 'Payload deployment+execution opt-in not specified'
                     raise OperationNotSupported(impl, msg)
 
@@ -1090,9 +1106,9 @@ class Depthcharge:
 
         The keyword argument *force=True* can be used to force (re)deployment.
         """
-        if not self._allow_deployment:
-            log.note('Not performing payload deployment. (Requires opt-in.)')
-            return
+        if self._allow_deploy_exec is False:
+            # Shouldn't happen
+            raise OperationFailed('Not performing payload deployment. Requires opt-in.')
 
         payload     = self._payloads[name]
         addr        = payload['address']
@@ -1128,8 +1144,9 @@ class Depthcharge:
         reading of response data, should the caller want to do so manually
         through raw console accesses. In this case, this method returns ``None``.
         """
-        if not self._allow_deployment:
-            msg = 'Not attempting payload execution. Requires opt-in of payload deployment and execution.'
+        if self._allow_deploy_exec is False:
+            msg = ('Not attempting payload execution. '
+                   'Requires opt-in of payload deployment and execution.')
             raise OperationFailed(msg)
 
         payload = self._payloads[name]

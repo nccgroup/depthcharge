@@ -72,7 +72,7 @@ class Console:
         #       (More feedback and mulling over this required.)
         #
         self._reboot_re = kwargs.pop('reboot_re', None)
-        self._reboot_cmd = kwargs.pop('reboot_cmd', 'reboot || shutdown -r')
+        self._reboot_cmd = kwargs.pop('reboot_cmd', 'reboot || shutdown -r now')
 
         if self._reboot_re:
             self._reboot_re = re.compile(self._reboot_re)

@@ -7,7 +7,7 @@ options:
   -f <path>, --file <path>
                         Binary image to search
   -a <value>, --address <value>
-                        Base address of the flash or memory dump. Result are
+                        Base address of the flash or memory dump. Results are
                         shown with respect to this address. Use the default of
                         0 if interested in relative offsets. Default:
                         0x00000000

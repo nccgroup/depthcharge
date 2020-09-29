@@ -50,7 +50,6 @@ def setup_stratagem(ctx, data, pattern_name, writer):
         log.info('Loading Stratagem input data.')
         ctx.write_memory(stratagem_input_data_addr, STRATAGEM_DATA)
         _STRATAGEM_DATA_LOADED = True
-
     had_resource = False
     filename = '{:s}.0x{:08x}.{:d}.stratagem'.format(pattern_name, address, len(data))
     try:
@@ -264,7 +263,7 @@ if __name__ == '__main__':
     cmdline.add_argument('--writer', default=None, help='Specific writier to test')
     args = cmdline.parse_args()
 
-    ctx = create_depthcharge_ctx(args,
+    ctx = create_depthcharge_ctx(args, allow_deploy=True, allow_reboot=True,
                                  da_pre_fn=_da_read_pre_func, da_pre_info=_da_read_pre_info)
 
     version_str = ctx.version()[0]

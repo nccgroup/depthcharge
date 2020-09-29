@@ -323,11 +323,12 @@ def test_inspect(state: dict, script: str):
     Produces state['config_file'] that is used by later scripts.
     Loads state['config_file]'.
     """
-    # TODO: Still need to exercise -C, -p, -b
+    # TODO: Still need to exercise -C
 
     # Inspect device and produce config file
     args = [
         script, '-c', state['config_file'],
+        '-A', '-R',
         '-X', '_unused_value=foo,_unused_bar',
         '-m', 'file:/dev/null',
     ]
@@ -416,6 +417,7 @@ def test_write_mem__pattern(state: dict, script: str):
         '-X', '_unused_value=foo,_unused_bar',
         '-m', 'file:/dev/null',
         '--op', 'loady,loadx,loadb'
+        '-AR'
     ]
     run(args, check=True)
 
@@ -428,6 +430,7 @@ def test_write_mem__pattern(state: dict, script: str):
         '-a', hex(wr_addr),
         '-d', wr_data2.hex(),
         '-c', state['config_file'],
+        '-AR'
     ]
     run(args, check=True)
 
@@ -446,7 +449,8 @@ def test_read_mem__pattern(state: dict, script: str):
         '-c', state['config_file'],
         '-a', hex(loadaddr),
         '-l', str(len(state['write_data'])),
-        '-f', test_file
+        '-f', test_file,
+        '-AR'
     ]
     run(args, check=True)
 
@@ -460,7 +464,8 @@ def test_read_mem__pattern(state: dict, script: str):
         script,
         '-c', state['config_file'],
         '-a', hex(loadaddr),
-        '-l', str(len(state['write_data']))
+        '-l', str(len(state['write_data'])),
+        '-A', '-R'
     ]
 
     result = run(args, check=True, capture_output=True, text=True)
@@ -495,6 +500,7 @@ def test_read_mem__uboot(state: dict, script: str):
         script,
         '-a', hex(uboot_addr), '-l', str(_READ_SIZE),
         '-f', state['uboot_bin_file'],
+        '-A', '-R',
     ]
     run(args, check=True)
 
@@ -618,6 +624,7 @@ def test_write_mem__deploy_stratagem(state: dict, script: str):
         '-c', state['config_file'],
         '-a', hex(zero_addr),
         '-d', '00' * state['zeroized_len'],
+        '-A', '-R'
     ]
     run(args, check=True)
 
@@ -627,6 +634,7 @@ def test_write_mem__deploy_stratagem(state: dict, script: str):
         '-c', state['config_file'],
         '-a', hex(target_addr),
         '-s', state['stratagem'],
+        '-A', '-R'
     ]
     run(args, check=True)
 
@@ -659,7 +667,7 @@ def test_read_mem__readback(state: dict, script: str):
         '-a', hex(addr),
         '-l', str(read_len),
         '-f', state['readback_file'],
-        '-D',
+        '-S', '-R',
     ]
     run(args, check=True)
 

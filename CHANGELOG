@@ -3,7 +3,10 @@
 
 Summary:
 
-* API breaking change: Migrated uboot.py submodule to a uboot subpackage
+* Command-line argument and API "breaking" changes: 
+  * Migrated uboot.py submodule to a uboot subpackage
+  * Change to opt-in semantics for payload deploy+execute, device crash/reboot
+  * Payload base and offset improvements
 
 Versions:
 
@@ -11,6 +14,8 @@ Versions:
     Companion Firmware: 0.1.0
 
 Details:
+
+  **Migration uboot.py submodule to a uboot subpackage**
 
   The migration of the uboot.py submodule to a uboot subpackage was
   performed in order to allow new additions to be introduced in a more
@@ -80,7 +85,35 @@ Details:
     v0.2.x: depthcharge.uboot.jump_table.exports()
             depthcharge.uboot.jump_table.find()
 
+  **Opt-in Operation Semantics**
+  
+  Previously, Depthcharge would attempt to automatically explore a device as much
+  as possible when the depthcharge.Depthcharge context object is created (which
+  is what is happening when the depthcharge-inspect is used).
+  
+  However, when beginning work on a bringing up MIPS support, it became clear
+  that the (expected) failures resulting from previously untested U-Boot versions
+  (including those heavily modified by a platform vendor) would be very unintuitive
+  to new users of the Depthcharge toolkit.  In order to better to provide a better
+  user experience (i.e. a less annoying and kludgy-feeling toolkit), as well as
+  making adding new architecture support less of a hassle,  the platform inspection
+  now behaves according to opt-in semantics, rather than opt-out semantics.
+  
+  In the depthcharge.Depthcharge constructor, there are now `allow_deploy`
+  and `skip_deploy` options, whose semantics are detailed in the corresponding
+  API documentation.  On the command-line, these ccorrespond to -A, --allow-deploy 
+  and -S, --skip-deploy arguments.
 
+  Similarly, the opt-out of operations requirinig a device crash or reboot reboot.
+  The kwarg has always been `allow_reboot`, but the cmdline options has been 
+  updated to match: -R, --allow-reboot
+
+  **Payload base address and offset improvements**
+  
+  The code used to configure the address at which Depthcharge should 
+  deploy payloads as been updated to address some deficiencies and 
+  better match the promises made in the API docs.
+  
 
 2020-07-22: Depthcharge 0.1.1.post1
 ----------------------------------------------------------------------------

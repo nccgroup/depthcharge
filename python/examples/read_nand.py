@@ -60,9 +60,9 @@ if __name__ == '__main__':
         console = Console('/dev/ttyUSB0', baudrate=115200)
 
         if os.path.exists(config_file):
-            ctx = Depthcharge.load(config_file, console)
+            ctx = Depthcharge.load(config_file, console, allow_deploy=True, allow_reboot=True)
         else:
-            ctx = Depthcharge(console)
+            ctx = Depthcharge(console, allow_deploy=True, allow_reboot=True)
 
         # Check for the presence of commands and variables we'll use
         env = validate_requirements(ctx)

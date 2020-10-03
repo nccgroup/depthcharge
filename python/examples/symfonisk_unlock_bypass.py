@@ -8,7 +8,7 @@
 # I2C bus #2 on the target device (assuming we're attached to the bus
 # via U10).
 #
-#   $ ./symfonisk_unlock_bypass.py -C /dev/ttyACM0:i2c_bus=2
+#   $ ./symfonisk_unlock_bypass.py -ARC /dev/ttyACM0:i2c_bus=2
 #
 
 import re

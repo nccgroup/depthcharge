@@ -75,7 +75,8 @@ def handle_cmdline():
                             formatter_class=RawDescriptionHelpFormatter,
                             usage=_USAGE, description=_DESCRIPTION, epilog=_EPILOG,
                             address_help='Target address to read from',
-                            address_required=True, length_required=True,
+                            address_default=None,
+                            length_required=True,
                             file_help='Optional file to store data in.')
 
     return parser.parse_args()

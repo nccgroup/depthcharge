@@ -305,94 +305,103 @@ class ArgumentParser(argparse.ArgumentParser):
         except AttributeError:
             pass
 
-    def add_address_argument(self, default=0, help=None, required=True):
+    def add_address_argument(self, **kwargs):
         """
         Add a memory address argument to the ArgumentParser.
         """
-        if help is None:
-            help = 'Base address of image.'
+        default_value = kwargs.pop('default', 0)
+        help_text = 'Base address of image.'
+        is_required = kwargs.pop('required', default_value is not None)
 
-        if default is not None:
-            help += ' Default: 0x{:08x}'.format(default)
+        if default_value is not None:
+            help_text += ' Default: 0x{:08x}'.format(default_value)
 
         self.add_argument('-a', '--address',
-                          metavar='<value>',
-                          default=default,
+                          metavar=kwargs.pop('metavar', '<value>'),
+                          default=kwargs.pop('default', default_value),
                           action=AddressAction,
-                          required=required,
-                          help=help)
+                          required=is_required,
+                          help=kwargs.pop('help', help_text),
+                          **kwargs)
 
-    def add_arch_argument(self, default='ARM', required=False):
+    def add_arch_argument(self, **kwargs):
         """
         Add a CPU architecture argument to the ArgumentParser.
         """
-        self.add_argument('-A', '--arch',
-                          metavar='<architecture>',
-                          default=default,
-                          required=required,
-                          help='CPU architecture. Default: ' + default)
+        default_value = kwargs.pop('default', 'ARM')
+        help_text = kwargs.pop('help', 'CPU architecture. Default: ' + default_value)
 
-    def add_companion_argument(self, required=False):
+        self.add_argument('-A', '--arch',
+                          metavar=kwargs.pop('metavar', '<architecture>'),
+                          default=kwargs.pop('default', default_value),
+                          help=kwargs.pop('help', help_text),
+                          **kwargs)
+
+    def add_companion_argument(self, **kwargs):
         """
         Add an argument to the ArgumentParser that can be used to
         specify a Depthcharge Companion device and its corresponding
         settings.
         """
-        help = ('Depthcharge companion device to use and its associated settings.'
-                ' See the depthcharge.Companion documentation for supported '
-                ' settings.')
+        help_text = (
+            'Depthcharge companion device to use and its associated settings. '
+            'See the depthcharge.Companion documentation for supported settings.'
+        )
 
         self.add_argument('-C', '--companion',
-                          metavar='<device>[:setting=value,...]',
-                          default=None,
+                          metavar=kwargs.pop('metavar', '<device>[:setting=value,...]'),
+                          default=kwargs.pop('default', None),
                           action=CompanionAction,
-                          required=required,
-                          help=help)
+                          help=kwargs.pop('help', help_text),
+                          **kwargs)
 
-    def add_config_argument(self, required=False, help=None):
+    def add_config_argument(self, **kwargs):
         """
         Add the device configuration argument to the ArgumentParser.
         """
-
-        if help is None:
-            help = ('Device configuration file to load and update. '
-                    'It will be created if it does not exist.')
+        help_text = (
+            'Device configuration file to load and update. '
+            'It will be created if it does not exist.'
+        )
 
         self.add_argument('-c', '--config',
-                          metavar='<cfg>',
-                          required=required,
-                          help=help)
+                          metavar=kwargs.pop('metavar', '<cfg>'),
+                          help=kwargs.pop('help', help_text),
+                          **kwargs)
 
-    def add_data_argument(self, help=None, required=False):
+    def add_data_argument(self, **kwargs):
         """
         Add an option to provide data as a hex string to the ArgumentParser.
 
         The caller is required to provide help text in order to describe the
         nature of the data users must provide.
         """
-        self.add_argument('-d', '--data', metavar='<hex str>', help=help, required=required)
+        self.add_argument('-d', '--data',
+                          metavar=kwargs.pop('metavar', '<hex str>'),
+                          **kwargs)
 
-    def add_extra_argument(self, help=None, required=False):
+    def add_extra_argument(self, **kwargs):
         """
         Add an option to allow scripts to provide "extra" arguments via the
         command line, which translate directly to ``**kwargs`` passed to
         Depthcharge API calls.
         """
-        if help is None:
-            help = ('Specify extra operation-specific parameters as a key-value '
-                    'pair. A value of True is implicit if a value is not '
-                    'explicitly provided. Multiple instances of this argument '
-                    'are permitted. See the documentation for subclasses of '
-                    'depthcharge.Operation for supported keyword arguments.')
+        help_text = (
+            'Specify extra operation-specific parameters as a key-value '
+            'pair. A value of True is implicit if a value is not '
+            'explicitly provided. Multiple instances of this argument '
+            'are permitted. See the documentation for subclasses of '
+            'depthcharge.Operation for supported keyword arguments.'
+        )
 
         self.add_argument('-X', '--extra',
-                          metavar='<key>[=<value>]',
+                          metavar=kwargs.pop('metavar', '<key>[=<value>]'),
                           action=KeyValListAction,
-                          required=required,
-                          default={},
-                          help=help)
+                          default=kwargs.pop('default', {}),
+                          help=kwargs.pop('help', help_text),
+                          **kwargs)
 
-    def add_file_argument(self, help=None, required=False):
+    def add_file_argument(self, **kwargs):
         """
         Add a file argument to the ArgumentParser.
 
@@ -402,70 +411,85 @@ class ArgumentParser(argparse.ArgumentParser):
         if help is None:
             raise ValueError('Help text must be provided for -f,--file ')
 
-        self.add_argument('-f', '--file', metavar='<path>', help=help, required=required)
+        self.add_argument('-f', '--file',
+                          metavar=kwargs.pop('metavar', '<path>'),
+                          **kwargs)
 
-    def add_interface_argument(self, required=False):
+    def add_interface_argument(self, **kwargs):
         """
         Add a serial console interface option the the ArgumentParser.
         """
+        help_text = 'Serial port interface connected to U-Boot console.'
         self.add_argument('-i', '--iface',
-                          metavar='<console dev>[:baudrate]',
-                          default='/dev/ttyUSB0:115200',
-                          required=required,
-                          help='Serial port interface connected to U-Boot console.')
+                          metavar=kwargs.pop('metavar', '<console dev>[:baudrate]'),
+                          default=kwargs.pop('default', '/dev/ttyUSB0:115200'),
+                          help=kwargs.pop('help', help_text),
+                          **kwargs)
 
-    def add_op_argument(self, required=False):
+    def add_op_argument(self, **kwargs):
         """
         Add an argument to allow desired :py:class:`depthcharge.Operation` implementations to be
         requested, by name.
         """
-        help = ('Request that one of the specified depthcharge.Operation '
-                'implementations be used. Depthcharge will attempt to choose '
-                'the best available option if this is not provided.')
+        help_text = (
+            'Request that one of the specified depthcharge.Operation '
+            'implementations be used. Depthcharge will attempt to choose '
+            'the best available option if this is not provided.'
+        )
 
         self.add_argument('--op',
-                          metavar='<name>[,name,...]',
-                          default=None,
+                          metavar=kwargs.pop('metavar', '<name>[,name,...]'),
+                          default=kwargs.pop('default', None),
                           action=ListAction,
-                          required=required,
-                          help=help)
+                          help=kwargs.pop('help', help_text),
+                          **kwargs)
 
-    def add_length_argument(self, help=None, required=False):
+    def add_length_argument(self, **kwargs):
         """
         Add a length argument to the ArgumentParser.
 
         Default help text describes a read operation, in bytes.
         """
-        if help is None:
-            help = 'Number of bytes to read'
+        default_value = kwargs.pop('default', None)
+        is_required = kwargs.pop('required', default_value is None)
 
         self.add_argument('-l', '--length',
-                          default=None,
-                          metavar='<n>',
+                          default=default_value,
+                          required=is_required,
+                          metavar=kwargs.pop('metavar', '<n>'),
                           action=LengthAction,
-                          help=help,
-                          required=required)
+                          help=kwargs.pop('help', 'Number of bytes to read'),
+                          **kwargs)
 
-    def add_monitor_argument(self, required=False):
+    def add_monitor_argument(self, **kwargs):
         """
         Add a serial port monitor argument to the ArgumentParser.
         """
-        self.add_argument('-m',  '--monitor',
-                          metavar='<type>[:options,...]',
-                          default=None,
-                          required=required,
-                          help='Attach a console monitor. Valid types: file, pipe, colorpipe')
+        help_text = (
+            'Attach a console monitor. Valid types: file, pipe, colorpipe, term'
+        )
 
-    def add_allow_reboot_argument(self, help=None):
-        if help is None:
-            help = 'Allow operations that require crashing or rebooting the target to be performed.'
+        self.add_argument('-m', '--monitor',
+                          metavar='<type>[:options,...]',
+                          default=kwargs.pop('default', None),
+                          help=kwargs.pop('help', help_text),
+                          **kwargs)
+
+    def add_allow_reboot_argument(self, **kwargs):
+        """
+        Add and argument that allows the user to opt-in to functionality that
+        necessitates crashing or rebooting the target platform.
+        """
+        default_help = ('Allow operations that require crashing or '
+                        'rebooting the target to be performed.')
 
         self.add_argument('-R', '--allow-reboot',
-                          default=False,
+                          default=kwargs.pop('default', False),
                           action='store_true',
-                          help=help)
+                          help=kwargs.pop('help', default_help),
+                          **kwargs)
 
-    def add_outfile_argument(self, help=None, required=False):
+    def add_outfile_argument(self, **kwargs):
         """
         Add an output file argument to the ArgumentParser.
 
@@ -477,24 +501,26 @@ class ArgumentParser(argparse.ArgumentParser):
 
         The caller is required to provide the *help* argument.
         """
-        if help is None:
+        if 'help' not in kwargs:
             raise ValueError('Help text must be provided for -o,--outfile ')
 
-        self.add_argument('-o', '--outfile', metavar='<path>', help=help, required=required)
+        self.add_argument('-o', '--outfile',
+                          metavar=kwargs.pop('meta', '<path>'),
+                          **kwargs)
 
-    def add_prompt_argument(self, required=False):
+    def add_prompt_argument(self, **kwargs):
         """
         Add an option to the ArgumentParser to allow for the expected U-Boot
         prompt to be supplied via the command line.
         """
-        help = 'Override expected U-Boot prompt string.'
+        help_text = 'Override expected U-Boot prompt string.'
         self.add_argument('-P', '--prompt',
                           metavar='<prompt str>',
-                          default=None,
-                          required=required,
-                          help=help)
+                          default=kwargs.pop('default', None),
+                          help=kwargs.pop('help', help_text),
+                          **kwargs)
 
-    def add_allow_deploy_argument(self, required=False):
+    def add_allow_deploy_argument(self, **kwargs):
         """
         Add an opt-in option to the ArgumentParser that specifies that the user
         wants to allow payload deployment and execution.
@@ -504,11 +530,11 @@ class ArgumentParser(argparse.ArgumentParser):
 
         self.add_argument('-A', '--allow-deploy',
                           action='store_true',
-                          default=False,
-                          required=required,
-                          help=help_text)
+                          default=kwargs.pop('default', False),
+                          help=kwargs.pop('help', help_text),
+                          **kwargs)
 
-    def add_skip_deploy_argument(self, required=False):
+    def add_skip_deploy_argument(self, **kwargs):
         """
         Add an option to the ArgumentParser to allow payload deployment to be
         skipped in situations where a prior script or command has already
@@ -520,11 +546,11 @@ class ArgumentParser(argparse.ArgumentParser):
 
         self.add_argument('-S', '--skip-deploy',
                           action='store_true',
-                          default=False,
-                          required=required,
-                          help=help_text)
+                          default=kwargs.pop('default', False),
+                          help=kwargs.pop('help', help_text),
+                          **kwargs)
 
-    def add_stratagem_argument(self, help=None, metavar='<file>', required=False):
+    def add_stratagem_argument(self, **kwargs):
         """
         Add an option to the ArgumentParser to allow a user to supply a file
         containing a :py:class:`depthcharge.Stratagem` JSON file.
@@ -532,7 +558,9 @@ class ArgumentParser(argparse.ArgumentParser):
         The caller must provide help text specifying the purpose of the
         stratagem file (e.g. whether its being produced or is an input).
         """
-        if help is None:
+        if 'help' not in kwargs:
             raise ValueError('Help text must be provided for -s,--stratagem')
 
-        self.add_argument('-s', '--stratagem', metavar=metavar, help=help, required=required)
+        self.add_argument('-s', '--stratagem',
+                          metavar=kwargs.pop('metavar', '<file>'),
+                          **kwargs)

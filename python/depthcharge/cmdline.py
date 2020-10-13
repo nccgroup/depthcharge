@@ -194,6 +194,7 @@ class ArgumentParser(argparse.ArgumentParser):
     #: Default list used by :py:meth:`ArgumentParser.__init__()` unless
     #: otherwise overridden with a caller-provided list.
     DEFAULT_ARGS = [
+        'arch',
         'config',
         'interface',
         'companion',
@@ -331,7 +332,7 @@ class ArgumentParser(argparse.ArgumentParser):
         default_value = kwargs.pop('default', 'ARM')
         help_text = kwargs.pop('help', 'CPU architecture. Default: ' + default_value)
 
-        self.add_argument('-A', '--arch',
+        self.add_argument('--arch',
                           metavar=kwargs.pop('metavar', '<architecture>'),
                           default=kwargs.pop('default', default_value),
                           help=kwargs.pop('help', help_text),

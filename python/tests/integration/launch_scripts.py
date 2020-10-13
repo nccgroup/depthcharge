@@ -168,7 +168,7 @@ def test_find_env(state: dict, script: str):
     # Expanded text
     args = [
         script,
-        '-A', 'arm',
+        '--arch', 'arm',
         '-a', '0x8004_0000',
         '-E',
         '-f', blobfile,
@@ -528,7 +528,7 @@ def test_find_cmd(state: dict, script):
     args = [
         script,
         '-a', hex(uboot_addr),
-        '-A', state['config']['arch'],
+        '--arch', state['config']['arch'],
         '-f', image_file,
         '--details',
         '--subcmds',
@@ -542,7 +542,7 @@ def test_find_cmd(state: dict, script):
     args = [
         script,
         '-a', hex(uboot_addr),
-        '-A', state['config']['arch'],
+        '--arch', state['config']['arch'],
         '-f', image_file,
         '--longhelp', 'Y',
         '--autocomplete', 'Y'
@@ -555,7 +555,7 @@ def test_find_cmd(state: dict, script):
     args = [
         script,
         '-a', hex(uboot_addr),
-        '-A', state['config']['arch'],
+        '--arch', state['config']['arch'],
         '-f', image_file,
         '--longhelp', 'N',
         '--autocomplete', 'N'

@@ -281,9 +281,15 @@ class Depthcharge:
 
         # Establish our payload base address by resolving either an environment
         # variable read from the target device or using a user-provided address
-        self._resolve_payload_base()
-        self._payloads = PayloadMap(self.arch,
-                                    self._payload_base + self._payload_off,
+        try:
+            payload_map_base = self._resolve_payload_base()
+        except OperationFailed:
+            self._allow_deploy_exec = False
+            self._skip_deploy = False
+            payload_map_base = 0
+            log.warning('Disabling payload deployemnt and execution due to error(s).')
+
+        self._payloads = PayloadMap(self.arch, payload_map_base,
                                     skip_deploy=self._skip_deployment)
 
         # Retrieve and cache version information, if not provided earlier
@@ -315,15 +321,16 @@ class Depthcharge:
                 expanded = uboot.env.expand_variable(self._env, self._payload_base)
                 self._payload_base = int(expanded, 0)
             except KeyError:
-                msg = 'Missing environment variable specified for payload_base: {:s}'
-                raise ValueError(msg.format(self._payload_base))
+                msg = 'Environment variable used for payload_base does not exist: {:s}'
+                raise OperationFailed(msg.format(self._payload_base))
             except ValueError:
-                msg = 'Encountered invalid environment variable expansion: ' + expanded
-                raise ValueError(msg)
+                msg = 'Encountered invalid expansion of payload_base: ' + expanded
+                raise OperationFailed(msg)
 
         msg = 'Depthcharge payload base (0x{:08x}) + payload offset (0x{:08x}) => 0x{:08x}'
         actual_base = self._payload_base + self._payload_off
         log.info(msg.format(self._payload_base, self._payload_off, actual_base))
+        return actual_base
 
     @staticmethod
     def _log_not_supported(err):

@@ -121,9 +121,9 @@ class Depthcharge:
         keyword argument to the constructor or by making a later call to
         :py:meth:`commands()` with *detailed=True*.
 
-    :Allow payload deployment & execution: If *allow_payload=True*, Depthcharge will attempt
+    :Allow payload deployment & execution: If *allow_deploy=True*, Depthcharge will attempt
         to deploy and execute payloads in memory, when neccessary. Specifying
-        *allow_payload=True* will always force payloads to be deployed; this overrides
+        *allow_deploy=True* will always force payloads to be deployed; this overrides
         (and therefore ignores) whatever is set for the following *skip_deploy* parameter.
 
     :Skip payload deployment, but allow execution: When performing the same operations on a device
@@ -135,7 +135,7 @@ class Depthcharge:
 
         Specifying *skip_deploy=True` implies that one wishes to execute payloads.
         If this is not true -- you want no payload deployment and no execution --
-        then *allow_payload=False* is what you're looking for.
+        then *allow_deploy=False* is what you're looking for.
 
     :Payload location: By default, payloads are staged 32 MiB beyond the
         target's ``$loadaddr`` location. To override this location, either

@@ -102,10 +102,17 @@ class MdMemoryReader(MemoryReader):
         cmd = 'md{:s} {:x} {:x}'.format(mode, addr, count)
         self._ctx.send_command(cmd, read_response=False)
 
-        line = self._ctx.console.readline()
+        # Seeing \r prefixed on each line in MT7628 builds dated
+        # U-Boot 1.1.3 (Sep 17 2018 - 18:22:09)
+        #
+        # Wow, been a while since versions other than YYYY.MM, no?
+        #
+        # Anyway, that's the point of lstripping this junk.
+        #
+        line = self._ctx.console.readline().lstrip()
         line = self._ctx.console.strip_echoed_input(cmd, line)
         if line == '':
-            line = self._ctx.console.readline()
+            line = self._ctx.console.readline().lstrip()
 
         self._ctx._check_response_for_error(line)
         n_read = 0
@@ -123,7 +130,7 @@ class MdMemoryReader(MemoryReader):
                 handle_data(data[:end_idx])
                 n_read += end_idx
 
-            line = self._ctx.console.readline()
+            line = self._ctx.console.readline().lstrip()
 
 
 class MmMemoryReader(MemoryWordReader):

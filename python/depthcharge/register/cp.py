@@ -28,7 +28,7 @@ class CpCrashRegisterReader(DataAbortRegisterReader):
     # This is by intent; we are not using another memory reader.
     # pylint: disable=method-hidden
     def _trigger_data_abort(self):
-        cmd = 'fdt addr {addr:x} {addr:x} 1'.format(addr=self._crash_addr)
+        cmd = 'cp.l {addr:x} {addr:x} 1'.format(addr=self._crash_addr)
         return self._ctx.send_command(cmd)
 
 

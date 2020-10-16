@@ -57,7 +57,7 @@ def print_results(results):
 
 if __name__ == '__main__':
     success = False
-    cmdline = ArgumentParser()
+    cmdline = ArgumentParser(allow_deploy_default=True, allow_reboot_default=True)
     args = cmdline.parse_args()
     ctx = create_depthcharge_ctx(args)
 

@@ -39,7 +39,7 @@ class Console:
 
     def __init__(self, device='/dev/ttyUSB0:115200', prompt=None, monitor=None, **kwargs):
         if 'timeout' not in kwargs:
-            kwargs = {'timeout': 0.050, **kwargs}
+            kwargs = {'timeout': 0.150, **kwargs}
 
         # Parse device string and merge its entries into the provided kwargs,
         # giving priority to the items in the device string.

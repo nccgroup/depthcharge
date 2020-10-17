@@ -14,7 +14,6 @@ class ARM(Architecture):
     """
     ARMv7 (or earlier) target information - 32-bit little-endian
     """
-    _name = 'ARM'
     _desc = 'ARM 32-bit, little-endian'
     _alignment = 4
     _word_size = 4

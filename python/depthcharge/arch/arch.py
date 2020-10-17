@@ -18,14 +18,26 @@ class ArchitectureProperties(type):
     _phys_size = None
     _alignment = None
     _endianness = None
+    _generic = False
     _regs = None
+
+    @property
+    def generic(cls) -> bool:
+        """
+        True for a generic architecture implementation, for which
+        Deptcharge foregoes most architecture-specific functionality
+        in an effort to be more resilient to system quirks.
+        """
+        return cls._generic
 
     @property
     def name(cls) -> str:
         """
         Short, 1-word name for the architecture
         """
-        return cls._name
+        if hasattr(cls, '_name') and cls._name:
+            return cls._name
+        return cls.__name__
 
     @property
     def description(cls) -> str:
@@ -123,9 +135,16 @@ class Architecture(metaclass=ArchitectureProperties):
                 print('  ' + reg_name)
 
         """
-        for arch in cls.__subclasses__():
-            if arch._name.lower() == arch_name.lower():
-                return arch
+        target_arch = arch_name.lower()
+
+        for candidate in cls.__subclasses__():
+            if candidate.name.lower() == target_arch:
+                return candidate
+
+            # Take a step deeper into subclasses
+            for sub_candidate in candidate.__subclasses__():
+                if sub_candidate.name.lower() == target_arch:
+                    return sub_candidate
 
         raise KeyError('No such architecture: ' + arch_name)
 

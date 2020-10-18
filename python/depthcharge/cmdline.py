@@ -68,10 +68,10 @@ def create_depthcharge_ctx(args, **kwargs):
     if args.extra:
         kwargs = {**kwargs, **args.extra}
 
-    # Insert the specified boolean flag items into kwargs if args contains corresponding keys
-    bool_flags = ('allow_deploy', 'skip_deploy', 'allow_reboot')
+    # Arguments to pass to Depthcharge if non-None or True (for bools)
+    keys = ('arch', 'allow_deploy', 'skip_deploy', 'allow_reboot')
 
-    for key in bool_flags:
+    for key in keys:
         if hasattr(args, key) and getattr(args, key):
             kwargs[key] = getattr(args, key)
 
@@ -329,12 +329,9 @@ class ArgumentParser(argparse.ArgumentParser):
         """
         Add a CPU architecture argument to the ArgumentParser.
         """
-        default_value = kwargs.pop('default', 'ARM')
-        help_text = kwargs.pop('help', 'CPU architecture. Default: ' + default_value)
-
+        help_text = kwargs.pop('help', 'CPU architecture.')
         self.add_argument('--arch',
                           metavar=kwargs.pop('metavar', '<architecture>'),
-                          default=kwargs.pop('default', default_value),
                           help=kwargs.pop('help', help_text),
                           **kwargs)
 

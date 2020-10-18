@@ -160,6 +160,7 @@ class Depthcharge:
         constructor, specify the string ``'self'``.
     """
 
+    _default_arch = 'arm'
     _ver_re   = re.compile(r'^U-Boot\s+[0-9]{4}\.[0-9]{2}')
 
     def __init__(self, console, companion=None, **kwargs):
@@ -173,7 +174,8 @@ class Depthcharge:
         else:
             self.console = console
 
-        self.arch = Architecture.get(kwargs.get('arch', 'arm'))
+        self.arch = Architecture.get(kwargs.get('arch', self._default_arch) or self._default_arch)
+        log.debug('Architecture: ' + self.arch.description)
 
         # Is the user allowing us to reboot or reset the platform?
         self._allow_reboot = kwargs.get('allow_reboot', False)
@@ -265,6 +267,16 @@ class Depthcharge:
         # device. This has been split just to afford us an opportunity to
         # suppress or defer this, should such an API change ever be necessary.
         self._perform_active_init(**kwargs)
+
+        # With some future additions, we could either directly determine
+        # or deduce the architecture here, if we're still using a Generic* arch.
+        #
+        # From there, we can re-init accordingly.
+        #
+        # For now, just warn that functionality may be limited with Generic*
+        if 'Generic' in self.arch.name:
+            m = 'Using {:s} architecture. Functionality may be limited without more specific architecture.'
+            log.warning(m.format(self.arch.name))
 
     def _perform_active_init(self, **kwargs):
         """
@@ -507,7 +519,7 @@ class Depthcharge:
             kwargs['payload_offset'] = ctx['payload_offset']
 
         return cls(console,
-                   arch=ctx['arch'],
+                   arch=kwargs.pop('arch', ctx['arch']),
                    _version=ctx['version'],
                    _cmds=ctx['commands'],
                    _env=ctx['env_vars'],

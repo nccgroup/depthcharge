@@ -160,7 +160,7 @@ class Depthcharge:
         constructor, specify the string ``'self'``.
     """
 
-    _default_arch = 'arm'
+    _default_arch = 'generic'  # 32-bit, little endian
     _ver_re   = re.compile(r'^U-Boot\s+[0-9]{4}\.[0-9]{2}')
 
     def __init__(self, console, companion=None, **kwargs):

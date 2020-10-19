@@ -81,7 +81,7 @@ class Console:
                 + self._reboot_re.pattern + '\n'
                 + '    Will use this command: ' + self._reboot_cmd
             )
-            log.info(msg)
+            log.note(msg)
 
         # We're going to pass this off to the Serial constructor in a moment.
         if 'baudrate' not in kwargs:
@@ -163,7 +163,7 @@ class Console:
         self._ser.flush()
 
         if self.prompt is None or len(self.prompt) == 0:
-            log.info('No user-specified prompt provided. Attempting to determine this.')
+            log.note('No user-specified prompt provided. Attempting to determine this.')
             return self.discover_prompt(interrupt_str, timeout)
 
         ret = ''
@@ -223,12 +223,12 @@ class Console:
                         candidate = ''
                         candidate_count = 0
                         msg = 'Attempting reboot. Matched reboot regex: ' + response_stripped
-                        log.info(msg)
+                        log.note(msg)
                         self.write(self._reboot_cmd + '\n')
                         self._ser.flush()
 
                     if candidate_count > 0:
-                        log.info('Identified prompt: ' + response)
+                        log.note('Identified prompt: ' + response)
                         self.prompt = response
                         return ret
             else:

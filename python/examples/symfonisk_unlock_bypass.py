@@ -183,7 +183,7 @@ def perform_unlock_bypass(ctx):
 _INSPECT_CFG = 'symfonisk_rev0.2_unlock_bypassed.cfg'
 
 def handle_cmdline():
-    cmdline = ArgumentParser(companion_required=True)
+    cmdline = ArgumentParser(companion_required=True, arch_default='arm')
 
     cmdline.add_argument('--inspect', default=False, action='store_true',
                          help=('Perform deeper inspection of device following unlock bypass.'

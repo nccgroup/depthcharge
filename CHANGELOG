@@ -4,6 +4,7 @@
 Summary:
 
 * Command-line argument and API "breaking" changes: 
+  * ARM is longer the default architecture, "Generic" is
   * Migrated uboot.py submodule to a uboot subpackage
   * Change to opt-in semantics for payload deploy+execute, device crash/reboot
   * Payload base and offset improvements
@@ -14,6 +15,27 @@ Versions:
     Companion Firmware: 0.1.0
 
 Details:
+
+  **ARM is longer the default architecture, "Generic" is.**
+
+  In the interest of being more user friendly, Depthcharge now defaults to an
+  ARM-ish "Generic" architecture, which is still 32-bit and little endian. 
+
+  By making no assumptions about registers and instruction set, we can exclude
+  operations that would otherwise cause a target device to spin out of control.
+  The goal here is try to balance provide some reasonable amount of
+  functionality, while being resilient to platform-specific quirks that would
+  otherwise cause grief fro a newcomer to Depthcharge.
+
+  In order to use ARM-specific functionality, one must now do one of the
+  following:
+
+    * API: Create a Depthcharge context using `arch='arm'`
+    * Scripts: pass an `--arch arm` argument
+
+  See `arch/generic.py` for the other Generic architectures available.
+  However, note that 64-bit and big-endian platforms have not yet undergone 
+  testing.
 
   **Migration uboot.py submodule to a uboot subpackage**
 

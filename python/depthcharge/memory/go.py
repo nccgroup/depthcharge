@@ -114,9 +114,7 @@ class GoMemoryReader(MemoryReader):
             blocksize = 1024
             read_op = self._fallback_read
 
-        n_left = size
         offset = 0
-
         while offset < size:
             n_left = size - offset
             to_read = n_left if n_left < blocksize else blocksize

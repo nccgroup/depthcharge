@@ -418,8 +418,8 @@ class ReverseCRC32Hunter(Hunter):
                 # a shared revlut dict (via the manager.dict) rather than allowing
                 # each child process to work with a copy of the huge self._revlut.
                 # Food for thought. Might be worth doing some perf measurements
-                # and considering.
-                workload = None
+                # and considering an explicit gc.collect().
+                workload = None  # lgtm [py/unused-local-variable]
 
                 results_gathered = 0
                 while results_gathered < total_workload:

@@ -15,7 +15,7 @@ def setup():
     console = Console('/dev/ttyUSB0', baudrate=115200, monitor=mon)
 
     # Create and return an initialized Depthcharge context
-    return Depthcharge(console, allow_deploy=True, allow_reboot=True)
+    return Depthcharge(console, arch='arm', allow_deploy=True, allow_reboot=True)
 
     # Alternatively, create it from a previously created device config file
     # This will allow Depthcharge to skip any "inspection" steps.

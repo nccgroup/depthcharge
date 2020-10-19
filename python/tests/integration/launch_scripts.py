@@ -58,7 +58,7 @@ def locate_scripts() -> dict:
 
     """
     script_dir = realpath(os.path.join(_THIS_DIR, '../../scripts'))
-    log.info('Searching for scripts in: ' + script_dir)
+    log.note('Searching for scripts in: ' + script_dir)
 
     ret = {}
     for root, _, files in os.walk(script_dir):
@@ -516,7 +516,7 @@ def test_read_mem__uboot(state: dict, script: str):
     state['uboot_bin_file'] = os.path.join(state['test_dir'], 'uboot_512K.bin')
     uboot_addr = state['config']['gd']['bd']['relocaddr']['value']
 
-    log.info('Reading 512K of U-Boot code/data to a binary file')
+    log.note('Reading 512K of U-Boot code/data to a binary file')
 
     args = [
         script,
@@ -788,14 +788,20 @@ if __name__ == '__main__':
 
     for test in tests:
         script = test_name_to_script(test.__name__)
-        log.info('Running ' + test.__name__)
+        log.note('Running ' + test.__name__)
         test_help(state, script)
         test(state, script)
         save_state(state)
 
     t_end = time.time()
     t_elapsed = timedelta(seconds=(t_end - t_start))
-    print(os.linesep + '=' * 76)
-    print('Tests complete successfully.')
-    print('Elapsed: ' + str(t_elapsed))
-    print()
+
+    msg = (
+        '=' * 76 + os.linesep +
+        '  Tests complete successfully.' +
+        os.linesep +
+        '  Elapsed: ' + str(t_elapsed) +
+        os.linesep
+    )
+
+    log.info(msg)

@@ -15,6 +15,8 @@ import sys
 
 from depthcharge.cmdline import ArgumentParser, create_depthcharge_ctx
 
+_DEFAULT_ARCH = os.getenv('DEPTHCHARGE_TEST_ARCH', 'arm')
+
 
 def perform_reads(ctx) -> list:
     reg = ctx.arch.gd_register
@@ -57,7 +59,10 @@ def print_results(results):
 
 if __name__ == '__main__':
     success = False
-    cmdline = ArgumentParser(allow_deploy_default=True, allow_reboot_default=True)
+    cmdline = ArgumentParser(
+                allow_deploy_default=True, allow_reboot_default=True,
+                arch_default=_DEFAULT_ARCH)
+
     args = cmdline.parse_args()
     ctx = create_depthcharge_ctx(args)
 

@@ -28,8 +28,25 @@ from test_utils import (
     create_resource_dir, now_str, load_config, load_file, save_file, random_pattern
 )
 
+
+_DEFAULT_ARCH = os.getenv('DEPTHCHARGE_TEST_ARCH', 'arm')
 _THIS_DIR = dirname(realpath(__file__))
 _EXPECTED = ['inspect', 'print', 'read-mem', 'find-cmd', 'stratagem', 'write-mem']
+
+def run_script(args: list, check=True, **kwargs):
+    """
+    Run script and insert --arch X as specified.
+    """
+    if 'arch' not in kwargs:
+        args.append('--arch')
+        args.append(_DEFAULT_ARCH)
+    else:
+        arch = kwargs.pop('arch')
+        if arch is not None:
+            args.append('--arch')
+            args.append(arch)
+
+    return run(args, **kwargs)
 
 
 def locate_scripts() -> dict:
@@ -62,8 +79,13 @@ def test_help(_state: dict, script: str):
     Confirm that the script doesn't explode before argument parsing takes place.
     """
     log.note('  Verifying help results in 0 return status')
-    run([script, '-h'], stdout=DEVNULL, check=True)
-    run([script, '--help'], stdout=DEVNULL, check=True)
+
+    # No --arch shouldn't matter. Confirm.
+    run_script([script, '-h'], stdout=DEVNULL, arch=None)
+    run_script([script, '--help'], stdout=DEVNULL, arch=None)
+
+    run_script([script, '-h'], stdout=DEVNULL)
+    run_script([script, '--help'], stdout=DEVNULL)
 
 
 _ENV_TEXT = """\
@@ -99,7 +121,7 @@ def test_mkenv(state: dict, script: str):
         '-f', text_env,
         '-o', os.path.join(output_dir, 'env_no_hdr.1.bin')
     ]
-    run(args, stdout=DEVNULL, check=True)
+    run_script(args, stdout=DEVNULL)
 
     args = [
         script,
@@ -109,7 +131,7 @@ def test_mkenv(state: dict, script: str):
         '-f', text_env,
         '-o', os.path.join(output_dir, 'env_no_hdr.2.bin')
     ]
-    run(args, stdout=DEVNULL, check=True)
+    run_script(args, stdout=DEVNULL)
 
     args = [
         script,
@@ -117,7 +139,7 @@ def test_mkenv(state: dict, script: str):
         '-f', text_env,
         '-o', os.path.join(output_dir, 'env.bin')
     ]
-    run(args, stdout=DEVNULL, check=True)
+    run_script(args, stdout=DEVNULL)
 
     args = [
         script,
@@ -126,7 +148,7 @@ def test_mkenv(state: dict, script: str):
         '-f', text_env,
         '-o', os.path.join(output_dir, 'env_flags_0xa.bin')
     ]
-    run(args, stdout=DEVNULL, check=True)
+    run_script(args, stdout=DEVNULL)
 
 
 def test_find_env(state: dict, script: str):
@@ -174,7 +196,7 @@ def test_find_env(state: dict, script: str):
         '-f', blobfile,
         '-o', filename_pfx,
     ]
-    run(args, stdout=DEVNULL, check=True)
+    run_script(args, stdout=DEVNULL)
 
     # Expanded text dup, default arch and addr
     args = [
@@ -183,7 +205,7 @@ def test_find_env(state: dict, script: str):
         '-f', blobfile,
         '-o', filename_pfx,
     ]
-    run(args, stdout=DEVNULL, check=True)
+    run_script(args, stdout=DEVNULL)
 
     # Text
     args = [
@@ -191,7 +213,7 @@ def test_find_env(state: dict, script: str):
         '-f', blobfile,
         '-o', filename_pfx,
     ]
-    run(args, stdout=DEVNULL, check=True)
+    run_script(args, stdout=DEVNULL)
 
     args = [
         script,
@@ -199,7 +221,7 @@ def test_find_env(state: dict, script: str):
         '-f', blobfile,
         '-o', filename_pfx,
     ]
-    run(args, stdout=DEVNULL, check=True)
+    run_script(args, stdout=DEVNULL)
 
     # Dup of the above, just long-form args
     args = [
@@ -208,7 +230,7 @@ def test_find_env(state: dict, script: str):
         '--file', blobfile,
         '--outfile', filename_pfx,
     ]
-    run(args, stdout=DEVNULL, check=True)
+    run_script(args, stdout=DEVNULL)
 
     results = {
         'high_exp_text': 0,
@@ -273,7 +295,7 @@ def test_find_fdt(state: dict, script: str):
         outfile.write(_DTS)
 
     args = [_DTC, '-q', '-I', 'dts', '-O', 'dtb', dts_file]
-    sub = run(args, check=True, capture_output=True)
+    sub = run_script(args, arch=None, capture_output=True)
     dtb = sub.stdout
 
     image_file = os.path.join(output_dir, 'image.bin')
@@ -288,21 +310,21 @@ def test_find_fdt(state: dict, script: str):
 
     # Print only
     args = [script, '-f', image_file]
-    run(args, check=True, stdout=DEVNULL)
+    run_script(args, stdout=DEVNULL)
 
     outpfx = os.path.join(output_dir, 'test')
 
     # Save DTB and DTS files
     args = [script, '-f', image_file, '-o', outpfx, '-a', '0x8000_0000']
-    run(args, check=True, stdout=DEVNULL)
+    run_script(args, stdout=DEVNULL)
 
     # Save DTB only
     args = [script, '-f', image_file, '-o', outpfx, '-a', '0x9000_0000', '--no-dts']
-    run(args, check=True, stdout=DEVNULL)
+    run_script(args, stdout=DEVNULL)
 
     # Save DTS only
     args = [script, '-f', image_file, '-o', outpfx, '-a', '0xa000_0000', '--no-dtb']
-    run(args, check=True, stdout=DEVNULL)
+    run_script(args, stdout=DEVNULL)
 
     # Count results
     results = {'dtb': 0, 'dts': 0}
@@ -332,17 +354,17 @@ def test_inspect(state: dict, script: str):
         '-X', '_unused_value=foo,_unused_bar',
         '-m', 'file:/dev/null',
     ]
-    run(args, check=True)
+    run_script(args)
 
     # Run again to force loading of config
-    run(args, check=True)
+    run_script(args)
 
     # This should trigger a timeout if -P is working;
     log.note('  Inducing a timeout to test -P ... please wait')
     env = os.environ.copy()
     env['DEPTHCHARGE_LOG_LEVEL'] = 'error'
 
-    result = run(args + ['-P', 'BAD PROMPT >'], text=True, capture_output=True, env=env, check=False)
+    result = run_script(args + ['-P', 'BAD PROMPT >'], text=True, capture_output=True, env=env, check=False)
     if result.returncode != 1:
         raise ValueError('Expected returcode = 1, got ' + str(result.returncode))
 
@@ -374,7 +396,7 @@ def test_print(state: dict, script: str):
         filename = os.path.join(output_dir, item.replace(':', '_'))
         log.note('  Printing ' + item + ' > ' + filename)
         with open(filename, 'w') as outfile:
-            run(args, check=True, stdout=outfile)
+            run_script(args, stdout=outfile)
 
 
 def test_write_mem__pattern(state: dict, script: str):
@@ -419,7 +441,7 @@ def test_write_mem__pattern(state: dict, script: str):
         '--op', 'loady,loadx,loadb'
         '-AR'
     ]
-    run(args, check=True)
+    run_script(args)
 
     wr_addr += len(wr_data1)
 
@@ -432,7 +454,7 @@ def test_write_mem__pattern(state: dict, script: str):
         '-c', state['config_file'],
         '-AR'
     ]
-    run(args, check=True)
+    run_script(args)
 
 
 def test_read_mem__pattern(state: dict, script: str):
@@ -452,7 +474,7 @@ def test_read_mem__pattern(state: dict, script: str):
         '-f', test_file,
         '-AR'
     ]
-    run(args, check=True)
+    run_script(args)
 
     test_data = load_file(test_file, 'rb')
     assert test_data == state['write_data']
@@ -468,17 +490,17 @@ def test_read_mem__pattern(state: dict, script: str):
         '-A', '-R'
     ]
 
-    result = run(args, check=True, capture_output=True, text=True)
+    result = run_script(args, capture_output=True, text=True)
     test_addr, test_data = string.xxd_reverse(result.stdout)
 
     assert test_addr == loadaddr
     assert test_data == state['write_data']
 
     # Add --op argument as list
-    run(args + ['--op', 'md,itest,setexpr'], check=True)
+    run_script(args + ['--op', 'md,itest,setexpr'])
 
     # Add --op argument
-    run(args + ['--op', 'md'], check=True)
+    run_script(args + ['--op', 'md'])
 
 
 def test_read_mem__uboot(state: dict, script: str):
@@ -502,7 +524,7 @@ def test_read_mem__uboot(state: dict, script: str):
         '-f', state['uboot_bin_file'],
         '-A', '-R',
     ]
-    run(args, check=True)
+    run_script(args)
 
 
 def test_find_cmd(state: dict, script):
@@ -520,7 +542,7 @@ def test_find_cmd(state: dict, script):
         '-a', hex(uboot_addr),
         '-f', image_file,
     ]
-    results = run(args, capture_output=True, text=True, check=True)
+    results = run_script(args, capture_output=True, text=True)
     assert 'Command table @ 0x' in results.stdout
     assert 'cmd_rep' not in results.stdout
 
@@ -534,7 +556,7 @@ def test_find_cmd(state: dict, script):
         '--subcmds',
         '--threshold', '6'
     ]
-    results = run(args, capture_output=True, text=True, check=True)
+    results = run_script(args, capture_output=True, text=True)
     assert 'Command table @ 0x' in results.stdout
     assert 'cmd_rep' in results.stdout
 
@@ -547,7 +569,7 @@ def test_find_cmd(state: dict, script):
         '--longhelp', 'Y',
         '--autocomplete', 'Y'
     ]
-    results = run(args, capture_output=True, text=True, check=True)
+    results = run_script(args, capture_output=True, text=True)
     assert 'Command table @ 0x' in results.stdout
     assert 'cmd_rep' not in results.stdout
 
@@ -560,7 +582,7 @@ def test_find_cmd(state: dict, script):
         '--longhelp', 'N',
         '--autocomplete', 'N'
     ]
-    results = run(args, capture_output=True, text=True, check=True)
+    results = run_script(args, capture_output=True, text=True)
     assert len(results.stdout) == 0
 
 
@@ -591,7 +613,7 @@ def test_stratagem(state: dict, script: str):
         '-o', stratagem,
         '-s', 'crc32',
     ]
-    run(args, check=True)
+    run_script(args, arch=None)
 
 
 def test_write_mem__deploy_stratagem(state: dict, script: str):
@@ -626,7 +648,7 @@ def test_write_mem__deploy_stratagem(state: dict, script: str):
         '-d', '00' * state['zeroized_len'],
         '-A', '-R'
     ]
-    run(args, check=True)
+    run_script(args)
 
     log.note('  Executing CRC32MemoryWriter stratagem')
     args = [
@@ -636,7 +658,7 @@ def test_write_mem__deploy_stratagem(state: dict, script: str):
         '-s', state['stratagem'],
         '-A', '-R'
     ]
-    run(args, check=True)
+    run_script(args)
 
 
 def test_read_mem__readback(state: dict, script: str):
@@ -669,7 +691,7 @@ def test_read_mem__readback(state: dict, script: str):
         '-f', state['readback_file'],
         '-S', '-R',
     ]
-    run(args, check=True)
+    run_script(args)
 
     readback_data = load_file(state['readback_file'], 'rb')
     assert readback_data == expected

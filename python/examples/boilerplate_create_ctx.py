@@ -6,7 +6,7 @@ ctx = None
 
 try:
     console = Console('/dev/ttyUSB0', baudrate=115200)
-    ctx = Depthcharge(console)
+    ctx = Depthcharge(console, arch='arm')
 
     # Comment out the above ctx creation and uncomment the following one in
     # order to possibly make more operations available to Depthcharge by allowing

@@ -186,7 +186,7 @@ class Companion:
         if addr not in range(0, 0x80):
             raise ValueError('Invalid address: 0x{:02x}'.format(addr))
 
-        log.info('Setting Companion I2C device address to 0x{:02x}'.format(addr))
+        log.note('Setting Companion I2C device address to 0x{:02x}'.format(addr))
         self.send_cmd('i2c_set_addr', addr.to_bytes(1, 'big'), 1, self._status_ok)
 
         self._i2c_addr = addr
@@ -219,7 +219,7 @@ class Companion:
             err = 'Speed outside of supported range: {:d} Hz'.format(speed)
             raise ValueError(err)
 
-        log.info('Setting Companion I2C bus speed to {:d} Hz'.format(speed))
+        log.note('Setting Companion I2C bus speed to {:d} Hz'.format(speed))
 
         self.send_cmd('i2c_set_speed', speed.to_bytes(4, 'little'), 1, self._status_ok)
         self._i2c_speed = speed

@@ -522,7 +522,7 @@ class ReverseCRC32Hunter(Hunter):
         msg += '{:d} entries, {:d} total operations, largest operation is {:d} iterations'
         payload_name = ' from ' + kwargs.get('payload_name') if 'payload_name' in kwargs else ''
         msg = msg.format(payload_name, str(t_elapsed), n_entries, total_ops, max_iter)
-        log.info(msg)
+        log.note(msg)
 
         stratagem.comment = msg
         return stratagem

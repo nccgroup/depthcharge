@@ -258,7 +258,7 @@ class Depthcharge:
         # stomping on stuff that we actively may wish to tamper wtih.
         self._payload_base = kwargs.get('payload_base', 'loadaddr')
         if 'payload_base' not in kwargs:  # We used the loadaddr default...
-            log.info('Using default payload base address: ${loadaddr} + 32MiB')
+            log.note('Using default payload base address: ${loadaddr} + 32MiB')
             self._payload_off = 32 * 1024 * 1024
         else:
             self._payload_off = kwargs.get('payload_offset', 0)
@@ -341,7 +341,7 @@ class Depthcharge:
 
         msg = 'Depthcharge payload base (0x{:08x}) + payload offset (0x{:08x}) => 0x{:08x}'
         actual_base = self._payload_base + self._payload_off
-        log.info(msg.format(self._payload_base, self._payload_off, actual_base))
+        log.note(msg.format(self._payload_base, self._payload_off, actual_base))
         return actual_base
 
     @staticmethod
@@ -562,7 +562,7 @@ class Depthcharge:
         Serialize the current configuration of the current Depthcharge context
         to a JSON object and write it to the provided filename.
         """
-        log.info('Saving depthcharge configuration state to ' + filename)
+        log.note('Saving depthcharge configuration state to ' + filename)
         s = self.to_json(timestamp, comment)
         with open(filename, 'w') as outfile:
             outfile.write(s)
@@ -826,7 +826,7 @@ class Depthcharge:
             resp = self.console.send_command('version')
             self._version = resp.splitlines()
             if len(self._version) >= 1:
-                log.info('Version: ' + self._version[0])
+                log.note('Version: ' + self._version[0])
             return self._version
 
         if 'reset' in self._cmds and allow_reset:
@@ -836,7 +836,7 @@ class Depthcharge:
             for line in lines:
                 if self._ver_re.match(line):
                     self._version = [line.strip()]
-                    log.info('Version: ' + self._version[0])
+                    log.note('Version: ' + self._version[0])
                     return self._version
 
             log.warning('Did not see U-Boot version string. Old or non-standard version format?')
@@ -1141,7 +1141,7 @@ class Depthcharge:
             return
 
         if not deployed or force:
-            log.info('Deploying payload \"{:s}\" @ 0x{:08x}'.format(name, addr))
+            log.note('Deploying payload \"{:s}\" @ 0x{:08x}'.format(name, addr))
             self.write_memory(addr, payload['data'])
             self._payloads.mark_deployed(name)
 
@@ -1247,11 +1247,11 @@ class Depthcharge:
 
         if already_applied == len(patch_list):
             msg = 'Target memory appears to be already patched. No writes needed.'
-            log.info(msg)
+            log.note(msg)
             return False
 
         msg = 'Target memory appears to have been only partially patched.'
-        log.info(msg)
+        log.note(msg)
         return True
 
     def uboot_global_data(self, cached=True, **kwargs) -> dict:
@@ -1346,7 +1346,7 @@ class Depthcharge:
 
             self._gd['address'] = register_reader.read(gd_reg)
             msg = 'Located U-boot global data structure (*gd) @ 0x{:08x}'
-            log.info(msg.format(self._gd['address']))
+            log.note(msg.format(self._gd['address']))
             return self._gd['address']
 
     def _uboot_jump_table(self, memory_reader=None):

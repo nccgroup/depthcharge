@@ -42,7 +42,7 @@ def find_devices(ctx, buses):
 
             cmd = 'i2c dev {:d}'.format(bus)
             # Raise an exception on error via check=True
-            resp = ctx.send_command(cmd, check=True)
+            ctx.send_command(cmd, check=True)
 
             # This may fail for buses (or pinmux settings) that are configured
             # appropriately. Thus, we drop check=True and just look results

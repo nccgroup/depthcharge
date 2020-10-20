@@ -45,22 +45,29 @@ notes:
 
 examples:
   Save results to a "dev.cfg" file and use the default serial interface
-  settings (/dev/ttyUSB0 at 115200 baud).
+  settings (/dev/ttyUSB0 at 115200 baud). This will use the default "Generic"
+  32-bit little endian CPU architecture, and will avoid the use of any
+  operations that require rebooting/crashing the platform or deploying
+  and executing payloads.
 
     depthcharge-inspect -c dev.cfg
 
   Use the serial console located at /dev/ttyUSB2 at a speed of 19200 baud.
+  Here, we additionally specify that the target is a 32-bit ARM device,
+  and that we want to opt-in to the use of operations that necessitate
+  crashing/rebooting the platform, as well as payload deployment and execution.
 
-    depthcharge-inspect -i /dev/ttyUSB2:19200 -c dev.cfg
+    depthcharge-inspect --arch arm -AR -i /dev/ttyUSB2:19200 -c dev.cfg
 
   Use a companion device attached to /dev/ttyACM1.  Configure the companion
   to operate on the target's I2C bus #2, for a speed of 250kHz. (Here, -i is
   omitted again to use the default settings.)
 
-    depthcharge-inspect -C /dev/ttyACM1:i2c_bus=2,i2c_speed=250000 -c dev.cfg
+    depthcharge-inspect --arch arm -AR -c dev.cfg \
+                        -C /dev/ttyACM1:i2c_bus=2,i2c_speed=250000
 
   Supply a known prompt string to look for instead of having Depthcharge attempt
   to determine it:
 
-    depthcharge-inspect --prompt "ACMEcorp >" -c my_config.cfg
+    depthcharge-inspect --arch arm -AR --prompt "ACMEcorp >" -c my_config.cfg
 

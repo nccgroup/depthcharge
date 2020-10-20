@@ -6,8 +6,8 @@ options:
   -h, --help            show this help message and exit
   -a <value>, --address <value>
                         Base address of image.
-  -A <architecture>, --arch <architecture>
-                        CPU architecture. Default: ARM
+  --arch <architecture>
+                        CPU architecture.
   -f <path>, --file <path>
                         Flash or memory image to inspect
   --longhelp {Y,N}      Value of U-Boot CONFIG_SYS_LONGHELP setting.

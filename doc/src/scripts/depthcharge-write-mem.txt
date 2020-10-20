@@ -8,6 +8,8 @@ Write data to a specified memory address.
 
 options:
   -h, --help            show this help message and exit
+  --arch <architecture>
+                        CPU architecture.
   -c <cfg>, --config <cfg>
                         Device configuration file to load and update. It will
                         be created if it does not exist.
@@ -19,7 +21,7 @@ options:
                         for supported settings.
   -m <type>[:options,...], --monitor <type>[:options,...]
                         Attach a console monitor. Valid types: file, pipe,
-                        colorpipe
+                        colorpipe, term
   -X <key>[=<value>], --extra <key>[=<value>]
                         Specify extra operation-specific parameters as a key-
                         value pair. A value of True is implicit if a value is

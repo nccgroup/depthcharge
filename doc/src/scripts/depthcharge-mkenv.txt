@@ -6,8 +6,8 @@ options:
   -h, --help            show this help message and exit
   -f <path>, --file <path>
                         Input file containing environment in text form.
-  -A <architecture>, --arch <architecture>
-                        CPU architecture. Default: ARM
+  --arch <architecture>
+                        CPU architecture.
   -o <path>, --outfile <path>
                         Output file for binary environment.
   -S SIZE, --size SIZE  Environment size. Must match target's CONFIG_ENV_SIZE.

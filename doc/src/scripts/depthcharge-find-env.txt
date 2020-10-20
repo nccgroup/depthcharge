@@ -9,10 +9,9 @@ options:
   -a <value>, --address <value>
                         Base address of the flash or memory dump. Result are
                         shown with respect to this address. Use the default of
-                        0 if interested in relative offsets. Default:
-                        0x00000000
-  -A <architecture>, --arch <architecture>
-                        CPU architecture. Default: ARM
+                        0 if interested in relative offsets.
+  --arch <architecture>
+                        CPU architecture.
   -o <path>, --outfile <path>
                         Filename prefix for output file(s). No files are
                         written if this is not provided. A .txt or .bin suffix

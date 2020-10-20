@@ -45,7 +45,9 @@ class ARM(Architecture):
     _DA_ENTRY = re.compile(r"""
         (?P<name>[a-zA-Z][a-zA-Z0-9]+)
         \s?:\s?
+        (\[<)?
         (?P<value>[0-9a-fA-F]{8})
+        (>\])?
     """, re.VERBOSE)
 
     @classmethod
@@ -66,10 +68,9 @@ class ARM(Architecture):
         """
         ret = {}
         for line in text.splitlines():
-            pfx = ''
-            if 'reloc' in line:
-                pfx = 'reloc '
-            elif line.startswith('Flags:'):
+            line = line.strip()
+
+            if line.startswith('Flags:'):
                 ret['flags'] = {}
                 for field in line.split('  '):
                     name, value = field.split(' ')
@@ -93,6 +94,12 @@ class ARM(Architecture):
                 ret['code'] = instructions
 
             else:
+                if line.startswith('reloc '):
+                    pfx = 'reloc '
+                    line = line[len(pfx):]
+                else:
+                    pfx = ''
+
                 for match in cls._DA_ENTRY.finditer(line):
                     regname, _ = cls.register(match.group('name'))
                     name = pfx + regname

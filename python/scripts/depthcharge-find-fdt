@@ -44,17 +44,17 @@ _EPILOG = """
  examples:
   Print locations and sizes of FDT (DTB) instances found within an image.
 
-    depthcharge-find-fdt -f image.bin
+    depthcharge-find-fdt --arch arm -f image.bin
 
   Extract FDT instances and save them to .dtb and .dts files named
   "image_<address>.[dts|dtb]". Additionally, specify a base address
   for the image.
 
-    depthcharge-find-fdt -a 0xa000 -f image.bin -o image
+    depthcharge-find-fdt --arch arm -a 0xa000 -f image.bin -o image
 
   Same as the above, but only save .dts files.
 
-    depthcharge-find-fdt -a 0xa000 -f image.bin -o image --no-dtb
+    depthcharge-find-fdt --arch arm -a 0xa000 -f image.bin -o image --no-dtb
 
 \r
 """

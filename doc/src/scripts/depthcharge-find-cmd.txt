@@ -28,5 +28,5 @@ example:
   Search for command table entries provide detailed output, given an ARM
   device and a memory dump taken from address 0x87800000.
 
-    depthcharge-find-cmd -A arm -a 0x8780000 -f dump.bin --details
+    depthcharge-find-cmd --arch arm -a 0x8780000 -f dump.bin --details
 

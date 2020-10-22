@@ -10,6 +10,7 @@ Python :py:class:`argparse.Argumentparser` as well as custom :py:class:`argparse
 """
 
 import argparse
+import json
 
 from depthcharge import log
 from depthcharge.context    import Depthcharge
@@ -18,6 +19,9 @@ from depthcharge.console    import Console
 from depthcharge.monitor    import Monitor
 from depthcharge.string     import keyval_list_to_dict, length_to_int, str_to_property_keyval
 
+_DEFAULT_IFACE_DEVICE = '/dev/ttyUSB0'
+_DEFAULT_IFACE_BAUDRATE = '115200'
+_DEFAULT_IFACE = _DEFAULT_IFACE_DEVICE + ':' + _DEFAULT_IFACE_BAUDRATE
 
 def create_depthcharge_ctx(args, **kwargs):
     """
@@ -51,6 +55,19 @@ def create_depthcharge_ctx(args, **kwargs):
     #
     # TODO: Mull this over a bit more, clean it up if needed, and document this.
     console_kwargs = kwargs.get('console_kwargs', {})
+
+    # Attempt to retrive baudrate from config. This is intended to make life
+    # less annoying when working with a device that uses the non-default
+    # baud rate and forgetting to provide -i <iface>, thereby relying on the
+    # /dev/ttyUSB0 default.
+    if args.iface == _DEFAULT_IFACE and hasattr(args, 'config') and args.config:
+        try:
+            with open(args.config) as infile:
+                config = json.loads(infile.read())
+                args.iface = _DEFAULT_IFACE_DEVICE + ':' + str(config['baudrate'])
+        except (KeyError, FileNotFoundError):
+            # No worries! Keep calm and carry on hacking.
+            pass
 
     console = Console(args.iface,
                       prompt=args.prompt,
@@ -420,7 +437,7 @@ class ArgumentParser(argparse.ArgumentParser):
         help_text = 'Serial port interface connected to U-Boot console.'
         self.add_argument('-i', '--iface',
                           metavar=kwargs.pop('metavar', '<console dev>[:baudrate]'),
-                          default=kwargs.pop('default', '/dev/ttyUSB0:115200'),
+                          default=kwargs.pop('default', _DEFAULT_IFACE),
                           help=kwargs.pop('help', help_text),
                           **kwargs)
 

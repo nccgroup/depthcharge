@@ -534,6 +534,7 @@ class Depthcharge:
         """
         output = {
             'arch': self.arch.name,
+            'baudrate': self.console.baudrate,
             'version': self._version,
             'prompt': self.console.prompt,
             'commands': self._cmds,

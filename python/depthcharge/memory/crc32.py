@@ -35,8 +35,8 @@ class CRC32MemoryReader(MemoryWordReader):
 
     @classmethod
     def rank(cls, **kwargs) -> int:
-        # This is just a bit slow
-        return 55
+        # This is slow
+        return 20
 
     def __init__(self, ctx, **kwargs):
         super().__init__(ctx, **kwargs)

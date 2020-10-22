@@ -251,13 +251,13 @@ class Operation:
                 err = ctx.arch.name.lower() != s['arch'].lower()
 
             if err:
-                raise OperationNotSupported(cls, 'Not available on ' + ctx.arch.description)
+                raise OperationNotSupported(cls, 'Not available for ' + ctx.arch.description + ' architecture.')
 
         # Does this operation require that we're allowed to induce a crash / reset / reboot?
         # If so, is the user permitting this?
         s['crash_or_reboot'] = cls._required.get('crash_or_reboot', False)
         if s['crash_or_reboot'] and not ctx._allow_reboot:
-            err = 'Operation requires crash or reboot, but opt-in not specified'
+            err = 'Operation requires crash or reboot, but opt-in not specified.'
             raise OperationNotSupported(cls, err)
 
         # Required command check

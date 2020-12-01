@@ -1,0 +1,13 @@
+# 
+# Artisanlly generated file; DO NOT EDIT.
+# U-Boot 2076.13 Configuration
+#
+
+CONFIG_FOO=y
+# CONFIG_BAR is not set
+CONFIG_FIT_SIGNATURE=y
+CONFIG_BAZ=y
+
+CONFIG_ROYAL_TENENBAUM="Hell of a damn grave. Wish it were mine."
+CONFIG_MY_VOICE=IS_MY_PASSPORT
+CONFIG_SPACE_ODYSSEY=2001

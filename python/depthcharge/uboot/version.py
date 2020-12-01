@@ -106,6 +106,9 @@ class UBootVersion:
     def __le__(self, other):
         return self < other or self == other
 
+    def __ge__(self, other):
+        return self > other or self == other
+
     def __eq__(self, other):
         return (self._version == other._version and
                 self._patch == other._patch and

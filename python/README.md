@@ -29,7 +29,7 @@ documentation:
 
 ## Installation
 
-Given that the Depthcharge is still in its "alpha" state, its dependencies and
+Given that the Depthcharge is still in its "beta" state, its dependencies and
 API may change across version. As such, users are encouraged to install it into
 a [virtual environment](https://docs.python.org/3/library/venv.html) (venv), rather
 than system-wide. Below are the commands required to do this.

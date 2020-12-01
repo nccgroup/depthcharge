@@ -1,8 +1,9 @@
-<Date TBD>: Depthcharge Release 0.2.0 ("Clatter and Hiss")
+2020-12-01: Depthcharge Release 0.2.0 ("Clatter and Hiss")
 ----------------------------------------------------------------------------
 
 Summary:
 
+* Introduced configuration checker API and depthcharge-audit-config
 * Command-line argument and API "breaking" changes: 
   * ARM is longer the default architecture, "Generic" is
   * Migrated uboot.py submodule to a uboot subpackage
@@ -15,6 +16,28 @@ Versions:
     Companion Firmware: 0.1.0
 
 Details:
+
+  **Introduced configuration checker API and depthcharge-audit-config**
+
+  The depthcharge.checker API is designed to to facilitate configuration
+  auditing, where the goal is to consistently and quickly identify common
+  security pitfalls or known vulnerabilities, so time spent on security
+  review efforts can be focused elsewhere (e.g., in newly developed code).
+    
+  The depthcharge.checker.ConfigChecker class defines the overarching
+  framework and implements the common auditing and reporting functionality.
+  The depthcharge.checker.UBootConfigChecker and .UBootHeaderChecker
+  classes implement support for parsing .config and platform configuration
+  header files, respectively.
+    
+  The audit() methods of these "checkers" produce depthcharge.checker.Report
+  objects, which are sets of depthcharge.checker.SecurityRisk objects
+  that describe the potential risks and provide a high-level, general
+  recommendations. The Report class supports a few export formats, including
+  html, csv, and Markdown.
+
+  The depthcharge-audit-config script exposes this new API functionality
+  via the command-line.
 
   **ARM is longer the default architecture, "Generic" is.**
 

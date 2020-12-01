@@ -1,0 +1,343 @@
+#!/usr/bin/env python3
+#
+# SPDX-License-Identifier: BSD-3-Clause
+# Depthcharge: <https://github.com/nccgroup/depthcharge>
+#
+# Ignore docstring and name complaints
+#   pylint: disable=missing-module-docstring,missing-function-docstring
+#   pylint: disable=redefined-outer-name,invalid-name
+#
+
+import sys
+import textwrap
+
+from argparse import RawDescriptionHelpFormatter
+from os.path import basename
+
+from depthcharge.cmdline import ArgumentParser
+from depthcharge.checker import (
+    UBootConfigChecker, UBootHeaderChecker, Report, SecurityImpact
+)
+
+_MARKDOWN_EXTS = (
+    'md', 'mdown', 'markdn', 'mdtext', 'mdtxt', 'mkd', 'mkdn', 'txt', 'text'
+)
+
+_USAGE = '{:s} [options] <input file args> <-o outfile>'.format(basename(__file__))
+_DESCRIPTION = 'Audit U-Boot configuration and report potential security risks.'
+_EPILOG = """\
+
+ U-Boot .config and header files:
+
+    More recent version of U-Boot leverage Kconfig functionality to configure
+    builds, while older versions of U-Boot were largely configured via macro
+    definitions in header files. There exists version which include a bit of
+    both, as configuration items were transitioned. With regard to Depthcharge,
+    auditing a .config file is generally simpler and more reliable.
+
+    The decision of whether to use -u/--uboot-config, -H/--uboot-header, or
+    both ultimately depends upon the version of the codebase you are reviewing.
+
+    In general, Depthcharge's support for .config parsing is likely to yield
+    better results more quickly, while parsing headers may require more effort
+    in terms of locating relevant headers & include paths, as well as
+    appeasing the C preprocessor.
+
+    When working with headers, if an irrelevant #include directive or header
+    file is proving problematic, note that you can direct Depthcharge to
+    create dummy header files and place them at higher priority in the include
+    search paths.
+
+
+ Supported Output File Formats and Extensions:
+
+    .csv        - CSV
+    .html       - HTML
+    .tab        - HTML, table only
+    .md, .txt   - Markdown
+
+ Columns:
+
+    For column-based formats (csv, html) the inclusion and order of columns can
+    be specified via a comma-separated list of column names passed to `--cols`.
+    Below are the (case-insensitive) column names that may be used.
+
+    * Identifier        Short name that uniquely identifies security risk
+    * Summary           Brief summary of the security risk
+    * Impact            Encoded string describing overall impact
+                            See output of `--impact-legend` for a description
+                            of each abbreviation.
+    * Source:           Corresponding location within configuration file
+    * Description       Detailed description of the security risk
+    * Recommendation    High-level recommendation for eliminating or
+                            mitigating the reported risk.
+
+    When `--cols` is not specified, the following default is assumed.
+    (The longer Description and Recommendation columns are omitted.)
+
+        --cols Identifier,Impact,Summary,Source
+
+ Markdown:
+
+    When a Markdown file is produced, `--cols` is ignored. Each reported item
+    will be in its own section, and all of the above fields will be included in
+    the document, each in a subsections.
+
+
+ Examples:
+
+   Inspect a U-Boot .config file and save results to a Markdown file
+
+    depthcharge-audit-config -V 2019.07 -u /path/to/uboot/.config -o report.md
+
+
+   Inspect an i.MX53 evaluation kit's configuration header file, supplying a
+   "dummy header" to satisfy an `#include <asm/arch/imx-regs.h>` directive
+   that would otherwise require attempting a build or manually creating a
+   symlink in the U-Boot source tree. Note that this command is run from the
+   top-level of a U-Boot v2011.03 source tree.
+
+    depthcharge-audit-config -V 2011.03 -H ./include/configs/mx53evk.h \\
+            -I ./include -I ./arch/arm/include \\
+            --dummy-hdr 'asm/arch/imx-regs.h' \\
+            -o ~/audit-summary.html
+ \r
+"""
+
+_DISCLAIMER = """\
+------[ Disclaimer ]-----------------------------------------------------------
+
+ This tool is only intended to augment existing security processes by quickly
+ highlighting potential security risks. As with all security-related
+ "configuration checker" tooling, there are inherent limitations to tools'
+ capabilities. This disclaimer is intended to make this abundantly clear.
+
+ You may suppress this message in the future via -N or --no-disclaimer.
+
+ Depthcharge compares configuration settings against a fixed set of items
+ that are either directly associated with known security vulnerabilities or
+ features that could introduce security risks when enabled in production
+ firmware builds, depending on the relevant threat model.
+
+ U-Boot is highly configurable. This tool covers only a subset of the
+ functionality found within the upstream code. Given that many vendor and
+ OEM-specific forks of U-Boot exist (and that more will always be created),
+ this tool is not and simply cannot ever be exhaustive. Do not treat the
+ lack of reported security risks as a "clean bill of health." This may only
+ imply that you have reached the limit of the current set of built-in checks.
+
+ This tool *does not* analyze source code or binaries to detect programming
+ defects, nor does it identify newly introduced security vulnerabilities.
+
+ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+ FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+-------------------------------------------------------------------------------
+"""
+
+
+def _infer_fmt_or_fail(filename):
+    try:
+        idx = filename.rindex('.')
+        ext = filename[idx+1:].lower()
+
+        if ext in _MARKDOWN_EXTS:
+            return 'md'
+
+        if ext == 'table':
+            return 'tab'
+
+        if ext in ('html', 'tab', 'csv'):
+            return ext
+
+    except ValueError:
+        pass
+
+    msg = 'Unable to infer desired output format and -F/--fmt not specified.'
+    print(msg, file=sys.stderr)
+    sys.exit(1)
+
+
+def print_impact_legend():
+    print('Impact abbreviation legend:')
+    print('-' * 80)
+
+    for impact in SecurityImpact:
+        if impact is SecurityImpact.NONE:
+            continue
+
+        desc = SecurityImpact.describe(impact).replace('**', '')
+        delim = desc.index(':')
+        print(str(impact) + ' - ' + desc[:delim])
+
+        # Skip space after colon deliminiter and truncate a '\n'
+        print(textwrap.indent(desc[delim+2:-1], '  '))
+
+
+def handle_cmdline():
+    if '--impact-legend' in sys.argv:
+        print_impact_legend()
+        sys.exit(0)
+
+    parser = ArgumentParser([], formatter_class=RawDescriptionHelpFormatter,
+                            usage=_USAGE,
+                            description=_DESCRIPTION,
+                            epilog=_EPILOG)
+
+    parser.add_argument('-V', '--uboot-version', required=True,
+                        help='U-Boot version associated with configuration.')
+
+    parser.add_argument('-u', '--uboot-config', metavar='<cfg>',
+                        help='U-Boot .config file to audit.')
+
+    parser.add_argument('-H', '--uboot-header', metavar='<hdr>',
+                        help='U-Boot platform config header audit.')
+
+    parser.add_argument('-I', '--uboot-inc', metavar='<path>', action='append', default=[],
+                        help=('U-Boot include paths. Used only with -H/--uboot-header. '
+                              'May be specified multiple times to add multiple include paths.'))
+
+    parser.add_argument('--cpp', metavar='<cmd>',
+                        help=('C preprocessor program to use when parsing headers. '
+                              'Only used with -H/--uboot-header. '
+                              ' Default is "cpp".'))
+
+    parser.add_argument('--dummy-hdr', metavar='<hdr>', action='append', default=[],
+                        help=('Use an empty file for the specified header when '
+                              'running the C Preprocessor. Used only with '
+                              '-H/--uboot-header. May be specified multiple '
+                              'times to skip irrelevant and problematic '
+                              'headers in include paths.'))
+
+    # Not yet supported
+    # parser.add_config_argument(help='Depthcharge device configuration file to audit.')
+
+    parser.add_outfile_argument(help='Filename to write results to.', required=True)
+    parser.add_argument('--fmt', metavar='<fmt>',
+                        help=('Output format. If not specified, this will be selected '
+                              'based extension.'))
+
+    parser.add_argument('--cols', metavar='<names>',
+                        default='Identifier,Impact,Summary,Source',
+                        help='Comma-separated list of columns to include in HTML or CSV output.')
+
+    parser.add_argument('--impact-legend', metavar='',
+                        help='Print a legend for impact abbreviations and exit.')
+
+    parser.add_argument('-N', '--no-disclaimer', default=False, action='store_true',
+                        help='Supress disclaimer message.')
+
+    args = parser.parse_args()
+
+    # Parse comma-separated entries into list
+    args.cols = [s.strip() for s in args.cols.split(',')]
+
+    if args.fmt is None:
+        args.fmt = _infer_fmt_or_fail(args.outfile)
+
+    # Complain early, but try to be a bit forgiving
+    fmt = args.fmt.lower()
+    if fmt.startswith('.'):
+        fmt = fmt[1:]
+
+    if fmt not in ('md', 'tab', 'html', 'csv'):
+        err = 'Invalid or unsupported output format specified: ' + args.fmt
+        print(err, file=sys.stderr)
+        sys.exit(1)
+
+    files = (args.uboot_config, args.uboot_header)
+    if files.count(None) == len(files):
+        print('One ore more files to audit must be specified.', file=sys.stderr)
+        sys.exit(1)
+
+    return args
+
+
+def run_checkers(args):
+    """
+    Run checkers in the following order.
+
+     - KConfig-based configuration file
+     - Platform configuration header
+     - TODO: Our own observations from device interaction
+     - TODO: Deductions from binary files
+
+    Those run first will be listed as the sources of any
+    reported items.
+    """
+
+    report = Report()
+    config = {}
+
+    if args.uboot_config is not None:
+        checker = UBootConfigChecker(args.uboot_version)
+        config = checker.load(args.uboot_config)
+        report = checker.audit()
+
+    if args.uboot_header is not None:
+        checker = UBootHeaderChecker(args.uboot_version,
+                                     args.uboot_inc,
+                                     config_defs=config,
+                                     cpp=args.cpp,
+                                     dummy_headers=args.dummy_hdr)
+
+        config  = checker.load(args.uboot_header)
+        report |= checker.audit()
+
+    return report
+
+
+def save_results(args, report):
+    """
+    Write results to file in user-specified format.
+    """
+    if args.fmt == 'html':
+        report.save_html(args.outfile)
+    elif args.fmt == 'tab':
+        report.save_html(args.outfile, columns=args.cols, table_only=True)
+    elif args.fmt == 'csv':
+        report.save_csv(args.outfile, columns=args.cols)
+    elif args.fmt in ('md', 'txt'):
+        report.save_markdown(args.outfile)
+    else:
+        print('Bug! Unexpected format encountered: ' + args.fmt, file=sys.stderr)
+        sys.exit(63)
+
+    print('Results written to ' + args.outfile)
+
+
+if __name__ == '__main__':
+    args = handle_cmdline()
+
+    # "No issues reported - shippit" considered harmful
+    if not args.no_disclaimer:
+        print(_DISCLAIMER)
+
+    try:
+        report = run_checkers(args)
+
+        count = len(report)
+        if count == 0:
+            print()
+            print('No security risks identified. No output file will be written.')
+            print()
+            print('If this is unexpected, confirm that no error messages are')
+            print('indicative of parsing failures and that the provided input')
+            print('files are sufficiently complete.')
+            print()
+            sys.exit(0)
+
+        print('{:d} potential security risks identified.'.format(count))
+
+        save_results(args, report)
+    except ValueError as e:
+        print('Error: ' + str(e), file=sys.stderr)
+        sys.exit(2)

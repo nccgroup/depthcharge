@@ -44,7 +44,7 @@ def get_scripts() -> list:
 
 
 def get_description() -> str:
-    with open('../README.md', 'r') as infile:
+    with open('.Depthcharge.readme', 'r') as infile:
         return infile.read()
 
 

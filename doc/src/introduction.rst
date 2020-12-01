@@ -22,7 +22,7 @@ The Depthcharge source code and releases can be found at:
 .. centered:: https://github.com/nccgroup/depthcharge
 
 .. _Das U-Boot: https://www.denx.de/wiki/U-Boot
-.. _"helper" payload binaries: https://github.com/nccgroup/depthcharge/tree/master/payloads
+.. _"helper" payload binaries: https://github.com/nccgroup/depthcharge/tree/main/payloads
 .. _"standalone" program: https://gitlab.denx.de/u-boot/u-boot/-/blob/v2020.01/doc/README.standalone
 
 
@@ -210,7 +210,7 @@ apparent in the below examples. Note that the second time the *go*-based read is
 
 .. image:: ../images/read-mem-demo.gif
 
-.. _memory read payload: https://github.com/nccgroup/depthcharge/blob/master/payloads/src/read_memory.c
+.. _memory read payload: https://github.com/nccgroup/depthcharge/blob/main/payloads/src/read_memory.c
 
 And yes, we too know the tragic pain of losing hours due to an accidentally interrupted, long running memory dump.
 Memory read operations are neighborly and will return data read so far, when interrupted. This is shown below.

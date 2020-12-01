@@ -110,7 +110,7 @@ namespace Depthcharge {
         return ret;
     }
 
-    // Fill data buffer for master to read
+    // Fill data buffer for bus controller to read
     void I2CPeriph::setReadBuffer(uint8_t *buf, size_t len)
     {
         noInterrupts();
@@ -125,7 +125,7 @@ namespace Depthcharge {
         interrupts();
     }
 
-    // ISR callback: Handle master's write to our buffer
+    // ISR callback: Handle controller's write to our buffer
     void I2CPeriph::_handle_write(int count)
     {
         if (count < 0) {
@@ -159,7 +159,7 @@ namespace Depthcharge {
         }
     }
 
-    // ISR Callback: Handle master's read from our buffer
+    // ISR Callback: Handle controller's read from our buffer
     void I2CPeriph::_handle_read()
     {
         m_i2c->write(m_rbuf, m_rcount);

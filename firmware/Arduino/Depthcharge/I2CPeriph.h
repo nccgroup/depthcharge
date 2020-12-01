@@ -37,7 +37,7 @@ namespace Depthcharge {
             static uint8_t m_addr;      // Device address in [0x00, 0x7f]
             static uint32_t m_speed;    // Bus speed, Hz
 
-            // Handle data written from the master to our device buffer
+            // Handle data written from the bus controller to our device buffer
             static void _handle_write(int count);
 
             // Handle read of data from our device buffer, to the host
@@ -47,8 +47,8 @@ namespace Depthcharge {
              * reason not to simplify things by using different read/write
              * buffers.  For more memory constrained devices, we might
              * want to replace this with a single buffer. The host-code
-             * is in control of the target master, so in theory, we should
-             * not have to worry about concurrent accesses attempts.
+             * is in control of the target's bus controller, so in theory,
+             * we should not have to worry about concurrent accesses attempts.
              *
              * TODO: Arguably these might need to be volatile, since we're
              *       accessing them across normal and interrupt contexts.

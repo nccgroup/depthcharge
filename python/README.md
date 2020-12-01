@@ -1,9 +1,16 @@
 # Depthcharge Python Code
 
 This directory contains the [depthcharge](./depthcharge) Python module,
-a collection of [scripts](./scripts) built atop of that modules, 
-[example scripts](./examples), and the Sphinx-based 
+a collection of [scripts](./scripts) built atop of that modules,
+[example scripts](./examples), and the Sphinx-based
 [documentation source](./docs).
+
+The latest release of this code is available on the 
+[Python Package Index (PyPi)](https://pypi.org/project/depthcharge),
+and can be installed via `python3 -m pip install depthcharge`.
+
+The instructions below are intended for those wishing to work with the latest
+code [available on GitHub](https://github.com/nccgroup.com/depthcharge/tree/next).
 
 ## Python Dependencies
 
@@ -12,7 +19,7 @@ Earlier versions may suffice, but are not supported.
 
 * Python >= 3.6
 * [pyserial](https://github.com/pyserial/pyserial) >= 3.4
-* [tqdm](https://tqdm.github.io/) >= 4.42.1 
+* [tqdm](https://tqdm.github.io/) >= 4.42.1
 
 The following dependencies are required if you'd like to build the
 documentation:
@@ -40,21 +47,13 @@ and its dependencies in it. Note that there are `activate.csh` and
 ```
 $ python3 -m venv ./venv
 $ source ./venv/bin/activate
-$ pip install .
+$ python3 -m pip install .
 ```
 
-If you plan on modifying the source code or documentation, add the ``-e,
---editable`` flag to the pip command and specify the extra ``[docs]`` option in
+If you plan on modifying the source code or documentation, add the ``-e, --editable``
+flag to the pip command and specify the extra ``[docs]`` option in
 order to include the necessary *Sphinx* and *sphinx_rtd_theme* dependencies:
 
 ```
-$ pip install -e .[docs]
-```
-
-If you will be modifying the Depthcharge scripts, you may also want to symlink
-items in `venv/bin/` to the corresponding files in `scripts/` using
-`dev/symlink_scripts.py`
-
-```
-$ ./dev/symlink_scripts.py
+$ python3 -m pip install -e .[docs]
 ```

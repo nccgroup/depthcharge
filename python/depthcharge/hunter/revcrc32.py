@@ -61,7 +61,7 @@ class ReverseCRC32Hunter(Hunter):
     4 bytes to a zero-length input to achieve a chosen CRC32 output. The value we end up "appending"
     is the 4-byte inverse of our chosen CRC32 output. This simplified algorithm implementation
     resides in `depthcharge/revcrc32.py
-    <https://github.com/nccgroup/depthcharge/blob/master/python/depthcharge/revcrc32.py>`_.
+    <https://github.com/nccgroup/depthcharge/blob/main/python/depthcharge/revcrc32.py>`_.
 
     | *Reversing CRC - Theory and Practice*
     | by Martin Stigge, Henryk Plötz, Wolf Müller, Jens-Peter Redlich
@@ -160,7 +160,7 @@ class ReverseCRC32Hunter(Hunter):
 
     If you still have a healthy dose of skepticism about the high-level approach used here, worry not!
     An example demonstrating this algorithm is provided in `examples/reverse_crc32_algo_poc.py
-    <https://github.com/nccgroup/depthcharge/blob/master/python/examples/reverse_crc32_algo_poc.py>`_
+    <https://github.com/nccgroup/depthcharge/blob/main/python/examples/reverse_crc32_algo_poc.py>`_
     This example uses :py:meth:`~.Hunter.build_stratagem()` to produce the following string, using
     Edgar Allen Poe's *The Raven* as input data. In order to allow this example to be used without
     a target device, the :py:class:`~depthcharge.Stratagem` is "executed" by simply making calls

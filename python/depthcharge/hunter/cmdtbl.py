@@ -60,7 +60,7 @@ class CommandTableHunter(Hunter):
     interesting! This can be indicative of a situation in which different commands are exposed based
     upon different authorization levels (implemented by vendor-specific code). An example of this can be found in
     `examples/symfonisk_unlock_bypass.py
-    <https://github.com/nccgroup/depthcharge/blob/master/python/examples/symfonisk_unlock_bypass.py#L61>`_,
+    <https://github.com/nccgroup/depthcharge/blob/main/python/examples/symfonisk_unlock_bypass.py#L61>`_,
     where pointers to an unauthenticated "insecure" command table are redirected to a
     post-authentication "secure" command table.
 

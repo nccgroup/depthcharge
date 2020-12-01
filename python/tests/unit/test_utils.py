@@ -2,6 +2,7 @@
 """
 Miscelaneous utility functions for unit tests.
 """
+import hashlib
 import random
 import sys
 
@@ -19,3 +20,15 @@ def random_data(size: int, seed=0, ret_bytes=False):
         return ret
 
     return bytearray(ret)
+
+
+def verify_md5sum(filename: str, expected: str, test_case):
+    """
+    Invokes ``test_case.assertEqual()`` with loaded file's checksum
+    and the expected value (as hex strings), in that order.
+    """
+    with open(filename, 'rb') as infile:
+        data = infile.read()
+        md5sum = hashlib.new('md5')
+        md5sum.update(data)
+        test_case.assertEqual(md5sum.hexdigest(), expected)

@@ -14,10 +14,13 @@ from .version import __version__
 # Expose items from the various submodules to the top-level namespace
 
 from . import log
+
+from . import checker
 from . import hunter
 from . import memory
 from . import register
 from . import uboot
+
 
 from .context   import Depthcharge
 from .console   import Console

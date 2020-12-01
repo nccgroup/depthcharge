@@ -1,0 +1,10 @@
+# 
+# Artisanlly generated file; DO NOT EDIT.
+# U-Boot 2013.07 Configuration
+#
+
+CONFIG_FOO=y
+# CONFIG_BAR is not set
+CONFIG_FIT_SIGNATURE=y
+CONFIG_BAZ=y
+CONFIG_LEGACY_IMAGE_FORMAT=y

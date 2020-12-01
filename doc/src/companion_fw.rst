@@ -52,7 +52,7 @@ can then use this library with just a few operations, summarized below.
 .. _Teensy 3.6: https://www.pjrc.com/store/teensy36.html
 .. _Teensyduino: https://www.pjrc.com/teensy/teensyduino.html
 .. _Arduino: https://www.arduino.cc/en/Main/Software
-.. _Depthcharge: https://github.com/jynik/depthcharge/tree/master/firmware/Arduino/Depthcharge
+.. _Depthcharge: https://github.com/nccgroup/depthcharge/tree/main/firmware/Arduino/Depthcharge
 
 Below is the source code for the Teensy 3.6 implementation, which demonstrates the above.
 

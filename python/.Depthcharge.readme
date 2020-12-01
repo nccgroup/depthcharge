@@ -43,6 +43,18 @@ If you'd like to build this documentation for offline viewing, You can find the
 [online documentation]: https://depthcharge.readthedocs.io
 [Sphinx]: https://www.sphinx-doc.org
 
+## Branches
+
+The Depthcharge source repository contains two primary branches:
+
+* `main` - The latest release. This corresponds to what is available on [PyPi](https://github.com/nccgroup/depthcharge/tree/next)
+* `next` - "Bleeding edge" changes scheduled for inclusion in the next release.
+
+At each release, the contents of *next* are merged to *main* and tagged accordingly.
+
+Under some circumstances, selected fixes may be merged to main in order publish
+an interim patch release.
+
 ## Versioning
 
 Depthcharge uses a [Semantic versioning] scheme for both the Python API and the Companion Firmware.

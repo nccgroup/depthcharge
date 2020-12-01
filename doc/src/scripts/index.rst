@@ -7,6 +7,19 @@ This section presents the help and usage text for each of the scripts
 included with Depthcharge.  This same information can be viewed by
 invoking these scripts with a ``-h`` or ``--help`` argument.
 
+When the U-Boot source code for a platform is readily accessible,
+the :ref:`audit_config` script can be used to check a platform's
+`.config` file (or header file, for older U-Boot versions) for known 
+security risks and common product security pitfalls. 
+
+Note that this script is largely just a wrapper around the
+:py:class:`~depthcharge.checker.ConfigChecker` functionality in the API. One can
+further extend the nature of checks performed by defining more
+:py:class:`~depthcharge.checker.SecurityRisk` definitions, registering
+additional checks (:py:meth:`~depthcharge.checker.ConfigChecker.register_handler()`)
+at runtime, or by creating new :py:class:`~depthcharge.checker.ConfigChecker`
+subclasses to perform different types of configuration analyses.
+
 The first script one will usually want to run when working with a 
 device is :ref:`inspect`. This script collects information from a device
 and stores it into a *device configuration* file specified by a ``-c, --config``
@@ -28,7 +41,7 @@ so. However, those familiar with the :doc:`/api/index` can exercise full
 control over these scripts and their underling behavior using the ``--op`` and
 ``-X, --extra`` arguments.
 
-Once a a memory of flash dump has been obtained, either using :ref:`read` or
+Once a memory of flash dump has been obtained, either using :ref:`read` or
 through a chip-off approach, a few different scripts can be used to locate
 different types of data.
 
@@ -87,6 +100,15 @@ here are largely thought of as a means to more conveniently expose the API
 functionality for quicker use. As such, users are strongly encouraged to
 explore and understand these scripts, along with the underlying API
 functionality they use.
+
+.. _audit_config:
+
+
+depthcharge-audit-config
+------------------------
+
+.. literalinclude:: depthcharge-audit-config.txt
+    :language: text
 
 .. _inspect:
 

@@ -228,7 +228,7 @@ class Companion:
         """
         Retrieve the contents of the I2C data write buffer
 
-        This represents data written by a target SoC (bus master) to our
+        This represents data written by a target SoC (bus controller) to our
         peripheral device. Within the context U-Boot shenanigans, this is
         data retrieved from the memory space of the target SoC.
 
@@ -244,7 +244,7 @@ class Companion:
         """
         Set up the contents of the I2C data read buffer.
 
-        This is the data that the target SoC (bus master) will read
+        This is the data that the target SoC (bus controller) will read
         from our peripheral device into its memory space.
 
         Different firmware implementations are free to use either separate read

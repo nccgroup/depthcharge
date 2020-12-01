@@ -1,0 +1,103 @@
+usage: depthcharge-audit-config [options] <input file args> <-o outfile>
+
+Audit U-Boot configuration and report potential security risks.
+
+options:
+  -h, --help            show this help message and exit
+  -V UBOOT_VERSION, --uboot-version UBOOT_VERSION
+                        U-Boot version associated with configuration.
+  -u <cfg>, --uboot-config <cfg>
+                        U-Boot .config file to audit.
+  -H <hdr>, --uboot-header <hdr>
+                        U-Boot platform config header audit.
+  -I <path>, --uboot-inc <path>
+                        U-Boot include paths. Used only with -H/--uboot-
+                        header. May be specified multiple times to add
+                        multiple include paths.
+  --cpp <cmd>           C preprocessor program to use when parsing headers.
+                        Only used with -H/--uboot-header. Default is "cpp".
+  --dummy-hdr <hdr>     Use an empty file for the specified header when
+                        running the C Preprocessor. Used only with -H/--uboot-
+                        header. May be specified multiple times to skip
+                        irrelevant and problematic headers in include paths.
+  -o <path>, --outfile <path>
+                        Filename to write results to.
+  --fmt <fmt>           Output format. If not specified, this will be selected
+                        based extension.
+  --cols <names>        Comma-separated list of columns to include in HTML or
+                        CSV output.
+  --impact-legend       Print a legend for impact abbreviations and exit.
+  -N, --no-disclaimer   Supress disclaimer message.
+
+ U-Boot .config and header files:
+
+    More recent version of U-Boot leverage Kconfig functionality to configure
+    builds, while older versions of U-Boot were largely configured via macro
+    definitions in header files. There exists version which include a bit of
+    both, as configuration items were transitioned. With regard to Depthcharge,
+    auditing a .config file is generally simpler and more reliable.
+
+    The decision of whether to use -u/--uboot-config, -H/--uboot-header, or
+    both ultimately depends upon the version of the codebase you are reviewing.
+
+    In general, Depthcharge's support for .config parsing is likely to yield
+    better results more quickly, while parsing headers may require more effort
+    in terms of locating relevant headers & include paths, as well as
+    appeasing the C preprocessor.
+
+    When working with headers, if an irrelevant #include directive or header
+    file is proving problematic, note that you can direct Depthcharge to
+    create dummy header files and place them at higher priority in the include
+    search paths.
+
+ Supported Output File Formats and Extensions:
+
+    .csv        - CSV
+    .html       - HTML
+    .tab        - HTML, table only
+    .md, .txt   - Markdown
+
+ Columns:
+
+    For column-based formats (csv, html) the inclusion and order of columns can
+    be specified via a comma-separated list of column names passed to `--cols`.
+    Below are the (case-insensitive) column names that may be used.
+
+    * Identifier        Short name that uniquely identifies security risk
+    * Summary           Brief summary of the security risk
+    * Impact            Encoded string describing overall impact
+                            See output of `--impact-legend` for a description
+                            of each abbreviation.
+    * Source:           Corresponding location within configuration file
+    * Description       Detailed description of the security risk
+    * Recommendation    High-level recommendation for eliminating or
+                            mitigating the reported risk.
+
+    When `--cols` is not specified, the following default is assumed.
+    (The longer Description and Recommendation columns are omitted.)
+
+        --cols Identifier,Impact,Summary,Source
+
+ Markdown:
+
+    When a Markdown file is produced, `--cols` is ignored. Each reported item
+    will be in its own section, and all of the above fields will be included in
+    the document, each in a subsections.
+
+ Examples:
+
+   Inspect a U-Boot .config file and save results to a Markdown file
+
+    depthcharge-audit-config -V 2019.07 -u /path/to/uboot/.config -o report.md
+
+   Inspect an i.MX53 evaluation kit's configuration header file, supplying a
+   "dummy header" to satisfy an `#include <asm/arch/imx-regs.h>` directive
+   that would otherwise require attempting a build or manually creating a
+   symlink in the U-Boot source tree. Note that this command is run from the
+   top-level of a U-Boot v2011.03 source tree.
+
+    depthcharge-audit-config -V 2011.03 -H ./include/configs/mx53evk.h \
+            -I ./include -I ./arch/arm/include \
+            --dummy-hdr 'asm/arch/imx-regs.h' \
+            -o ~/audit-summary.html
+ 

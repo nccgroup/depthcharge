@@ -16,6 +16,7 @@ in the source repository).
     
     depthcharge
     depthcharge.cmdline
+    depthcharge.checker
     depthcharge.executor
     depthcharge.hunter
     depthcharge.log

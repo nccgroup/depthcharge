@@ -405,32 +405,45 @@ How do I get started?
 
 If you're reading this documentation, then you're in the right place!
 
-The repository can be cloned as follows.
+Below are two ways to install Depthcharge in a virtual environment (`venv`).
+
+**Install via PyPi**
+
+The most recent release can be obtained from the `Python Package Index (PyPi)` 
+as follows:
 
 .. code-block:: text
 
-    $ git clone https://github.com/nccgroup/depthcharge
-    $ cd depthcharge
+    $ python3 -m venv depthcharge-venv
+    $ source ./depthcharge-venv/bin/activate
+    $ python3 -m pip install depthcharge
 
+.. _Python Package Index (PyPi): https://pypi.org/project/depthcharge
 
-Once in the Depthcharge directory, install Python module can be installed in a
-virtual environment (`venv`_):
+**Installing latest changes from GitHub**
+
+The latest fixes and changes can be obtained the *next* branch
+of the GitHub repository.
 
 .. code-block:: text
 
-    $ cd python
+    $ git clone -b next https://github.com/nccgroup/depthcharge
+    $ cd depthcharge/python
     $ python3 -m venv ./venv
     $ source ./venv/bin/activate
-    $ pip install .
+    $ python3 -m pip install .
 
-If you plan to make changes to the code or documention, replace the last command with:
+If you plan to make changes to the code or documentation, replace the last command with:
 
 
 .. code-block:: text
 
-    $ pip install -e .[docs]
+    $ python3 -m pip install -e .[docs]
 
 .. _venv: https://docs.python.org/3/library/venv.html
+
+
+**Next Steps**
 
 We recommend you kick the tires on Depthcharge using the :ref:`scripts` and a
 device with a permissive U-Boot configuration, just to get a baseline sense of
@@ -443,9 +456,10 @@ to build a custom SD card image containing both U-Boot and a barebones Linux
 environment. This will result in a permissive default U-Boot configuration,
 allowing you to explore a greater breadth of Depthcharge's functionality.
 
-Finally, refer to `this NCC Group blog post`_ for some additional examples and
-inspiration!
+Finally, refer to `this NCC Group blog post`_ or `this Hardwear.io webinar`_
+for some additional examples and inspiration!
 
 .. _project documentation: https://depthcharge.readthedocs.io
-.. _This NCC Group blog post: https://research.nccgroup.com/2020/07/22/depthcharge
+.. _this NCC Group blog post: https://research.nccgroup.com/2020/07/22/depthcharge
+.. _this Hardwear.io webinar: https://bit.ly/NCC-hwio-Depthcharge
 .. _Ready, Set, Yocto!: https://github.com/jynik/ready-set-yocto

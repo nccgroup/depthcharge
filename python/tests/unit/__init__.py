@@ -1,6 +1,14 @@
 # flake8: noqa=E401
 # pylint: disable=missing-module-docstring
 
+from .checker import (
+    TestImportBuiltins,
+    TestReport,
+    TestSecurityRisk,
+    TestUBootConfigChecker,
+    TestUBootHeaderChecker
+)
+
 from .hunter import (
     TestConstantHunter,
     TestGappedRangeIter,
@@ -18,9 +26,8 @@ from .operation import (
 from .revcrc32 import TestReverseCRC32
 
 # TODO: Implement tests for the rest of this submodule
-from .string import (
-    TestXxd
-)
+from .string import TestXxd
+
 
 # TODO: Implement tests for the rest of this subpackage:
 #           board, cmd_table, jump_table

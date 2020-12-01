@@ -11,3 +11,4 @@ from . import board
 from . import cmd_table
 from . import env
 from . import jump_table
+from .version import UBootVersion, version_in_range

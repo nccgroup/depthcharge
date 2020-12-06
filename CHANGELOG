@@ -4,7 +4,7 @@
 Summary:
 
 * Introduced configuration checker API and depthcharge-audit-config
-* Command-line argument and API "breaking" changes: 
+* Command-line argument and API "breaking" changes:
   * ARM is longer the default architecture, "Generic" is
   * Migrated uboot.py submodule to a uboot subpackage
   * Change to opt-in semantics for payload deploy+execute, device crash/reboot
@@ -23,13 +23,13 @@ Details:
   auditing, where the goal is to consistently and quickly identify common
   security pitfalls or known vulnerabilities, so time spent on security
   review efforts can be focused elsewhere (e.g., in newly developed code).
-    
+
   The depthcharge.checker.ConfigChecker class defines the overarching
   framework and implements the common auditing and reporting functionality.
   The depthcharge.checker.UBootConfigChecker and .UBootHeaderChecker
   classes implement support for parsing .config and platform configuration
   header files, respectively.
-    
+
   The audit() methods of these "checkers" produce depthcharge.checker.Report
   objects, which are sets of depthcharge.checker.SecurityRisk objects
   that describe the potential risks and provide a high-level, general
@@ -42,7 +42,7 @@ Details:
   **ARM is longer the default architecture, "Generic" is.**
 
   In the interest of being more user friendly, Depthcharge now defaults to an
-  ARM-ish "Generic" architecture, which is still 32-bit and little endian. 
+  ARM-ish "Generic" architecture, which is still 32-bit and little endian.
 
   By making no assumptions about registers and instruction set, we can exclude
   operations that would otherwise cause a target device to spin out of control.
@@ -57,14 +57,14 @@ Details:
     * Scripts: pass an `--arch arm` argument
 
   See `arch/generic.py` for the other Generic architectures available.
-  However, note that 64-bit and big-endian platforms have not yet undergone 
+  However, note that 64-bit and big-endian platforms have not yet undergone
   testing.
 
   **Migration uboot.py submodule to a uboot subpackage**
 
   The migration of the uboot.py submodule to a uboot subpackage was
   performed in order to allow new additions to be introduced in a more
-  organized manner. 
+  organized manner.
 
   The uboot.py submodule has been converted to a subpackage organized as
   follows:
@@ -122,7 +122,7 @@ Details:
 
 
    depthcharge.uboot.jump_table:
-    v0.1.x: depthcharge.uboot.jump_table_exports()  
+    v0.1.x: depthcharge.uboot.jump_table_exports()
             depthcharge.uboot.find_jump_table()
 
                         Replaced by:
@@ -131,11 +131,11 @@ Details:
             depthcharge.uboot.jump_table.find()
 
   **Opt-in Operation Semantics**
-  
+
   Previously, Depthcharge would attempt to automatically explore a device as much
   as possible when the depthcharge.Depthcharge context object is created (which
   is what is happening when the depthcharge-inspect is used).
-  
+
   However, when beginning work on a bringing up MIPS support, it became clear
   that the (expected) failures resulting from previously untested U-Boot versions
   (including those heavily modified by a platform vendor) would be very unintuitive
@@ -143,22 +143,24 @@ Details:
   user experience (i.e. a less annoying and kludgy-feeling toolkit), as well as
   making adding new architecture support less of a hassle,  the platform inspection
   now behaves according to opt-in semantics, rather than opt-out semantics.
-  
+
   In the depthcharge.Depthcharge constructor, there are now `allow_deploy`
   and `skip_deploy` options, whose semantics are detailed in the corresponding
-  API documentation.  On the command-line, these ccorrespond to -A, --allow-deploy 
+  API documentation.  On the command-line, these correspond to -A, --allow-deploy
   and -S, --skip-deploy arguments.
 
-  Similarly, the opt-out of operations requirinig a device crash or reboot reboot.
-  The kwarg has always been `allow_reboot`, but the cmdline options has been 
-  updated to match: -R, --allow-reboot
+  Similarly, the opt-out of operations requiring a device crash or reboot in
+  scripts was found to be unfriendly and has been similarly been changed to
+  have opt-in semantics. The relevant API function keyword argument has always
+  been allow_reboot; the change was only needed in scripts' command-line
+  options, which now match: -R, --allow-reboot
 
   **Payload base address and offset improvements**
-  
-  The code used to configure the address at which Depthcharge should 
-  deploy payloads as been updated to address some deficiencies and 
+
+  The code used to configure the address at which Depthcharge should
+  deploy payloads has been updated to address some deficiencies and
   better match the promises made in the API docs.
-  
+
 
 2020-07-22: Depthcharge 0.1.1.post1
 ----------------------------------------------------------------------------

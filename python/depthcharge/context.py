@@ -1117,6 +1117,22 @@ class Depthcharge:
         except (KeyError, TypeError):
             return self._exec.default()
 
+    def register_payload(self, name: str, payload: bytes, required_by=None):
+        """
+        Register an executable payload that can later be deployed and executed.
+        The payload's *name* must be unique.
+
+        If you wish to manually deploy and execute the payload, refer to
+        :py:meth:`deploy_payload()` and :py:meth:`execute_payload()`.
+
+        Otherwise, the payload can be automatically deployed and
+        executed as-needed by specifying one or more :py:class:`~depthcharge.operation.Operation`
+        classes that require this payload to function. These can be specified
+        by class name (str) or an instance of the class. Either a single
+        item or a list can be provided.
+        """
+        self._payload.insert(name, payload, required_by)
+
     def deploy_payload(self, name: str, **kwargs):
         """
         Write the builtin payload identified by *name* to its corresponding address

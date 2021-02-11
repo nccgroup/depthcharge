@@ -11,8 +11,18 @@ from setuptools import setup, find_packages
 
 THIS_DIR = realpath(dirname(__file__))
 
+# This is technically more permissive than what is dictated by PEP440,
+# which requires a dot for suffixes, rather than a dash. (Plus signs
+# are used for local versions.)
+#
+# Strict compliance will matter uploads to PyPi, but I'd prefer that
+# mistakes in the dev series don't break the *next* branch for users
+# of the bleeding edge code in GitHub.
+#
+# See https://www.python.org/dev/peps/pep-0440/#public-version-identifiers
+#
 VERSION_REGEX = re.compile(
-    r"__version__\s*=\s*'(?P<version>[0-9]+\.[0-9]+\.[0-9]+(\.[a-zA-Z0-9]+)?)'"
+    r"__version__\s*=\s*'(?P<version>[0-9]+\.[0-9]+\.[0-9]+((\.|-|\+)[a-zA-Z0-9]+)*)'"
 )
 
 

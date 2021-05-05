@@ -35,7 +35,7 @@ non-volatile storage contents for analysis, and then achieve privileged access
 (e.g. a root shell) on a device in order to perform further testing and analysis.
 U-Boot's attack surface and breadth of functionality frequently make both
 readily available through local and physical attacks. While exciting
-to us hardware hackers, these types of attacks attacks generally
+to us hardware hackers, these types of attacks generally
 pose less risk to "regular" users of consumer devices that are not left
 unattended or carried around in one's pocket. (*Your system's threat model may
 vary, of course!*) In this sense, attacking a system's (vendor-modified) U-Boot
@@ -77,7 +77,7 @@ vendors. These tools are also intended to support those wishing to exercise
 their `right to repair, tinker with, and re-use`_ the products that they own.
 Just because a product vendor is no longer running web services, shipping
 fixes, or distributing security patches for a product, does a perfectly good
-piece of hardware need to become e-waste. Go forth, `upcycle`_, and breathe new life
+piece of hardware need to become e-waste? Go forth, `upcycle`_, and breathe new life
 info those old gadgets!
 
 .. _fault injection: https://media.defcon.org/DEF%20CON%2024/DEF%20CON%2024%20presentations/DEF%20CON%2024%20-%20Brad-Dixon-Pin2Pwn-How-to-Root-An-Embedded-Linux-Box-With-A-Sewing-Needle-UPDATED.pdf
@@ -256,8 +256,8 @@ For more information, see :py:class:`~depthcharge.hunter.EnvironmentHunter`.
 Command tables
 ^^^^^^^^^^^^^^
 
-If a device does not appear readily expose a command console, it can be very
-useful to determine if any tables command handlers (including their name,
+If a device does not appear to readily expose a command console, it can be very
+useful to determine if any command tables handlers (including their name,
 function pointers, and help text) are present in the binary.  If so, this may
 indicate that access is gated based upon some input, whether it be a standard
 `AUTOBOOT`-based "stop string", a simple IO pin state, or a cryptographic
@@ -320,11 +320,11 @@ These provide a reverse engineer with useful information including, but not limi
 * Which functions are assigned to multiplexed I/O pins or pads
 
 Beyond this, there are some interesting "nodes" in the tree that can more readily lead to
-compromised, such as the `chosen node`_, which is can be used to pass parameters to the kernel
+compromised, such as the `chosen node`_, which can be used to pass parameters to the kernel
 such as a KASLR seed, or `boot arguments`_.
 
 The :ref:`fdt` script, which uses :py:class:`~depthcharge.hunter.FDTHunter`, can be used
-to carve device trees binaries from a memory dump. If the `device tree compiler`_ installed,
+to carve device trees binaries from a memory dump. If the `device tree compiler`_ is installed,
 they will also be returned in their "source code" representation.
 
 .. _chosen node: https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/tree/Documentation/devicetree/bindings/chosen.txt?h=linux-5.7.y
@@ -390,7 +390,7 @@ Colorized Serial Monitor
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
 Depthcharge's :ref:`Monitor <api_monitor>` implementations allow you
-to keep an eye on exactly what is being sent a target device's console and what
+to keep an eye on exactly what is being sent to a target device's console and what
 the device responds with. As shown below, a colorized monitor can be used to
 keep tabs on long running operations, or simply to better understand how the
 Deptcharge code works. The following animation shows this monitor (lower

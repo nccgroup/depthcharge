@@ -1158,6 +1158,16 @@ class Depthcharge:
             return
 
         if not deployed or force:
+            if 'dcache' in self._cmds:
+                self.send_command('dcache flush')
+            else:
+                log.warning('Command to flush data cache (dcache) not available. Device may crash.')
+
+            if 'icache' in self._cmds:
+                self.send_command('icache flush')
+            else:
+                log.warning('Command to flush instruction cache (icache) not available. Device may crash.')
+
             log.note('Deploying payload \"{:s}\" @ 0x{:08x}'.format(name, addr))
             self.write_memory(addr, payload['data'])
             self._payloads.mark_deployed(name)

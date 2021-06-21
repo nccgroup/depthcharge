@@ -260,11 +260,9 @@ If a device does not appear to readily expose a command console, it can be very
 useful to determine if any command handler tables (including command name,
 function pointers, and help text) are present in the binary.  If so, this may
 indicate that access is gated based upon some input, whether it be a standard
-`AUTOBOOT`-based "stop string", a simple IO pin state, or a cryptographic
+`AUTOBOOT-based`_ "stop string", a simple IO pin state, or a cryptographic
 challenge-response mechanism. (Just knowing what a vendor has included in their
 build is half the battle!)
-
-.. _AUTOBOOT: https://gitlab.denx.de/u-boot/u-boot/-/blob/v2020.04/doc/README.autoboot#L116
 
 Furthermore, the presence of multiple unique command tables can suggest that a
 platform vendor has implemented different operating modes or authorization

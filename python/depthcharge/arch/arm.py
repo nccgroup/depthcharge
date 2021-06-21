@@ -65,6 +65,8 @@ class ARM(Architecture):
             Flags: nZCv  IRQs off  FIQs off  Mode SVC_32
             Code: 2800f915 f04fd0cf e7ce30ff d10a2d04 (2000f8d8)
 
+        Note: The "Mode" entry under "Flags:" will kcontain a " (T)" suffix
+              when the device is in Thumb mode.
         """
         ret = {}
         for line in text.splitlines():
@@ -73,7 +75,7 @@ class ARM(Architecture):
             if line.startswith('Flags:'):
                 ret['flags'] = {}
                 for field in line.split('  '):
-                    name, value = field.split(' ')
+                    name, value = field.split(' ', 1)
                     name = name.replace('Flags:', 'Asserted')
                     ret['flags'][name] = value
                 continue

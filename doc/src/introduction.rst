@@ -253,11 +253,11 @@ For more information, see :py:class:`~depthcharge.hunter.EnvironmentHunter`.
 
 .. _CONFIG_SYS_REDUNDAND_ENVIRONMENT: https://gitlab.denx.de/u-boot/u-boot/-/blob/v2020.04/env/Kconfig#L394
 
-Command tables
-^^^^^^^^^^^^^^
+Command handler tables
+^^^^^^^^^^^^^^^^^^^^^^
 
 If a device does not appear to readily expose a command console, it can be very
-useful to determine if any command tables handlers (including their name,
+useful to determine if any command handler tables (including command name,
 function pointers, and help text) are present in the binary.  If so, this may
 indicate that access is gated based upon some input, whether it be a standard
 `AUTOBOOT`-based "stop string", a simple IO pin state, or a cryptographic

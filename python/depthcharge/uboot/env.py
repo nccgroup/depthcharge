@@ -307,12 +307,12 @@ def create_raw(env: dict, size: int, arch: str, flags: int = None, no_header=Fal
 
     Finally, an optional *flags* value can be provided. This is an ``env_t``
     structure field present only when U-Boot is compiled with the
-    `CONFIG_SYS_REDUNDAND_ENV <https://gitlab.denx.de/u-boot/u-boot/-/blob/v2020.04/env/Kconfig#L394>`_
+    `CONFIG_SYS_REDUNDAND_ENV <https://source.denx.de/u-boot/u-boot/-/blob/v2020.04/env/Kconfig#L394>`_
     (sic) option.  This option enables the use of two environment copies, should
     one become corrupted during the programming operation (e.g. via unexpected power-loss).
     Although called "flags", it's basically a monotonic modulo-256 counter that's incremented
     by one at each write to denote the freshest copy. (See `env/common.c
-    <https://gitlab.denx.de/u-boot/u-boot/-/blob/v2020.04/env/common.c#L181>`_)
+    <https://source.denx.de/u-boot/u-boot/-/blob/v2020.04/env/common.c#L181>`_)
 
     If you are replacing an environment that uses this feature, be sure to provide either the same
     *flags* value or a greater value.

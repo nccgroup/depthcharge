@@ -23,7 +23,7 @@ The Depthcharge source code and releases can be found at:
 
 .. _Das U-Boot: https://www.denx.de/wiki/U-Boot
 .. _"helper" payload binaries: https://github.com/nccgroup/depthcharge/tree/main/payloads
-.. _"standalone" program: https://gitlab.denx.de/u-boot/u-boot/-/blob/v2020.01/doc/README.standalone
+.. _"standalone" program: https://source.denx.de/u-boot/u-boot/-/blob/v2020.01/doc/README.standalone
 
 
 Why did we create this?
@@ -111,7 +111,7 @@ likely achieve what you want without Depthcharge, but it can definitely be
 useful if you're looking to automate interactions with the U-Boot
 :py:class:`console <depthcharge.Console>`. Read on!
 
-.. _console: https://gitlab.denx.de/u-boot/u-boot/-/blob/v2020.01/doc/README.console
+.. _console: https://source.denx.de/u-boot/u-boot/-/blob/v2020.01/doc/README.console
 .. _environment: http://www.denx.de/wiki/view/DULG/UBootEnvVariables
 .. _script: https://www.denx.de/wiki/DULG/UBootScripts
 .. _Operation: ./python/depthcharge/operation.py
@@ -119,7 +119,7 @@ useful if you're looking to automate interactions with the U-Boot
 .. _Hunter: ./python/depthcharge/hunter.py
 .. _depthcharge-stratagem: ./python/scripts/depthcharge-stratagem
 .. _depthcharge-cmd-table: ./python/scripts/depthcharge-cmd-table
-.. _upstream defaults: https://gitlab.denx.de/u-boot/u-boot/-/tree/v2020.01/configs
+.. _upstream defaults: https://source.denx.de/u-boot/u-boot/-/tree/v2020.01/configs
 
 What are some of its key features?
 ----------------------------------
@@ -189,7 +189,7 @@ Depthcharge codebase, note that you can register your own
 API via the static :py:meth:`Operation.register() <depthcharge.Operation.register>`
 class method.
 
-.. _search for the U_BOOT_CMD macro: https://gitlab.denx.de/search?search=U_BOOT_CMD&project_id=531&search_code=true&repository_ref=v2020.04
+.. _search for the U_BOOT_CMD macro: https://source.denx.de/search?search=U_BOOT_CMD&project_id=531&search_code=true&repository_ref=v2020.04
 
 
 Improved Memory Dumping
@@ -252,7 +252,7 @@ friends are defined as a function of a dozen other variables.
 
 For more information, see :py:class:`~depthcharge.hunter.EnvironmentHunter`.
 
-.. _CONFIG_SYS_REDUNDAND_ENVIRONMENT: https://gitlab.denx.de/u-boot/u-boot/-/blob/v2020.04/env/Kconfig#L394
+.. _CONFIG_SYS_REDUNDAND_ENVIRONMENT: https://source.denx.de/u-boot/u-boot/-/blob/v2020.04/env/Kconfig#L394
 
 Command handler tables
 ^^^^^^^^^^^^^^^^^^^^^^
@@ -303,7 +303,7 @@ command tables. Below is an abridged example excerpt, when run with the ``--deta
         ...
 
 
-.. _AUTOBOOT-based: https://gitlab.denx.de/u-boot/u-boot/-/blob/v2020.04/doc/README.autoboot#L76
+.. _AUTOBOOT-based: https://source.denx.de/u-boot/u-boot/-/blob/v2020.04/doc/README.autoboot#L76
 
 
 Flattened Device Tree Blobs
@@ -338,7 +338,7 @@ Finally, in order to better facilitate writing custom executable payloads, Depth
 attempts to inspect U-Boot's "global data structure" in order to find its exported "jump table" - a collection
 of function pointers to handy functions, intended for use by "standalone programs."
 
-.. _standalone programs: https://gitlab.denx.de/u-boot/u-boot/-/blob/v2020.04/doc/README.standalone
+.. _standalone programs: https://source.denx.de/u-boot/u-boot/-/blob/v2020.04/doc/README.standalone
 
 The locations of identified functions are saved, along with other information collected for a device,
 in a JSON "device configuration" file, which can be "pretty-printed" with :ref:`print`. Below is

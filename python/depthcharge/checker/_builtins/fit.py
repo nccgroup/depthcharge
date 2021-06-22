@@ -128,7 +128,7 @@ _BUILTIN_DEFS = (
             with the bootloader environment (e.g. `bootcmd`).
 
             Links:
-                <https://gitlab.denx.de/u-boot/u-boot/-/commit/e0718b3ab754860bd47677e6b4fc5b70da42c4ab>
+                <https://source.denx.de/u-boot/u-boot/-/commit/e0718b3ab754860bd47677e6b4fc5b70da42c4ab>
                 <https://lists.denx.de/pipermail/u-boot/2020-March/403409.html>
                 <https://labs.f-secure.com/advisories/das-u-boot-verified-boot-bypass>
 

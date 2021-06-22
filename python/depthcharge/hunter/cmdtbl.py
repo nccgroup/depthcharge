@@ -17,13 +17,13 @@ from ..arch import Architecture
 class CommandTableHunter(Hunter):
     """
     The CommandTableHunter searches a U-Boot memory dump for instances of `linker lists
-    <https://gitlab.denx.de/u-boot/u-boot/-/blob/v2020.04/doc/README.commands#L118>`_
+    <https://source.denx.de/u-boot/u-boot/-/blob/v2020.04/doc/README.commands#L118>`_
     containing the `cmd_tbl_s structures
-    <https://gitlab.denx.de/u-boot/u-boot/-/blob/v2020.04/include/command.h#L30>`_
+    <https://source.denx.de/u-boot/u-boot/-/blob/v2020.04/include/command.h#L30>`_
     that define console commands. Within the U-Boot source code, console commands are declared using
-    `U_BOOT_CMD <https://gitlab.denx.de/u-boot/u-boot/-/blob/v2020.04/include/command.h#L357>`_
+    `U_BOOT_CMD <https://source.denx.de/u-boot/u-boot/-/blob/v2020.04/include/command.h#L357>`_
     and related preprocessor macros. (More background information can be found in U-Boot's
-    `README.commands <https://gitlab.denx.de/u-boot/u-boot/-/blob/v2020.04/doc/README.commands>`_.)
+    `README.commands <https://source.denx.de/u-boot/u-boot/-/blob/v2020.04/doc/README.commands>`_.)
 
     **Constructor**
 
@@ -36,7 +36,7 @@ class CommandTableHunter(Hunter):
         my_hunter = CommandTableHunter(mem_dump, 0x4FF4_F000, arch='arm')
 
     The *address* parameter should generally refer the corresponding data's
-    `post-relocation address <https://gitlab.denx.de/u-boot/u-boot/-/blob/v2020.04/common/board_f.c#L352>`_.
+    `post-relocation address <https://source.denx.de/u-boot/u-boot/-/blob/v2020.04/common/board_f.c#L352>`_.
     This address information is used to determine whether a potential ``cmd_tbl_s`` structure
     contains valid information. For example, ``char *`` pointers are "dereferenced" (within the
     confines of the provided image) to confirm that they lead to NULL-terminated ASCII strings.
@@ -48,12 +48,12 @@ class CommandTableHunter(Hunter):
     **Motivation**
 
     The presence of these command tables can serve as an indicator that `CONFIG_CMDLINE
-    <https://gitlab.denx.de/u-boot/u-boot/-/blob/v2020.04/cmd/Kconfig#L3?>`_
+    <https://source.denx.de/u-boot/u-boot/-/blob/v2020.04/cmd/Kconfig#L3?>`_
     is enabled. This evidence can be used to justify further analyses focusing of how a console can
     be accessed, if it is not otherwise obviously exposed or protected with standard functionality.
     For example, does vendor-specific code hide the U-Boot console unless a particular GPIO pin is
     asserted?  Is a custom functionality akin to `CONFIG_AUTOBOOT_STOP_STR and friends
-    <https://gitlab.denx.de/u-boot/u-boot/-/blob/v2020.04/cmd/Kconfig#L127>`_
+    <https://source.denx.de/u-boot/u-boot/-/blob/v2020.04/cmd/Kconfig#L127>`_
     used to gate access to the console?
 
     The presence of **multiple unique command tables** within a U-Boot memory can also be quite

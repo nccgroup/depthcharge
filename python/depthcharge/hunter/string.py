@@ -44,8 +44,8 @@ class StringHunter(Hunter):
 
     As every good little reverse engineer knows, stings can be very telling about the nature of
     code. For example, they could hint at the use of
-    `HABv4 <https://gitlab.denx.de/u-boot/u-boot/-/blob/v2020.04/arch/arm/mach-imx/hab.c#L587>`_
-    `functionality <https://gitlab.denx.de/u-boot/u-boot/-/blob/v2020.04/arch/arm/mach-imx/hab.c#L646>`_
+    `HABv4 <https://source.denx.de/u-boot/u-boot/-/blob/v2020.04/arch/arm/mach-imx/hab.c#L587>`_
+    `functionality <https://source.denx.de/u-boot/u-boot/-/blob/v2020.04/arch/arm/mach-imx/hab.c#L646>`_
     to authenticate images on NXP i.MX-based platforms.
 
     |

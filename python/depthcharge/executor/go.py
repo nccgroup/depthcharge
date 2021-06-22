@@ -16,7 +16,7 @@ class GoExecutor(Executor):
     """
     This class implements the :py:class:`Executor` interface atop of U-Boot's
     builtin functionality for executing
-    `U-Boot standalone programs <https://gitlab.denx.de/u-boot/u-boot/-/blob/v2020.04/doc/README.standalone>`_
+    `U-Boot standalone programs <https://source.denx.de/u-boot/u-boot/-/blob/v2020.04/doc/README.standalone>`_
     via the ``go`` console command.
     """
     _required = {

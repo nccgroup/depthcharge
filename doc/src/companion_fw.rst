@@ -27,8 +27,8 @@ future, pending a platform that demonstrates a good (ab)use-case for it.
 of sufficiently "dangerous" console commands.
 
 .. _TPM Genie whitepaper: https://github.com/nccgroup/TPMGenie/blob/master/docs/NCC_Group_Jeremy_Boone_TPM_Genie_Whitepaper.pdf
-.. _Ethernet controller management: https://gitlab.denx.de/u-boot/u-boot/-/blob/master/drivers/net/e1000.c#L5825
-.. _utility commands: https://gitlab.denx.de/u-boot/u-boot/-/blob/master/drivers/net/pfe_eth/pfe_cmd.c#L495
+.. _Ethernet controller management: https://source.denx.de/u-boot/u-boot/-/blob/master/drivers/net/e1000.c#L5825
+.. _utility commands: https://source.denx.de/u-boot/u-boot/-/blob/master/drivers/net/pfe_eth/pfe_cmd.c#L495
 
 Implementation
 --------------

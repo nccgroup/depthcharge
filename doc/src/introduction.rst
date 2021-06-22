@@ -39,7 +39,7 @@ to us hardware hackers, these types of attacks generally
 pose less risk to "regular" users of consumer devices that are not left
 unattended or carried around in one's pocket. (*Your system's threat model may
 vary, of course!*) In this sense, attacking a system's (vendor-modified) U-Boot
-bootloader is often just a neccessary first step towards getting a closer look
+bootloader is often just a necessary first step towards getting a closer look
 at a system' custom application software operating along attack surface boundaries.
 
 Security professionals operate under limited time frames and budgets. Tools that
@@ -52,7 +52,7 @@ access or `device-specific environment modifications`_ weren't possible or fruit
 Specifically, we've encountered a number of devices in which a product vendor
 or OEM attempted to restrict access to the U-Boot console, as well as prevent
 modification of boot-time code and data through the use of "*secure boot*" (or
-"*authenticated boot"*) implementations, such as `NXP's HABv4`_.
+"*authenticated boot"*) implementations, such as `NXP's HABv4`_ (`AN4581`_ - requires login).
 
 In many of these situations, a reduced-functionality console was
 still present and contained a handful of seemingly harmless standard or
@@ -84,7 +84,8 @@ info those old gadgets!
 .. _licensed under GPL v2.0: https://www.denx.de/wiki/U-Boot/Licensing
 .. _right to repair, tinker with, and re-use: https://www.eff.org/issues/right-to-repair
 .. _device-specific environment modifications: https://colinoflynn.com/2016/07/getting-root-on-philips-hue-bridge-2-0
-.. _NXP's HABv4: https://www.nxp.com/docs/en/application-note/AN4581.pdf
+.. _NXP's HABv4: https://source.denx.de/u-boot/u-boot/-/blob/v2020.01/doc/imx/habv4/introduction_habv4.txt
+.. _AN4581: https://www.nxp.com/docs/en/application-note/AN4581.pdf
 .. _upcycle: https://hackaday.com/tag/upcycle
 
 Will this be useful for my situation?

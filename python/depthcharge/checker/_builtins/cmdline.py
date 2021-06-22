@@ -165,7 +165,7 @@ _BUILTIN_DEFS = (
 
             References:
 
-            * <https://gitlab.denx.de/u-boot/u-boot/-/blob/v2020.04/doc/README.standalone>
+            * <https://source.denx.de/u-boot/u-boot/-/blob/v2020.04/doc/README.standalone>
         """),
 
         'recommendation': 'Disable the `go` command via `CONFIG_CMD_GO`.\n'

@@ -78,8 +78,8 @@ Implementations
         |               |       |         | Hunter will attempt to infer the right value.         |
         +---------------+-------+---------+-------------------------------------------------------+
 
-        .. _CONFIG_SYS_LONGHELP: https://gitlab.denx.de/u-boot/u-boot/-/blob/v2020.04/cmd/Kconfig#L41
-        .. _CONFIG_AUTO_COMPLETE: https://gitlab.denx.de/u-boot/u-boot/-/blob/v2020.04/cmd/Kconfig#L34
+        .. _CONFIG_SYS_LONGHELP: https://source.denx.de/u-boot/u-boot/-/blob/v2020.04/cmd/Kconfig#L41
+        .. _CONFIG_AUTO_COMPLETE: https://source.denx.de/u-boot/u-boot/-/blob/v2020.04/cmd/Kconfig#L34
 
     .. method:: finditer(self, target, start=-1, end=-1, **kwargs)
 

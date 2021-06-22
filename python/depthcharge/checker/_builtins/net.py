@@ -28,7 +28,7 @@ _BUILTIN_DEFS = (
             console commands supported in the U-Boot environment.
 
             More information about NetConsole functionality can be found in the upstream documentation:
-                <https://gitlab.denx.de/u-boot/u-boot/-/blob/master/doc/README.NetConsole>
+                <https://source.denx.de/u-boot/u-boot/-/blob/master/doc/README.NetConsole>
         """),
 
         'recommendation': dedent("""

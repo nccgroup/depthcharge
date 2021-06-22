@@ -20,7 +20,7 @@ class EnvironmentHunter(Hunter):
     1. Built-in defaults used when no (valid) environment is present in non-volatile storage.
     2. A valid environment stored in non-volatile storage, prefixed with a CRC32 header value.
     3. A "redundant" environment, (see `CONFIG_SYS_REDUNDAND_ENVIRONMENT
-       <https://gitlab.denx.de/u-boot/u-boot/-/blob/v2020.04/env/Kconfig#L394>`_) which includes
+       <https://source.denx.de/u-boot/u-boot/-/blob/v2020.04/env/Kconfig#L394>`_) which includes
        both a CRC32 header and a *flags* value used to determine the active environment copy.
 
     The constructor supports two keyword arguments that place a lower and upper bound on the

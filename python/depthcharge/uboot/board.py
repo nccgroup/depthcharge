@@ -6,6 +6,7 @@
 Parsing and conversion of "board" or platform-specific data
 """
 
+import os
 import re
 
 from .. import log
@@ -32,6 +33,9 @@ def bdinfo_dict(output: str) -> dict:
     """
     ret = {}
 
+    dram_banks = {}
+    curr_dram_bank = None
+
     for line in output.splitlines():
         match = _BDINFO_NUM_REGEX.match(line)
         if not match:
@@ -42,10 +46,7 @@ def bdinfo_dict(output: str) -> dict:
             name    = match.group('name').strip()
             value   = match.group('value').strip()
             suffix  = match.group('suffix') or ''
-
-            # Fixup some known formatting
-            if 'drambank' in ret:
-                name = name.replace('->', 'DRAM bank')
+            suffix  = suffix.strip()
 
             try:
                 value = int(value, 0)
@@ -53,12 +54,63 @@ def bdinfo_dict(output: str) -> dict:
                 # Try to move forward with it as-is
                 pass
 
-            # Variable names in gd->bd tend to be mached up in one word,
-            # Try to follow that convention...
-            key  = name.replace(' ', '').lower()
-            ret[key] = {'name': name, 'value': value, 'suffix': suffix}
+            # Aggregate DRAM bank information in a nested fashion.
+            # Treat everything else as a single (assumed unique) entry.
+            if name == 'DRAM bank':
+                curr_dram_bank = {}
+                dram_banks[value] = curr_dram_bank
+            elif curr_dram_bank is not None and name.startswith('-> '):
+                name = name.replace('-> ', '')
+                curr_dram_bank[name] = value
+            else:
+                # Variable names in gd->bd tend to be mached up in one word,
+                # Try to follow that convention...
+                key  = name.replace(' ', '').lower()
+                ret[key] = {'name': name, 'value': value, 'suffix': suffix}
+
+                curr_dram_bank = None
 
         except (AttributeError, IndexError):
             log.error('Failed to parse line: ' + match.group())
 
+    ret['dram_bank'] = { 'name': 'DRAM bank(s)', 'value': dram_banks, 'suffix': '' }
     return ret
+
+def bdinfo_str(bdinfo: dict) -> str:
+    """
+    Return a user-facing, printable string from a dictionary
+    returned by `bdinfo_dict()`.
+    """
+    s = ''
+    for key in sorted(bdinfo.keys()):
+        entry = bdinfo[key]
+        name = entry['name']
+        value = entry['value']
+        suffix = entry['suffix']
+
+        if key == 'dram_bank':
+            assert(isinstance(value, dict))
+            banks = sorted(value.keys())
+            for bankno in banks:
+                start = value[bankno]['start']
+                size  = value[bankno]['size']
+
+                pfx  = 'DRAM Bank #{:d}'.format(int(bankno))
+                s += '  {:20s} start=0x{:08x}, size=0x{:08x}'.format(pfx, start, size)
+                s += os.linesep
+        else:
+
+            if isinstance(value, int):
+                if name in ('arch_number', 'baudrate'):
+                    line = '  {:20s} {:d}'.format(name, value)
+                else:
+                    line = '  {:20s} 0x{:08x}'.format(name, value)
+            else:
+                line = '  {:20s} {:s}'.format(name, value)
+
+            if suffix:
+                line += ' ' + suffix
+
+            s += line + os.linesep
+
+    return s.rstrip()

@@ -81,20 +81,7 @@ class ARM(Architecture):
                 continue
 
             elif line.startswith('Code:'):
-                code = line.split()
-                instructions = []
-                for instruction in code[1:]:
-                    try:
-                        instruction = instruction.replace('(', '').replace(')', '').strip()
-                        instruction = int(instruction, 16)
-                        instruction = instruction.to_bytes(cls.word_size, byteorder=cls.endianness)
-                        instructions.append(instruction)
-                    except ValueError as e:
-                        msg = 'Invalid instruction or parse error: ' + str(e)
-                        raise ValueError(msg)
-
-                ret['code'] = instructions
-
+                ret['code'] = cls._parse_instructions(line)
             else:
                 if line.startswith('reloc '):
                     pfx = 'reloc '

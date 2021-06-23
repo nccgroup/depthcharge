@@ -307,3 +307,22 @@ class Architecture(metaclass=ArchitectureProperties):
                 pass  # Not all registers have aliases
 
         raise ValueError('Invalid or unknown register: ' + name)
+
+    @classmethod
+    def _parse_instructions(cls, line: str) -> list:
+        """
+        Internal utility function for parsing "Code:" lines in data abort output
+        """
+        code = line.split()
+        instructions = []
+        for instruction in code[1:]:
+            try:
+                instruction = instruction.replace('(', '').replace(')', '').strip()
+                instruction = int(instruction, 16)
+                instruction = instruction.to_bytes(cls.word_size, byteorder=cls.endianness)
+                instructions.append(instruction)
+            except ValueError as e:
+                msg = 'Invalid instruction or parse error: ' + str(e)
+                raise ValueError(msg)
+
+        return instructions

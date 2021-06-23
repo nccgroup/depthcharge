@@ -122,25 +122,12 @@ def print_gd(config):
     print()
 
     try:
-        print('Board Data (from bdinfo):')
         bdinfo = config['gd']['bd']
-        for _, entry in bdinfo.items():
-            name = entry['name']
-            value = entry['value']
-            suffix = entry['suffix']
+        bdinfo_str = uboot.board.bdinfo_str(bdinfo)
+        print('Board Data (from bdinfo):')
+        print(bdinfo_str)
 
-            if isinstance(value, int):
-                if name in ('arch_number', 'baudrate'):
-                    desc = '  {:20s} {:d} {:s}'.format(name, value, suffix)
-                else:
-                    desc = '  {:20s} 0x{:08x} {:s}'.format(name, value, suffix)
-            else:
-                desc = '  {:20s} {:s} {:s}'.format(name, value, suffix)
-
-            print(desc)
-        print()
-
-    except KeyError:
+    except KeyError as e:
         print('Board Data (from bdinfo): Not available')
 
     print()

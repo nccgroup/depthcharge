@@ -47,3 +47,58 @@ a file, as shown below.
 
     $ depthcharge-inspect -c my_device.cfg -m file:monitor.txt
 
+
+Console Quirks
+~~~~~~~~~~~~~~
+
+As documented in the :py:class:`~depthcharge.Console` class, there are
+two timing parameters that you may find yourself needing to adjust if a device
+is inducing strange failures: the Console *timeout* and an optional
+intra-character delay (*intrachar*). Both can be specified programatically 
+as keyword arguments to the 
+
+Timeout
+=======
+
+If you feel that operations are just running sluggishly, but there's not
+any particular failure, you can try reducing the Console timeout via the
+`DEPTHCHARGE_CONSOLE_TIMEOUT` environment variable. The following (Bash)
+example sets a timeout of 15 ms prior to invoking `depthcharge-readmem`.
+
+.. code-block:: text
+
+    $ export DEPTHCHARGE_CONSOLE_TIMEOUT=0.015
+    $ depthcharge-readmem -c mydevice.cfg -a 0xa800_6000 -l 1024
+
+
+However, if you set this timeout too low, you may find that Depthcharge
+is reporting timeouts before a device has responded with all of the
+expected output. 
+
+Intracharacter Delay
+====================
+
+Another snag one might encounter is that a device's UART FIFO may `fill and drop data`_
+if the device isn't able to consume console input quickly enough. From Depthcharge's
+perspective, this will likely manifest as commands failing with the commands
+being partially echoed (incorrectly) in Monitor output.
+
+The optional *intrachar* Console parameter and associated
+`DEPTHCHARGE_CONSOLE_INTRACHAR` environment variable can be used to add an
+intra-byte delay between each byte sent via the UART. No such delay is 
+added by default.
+
+The value of this parameter is treated as a lower bound because there will be
+some implicit added overhead just by virtue of performing `write()` and
+`flush()` on a per-byte basis when sending data to the serial port.  
+*(In contrast, when this feature is not enabled - i.e. the default - data is written
+in its entirety to the host's corresponding serial device. The underlying driver and
+hardware ultimately is responsible for how much time, if any, occurs between succesive
+bytes.*)
+
+In cases where you need to use this, you may find that it's sufficient to
+specify value of `0` - this will just incur the implicit overhead without
+performing any additional `sleep()` between attempts to write to the serial
+port.
+
+.. _fill and drop data: https://twitter.com/sz_jynik/status/1414989128245067780

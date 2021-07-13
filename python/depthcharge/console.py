@@ -4,6 +4,7 @@
 Functionality for interacting with a U-Boot console.
 """
 
+import os
 import re
 import time
 
@@ -32,14 +33,43 @@ class Console:
     If you wish to view or capture data sent and received using this console,
     provide a :py:class:`~depthcharge.monitor.Monitor` instance as the *monitor* parameter.
 
-    By default, the underlying serial console is initialized with a 50 ms timeout.
-    This can be changed by providing a float value (in seconds) as a *timeout*
-    keyword argument.
-    """
+    By default, the underlying serial console is initialized with a 150 ms timeout.
+    Lowering this will speed up some operations (e.g. dumping memory via console
+    operations), but setting it too low might cause Depthcharge to time out before a
+    device has had a chance to finish responding with output from an operation.
 
+    The timeout be changed by providing a float value (in seconds) as a *timeout* keyword argument
+    or by setting a *DEPTHCHARGE_CONSOLE_TIMEOUT* environment variable. The latter takes precedence.
+
+    On some systems, you may find that sending too much data at a U-Boot console
+    will cause the target device's UART FIFO to fill, dropping characters. You
+    can find an example of this here: <https://twitter.com/sz_jynik/status/1414989128245067780>
+
+    If you wish to introduce intra-character delay to console input, provide an *intrachar* keyword
+    argument or DEPTHCHARGE_CONSOLE_INTRACHAR environment variable. (The latter takes presence.)
+    This floating point value, in seconds, is the minimum amount of time that shall be
+    inserted between successive bytes. Realistically, the value will be larger because
+    this mode of operation will send each byte with a single write() + flush(),
+    incurring non-negligible overhead.  You may set a value of 0 to incur only this
+    implicit overhead, with no additional sleep()-based delay.
+    """
     def __init__(self, device='/dev/ttyUSB0:115200', prompt=None, monitor=None, **kwargs):
+
         if 'timeout' not in kwargs:
-            kwargs = {'timeout': 0.150, **kwargs}
+            kwargs['timeout'] = 0.150
+
+        timeout_env = os.getenv('DEPTHCHARGE_CONSOLE_TIMEOUT')
+        if timeout_env is not None:
+            timeout_env = float(timeout_env)
+            kwargs['timeout'] = timeout_env
+
+        self._intrachar = None
+        if 'intrachar' in kwargs:
+            self._intrachar = kwargs.pop('intrachar')
+
+        intrachar_env = os.getenv('DEPTHCHARGE_CONSOLE_INTRACHAR')
+        if intrachar_env is not None:
+            self._intrachar = float(intrachar_env)
 
         # Parse device string and merge its entries into the provided kwargs,
         # giving priority to the items in the device string.
@@ -300,7 +330,17 @@ class Console:
         If `update_monitor` is `True`, this data is recorded by any attached
         :py:class:`~depthcharge.monitor.Monitor`.
         """
-        self._ser.write(data)
+        if self._intrachar is None:
+            self._ser.write(data)
+        else:
+            for b in data:
+                # A value of 0 will induce only the overhead of a per-byte
+                # write() + flush()... which is quite substantial.
+                if self._intrachar > 0:
+                    time.sleep(self._intrachar)
+
+                self._ser.write(b.to_bytes(1, 'little'))
+                self._ser.flush()
 
         if update_monitor:
             self.monitor.write(data)

@@ -74,7 +74,7 @@ class CRC32MemoryReader(MemoryWordReader):
                 else:
                     raise RuntimeError(col_err.format(i, j))
 
-    def _read_word(self, addr: int, size: int, handle_data):
+    def _revcrc32(self, addr: int, size: int) -> bytes:
         cmd = 'crc32 {:x} {:x}'.format(addr, size)
         resp = self._ctx.send_command(cmd)
         match = _RESP_REGEX.match(resp)
@@ -99,6 +99,17 @@ class CRC32MemoryReader(MemoryWordReader):
         if len(data) != size:
             err = 'Data and read size mismatch @ 0x{:08x}: {:d}-byte CRC32 -> {:d}-byte data'
             raise RuntimeError(err.format(addr, size, len(data)))
+
+        return data
+
+    def _read_word(self, addr: int, size: int, handle_data):
+        if size == 8:
+            # For 64-bit platforms where we normally try to operate on 8-byte words, split
+            # the read into two 4-byte accesses.
+            data = self._revcrc32(addr, 4)
+            data += self._revcrc32(addr + 4, 4)
+        else:
+            data = self._revcrc32(addr, size)
 
         handle_data(data)
 

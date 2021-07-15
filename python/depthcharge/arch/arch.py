@@ -242,9 +242,12 @@ class Architecture(metaclass=ArchitectureProperties):
     @classmethod
     def hexint_to_bytes(cls, hex_str: str, num_bytes: int) -> int:
         """
-        Convert a hexadecimal string representing an integer value to bytes,
-        taking the architecture's endianness into account.
+        Convert a hexadecimal string representing an integer value (big endian)
+        to bytes taking the architecture's endianness into account.
         """
+        if not hex_str.startswith('0x'):
+            hex_str = '0x' + hex_str
+
         return int(hex_str, 16).to_bytes(num_bytes, cls._endianness)
 
     @classmethod

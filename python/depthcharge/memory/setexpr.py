@@ -6,6 +6,8 @@ Implements SetexprMemoryReader
 
 import re
 
+from math import ceil
+
 from .memcmds import MdMemoryReader
 from .reader import MemoryWordReader
 from ..operation import Operation
@@ -42,8 +44,15 @@ class SetexprMemoryReader(MemoryWordReader):
             raise IOError('Failed to read {:d} byte(s) @ 0x{:08x}'.format(size, addr))
 
         data = match.group('data')
+
+        # Apparently setexpr.l will happily return 8 bytes when we only asked for 4.
+        # It obliges with .b, w., and .s though. Odd.  Hack around this.
+        out_size = size
+        if len(data) / 2 > size:
+            size = ceil(len(data) / 2)
+
         data_bytes = self._ctx.arch.hexint_to_bytes(data, size)
-        handle_data(data_bytes)
+        handle_data(data_bytes[:out_size])
 
 
 Operation.register(SetexprMemoryReader)

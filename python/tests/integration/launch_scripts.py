@@ -10,6 +10,8 @@ command-line usage and top-level APIs.
 
 This should be run on target with a permissive U-Boot configuration, such as a
 development kit or reference design.
+
+Use the DEPTHCHARGE_TEST_ARCH environment variable to specify the target architecture.
 """
 
 import os

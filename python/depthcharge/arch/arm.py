@@ -22,24 +22,23 @@ class ARM(Architecture):
     _endianness = 'little'
     _supports_64bit_data = False
 
-    # ident values used by RETURN_REGISTER payload
     _regs = {
-        'r0':  {'ident': 0x61},
-        'r1':  {'ident': 0x62},
-        'r2':  {'ident': 0x63},
-        'r3':  {'ident': 0x64},
-        'r4':  {'ident': 0x65},
-        'r5':  {'ident': 0x66},
-        'r6':  {'ident': 0x67},
-        'r7':  {'ident': 0x68},
-        'r8':  {'ident': 0x69},
-        'r9':  {'ident': 0x6a, 'gd': True, 'alias': 'sb'},
-        'r10': {'ident': 0x6b},
-        'r11': {'ident': 0x6c, 'alias': 'fp'},
-        'r12': {'ident': 0x6d, 'alias': 'ip'},
-        'r13': {'ident': 0x6e, 'alias': 'sp'},
-        'r14': {'ident': 0x6f, 'alias': 'lr'},
-        'r15': {'ident': 0x70, 'alias': 'pc'},
+        'r0':  {},
+        'r1':  {},
+        'r2':  {},
+        'r3':  {},
+        'r4':  {},
+        'r5':  {},
+        'r6':  {},
+        'r7':  {},
+        'r8':  {},
+        'r9':  {'gd': True, 'alias': 'sb'},
+        'r10': {},
+        'r11': {'alias': 'fp'},
+        'r12': {'alias': 'ip'},
+        'r13': {'alias': 'sp'},
+        'r14': {'alias': 'lr'},
+        'r15': {'alias': 'pc'},
     }
 
     _DA_ENTRY = re.compile(r"""

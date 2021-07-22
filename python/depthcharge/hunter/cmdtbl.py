@@ -142,7 +142,7 @@ class CommandTableHunter(Hunter):
         arch = self._arch
         addr = self._address + offset
 
-        if not arch.is_aligned(addr):
+        if not arch.is_word_aligned(addr):
             return None
 
         ret = {}

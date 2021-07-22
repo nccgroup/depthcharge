@@ -16,7 +16,7 @@ class CpCrashRegisterReader(DataAbortRegisterReader):
     """
 
     _required = {
-        'arch': 'ARM',
+        'arch': ['ARM', 'AARCH64'],
         'commands': ['cp'],
         'crash_or_reboot': True,
     }

@@ -152,6 +152,9 @@ def _find_extras(gd_mem: bytes, new_gd_offset: int, arch) -> dict:
 
     # struct global data fields preceding struct global_data *new_gd - in reverse,
     # up until the next conditionally-compiled field.
+    #
+    # FIXME: If CONFIG_SYS_MEM_RESERVE_SECURE (e.g. in v2016.v03) is set, then
+    # we would misinterpret secure_ram as ram_size, and so forth.
     fields = (
         ('reloc_off',       arch.word_size),
         ('start_addr_sp',   arch.word_size),

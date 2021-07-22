@@ -208,7 +208,7 @@ def find(gd_address, memory_reader, arch, **kwargs) -> dict:
     """
 
     # This seems to be "good enough" for a majority of devices.
-    gd_read_size = kwargs.get('gd_read_size', 256)
+    gd_read_size = kwargs.get('gd_read_size', 384)
 
     # This is just a sanity check to confirm we're not off in the weeds.
     # If you're running into unexpected failures here, report it and work

@@ -2,7 +2,7 @@
 # Depthcharge: <https://github.com/nccgroup/depthcharge>
 
 """
-Implements FDTCrashRegisterReader
+Implements CpCrashRegisterReader
 """
 
 from ..operation import Operation
@@ -28,7 +28,18 @@ class CpCrashRegisterReader(DataAbortRegisterReader):
     # This is by intent; we are not using another memory reader.
     # pylint: disable=method-hidden
     def _trigger_data_abort(self):
-        cmd = 'cp.l {addr:x} {addr:x} 1'.format(addr=self._crash_addr)
+        if self._ctx.arch.name == 'AARCH64':
+            # Using the same value for source/dest does not appear to work,
+            # perhaps due to the change to use memcpy() in U-Boot 2017.01
+            # (c2538421b28424b9705865e838c5fba19c9dc651).
+            #
+            # Adding this as a special case for AARCH64, as this was confirmed
+            # to work with the default crash_addr. (Granted, it too is probably
+            # relying on a SoC-specific memory map.)
+            cmd = 'cp.q 0 {:x} 1'.format(self._crash_addr)
+        else:
+            cmd = 'cp.l {addr:x} {addr:x} 1'.format(addr=self._crash_addr)
+
         return self._ctx.send_command(cmd)
 
 

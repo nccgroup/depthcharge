@@ -15,7 +15,6 @@ U-Boot's global data structure pointer.
 from .cp            import CpCrashRegisterReader
 from .crc32         import CRC32CrashRegisterReader
 from .fdt           import FDTCrashRegisterReader
-from .go            import GoRegisterReader
 from .itest         import ItestCrashRegisterReader
 
 from .memcmds       import (

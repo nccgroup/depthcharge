@@ -307,6 +307,13 @@ class Depthcharge:
         # Retrieve and cache version information, if not provided earlier
         self.version()
 
+        # Select a default data abort crash address
+        if 'da_crash_addr' not in kwargs:
+            if self.arch.name == 'ARM':
+                kwargs['da_crash_addr'] = 1
+            elif self.arch.name == 'AARCH64':
+                kwargs['da_crash_addr'] = 0xffffffff
+
         # Enumerate available operations
         #
         # The order in which this is performed is intentional, and according to

@@ -1,17 +1,17 @@
 #include <stdlib.h>
 
 #include "depthcharge.h"
-#include "str2uint.h"
+#include "str2ulong.h"
 
-int main(int argc, char * argv[])
+unsigned long main(int argc, char * argv[])
 {
     DECLARE_GLOBAL_DATA_VOID_PTR(gd);
-    unsigned int *ret_p;
+    unsigned long *ret_p;
 
     if (argc < 2) {
-        return (int) gd;
+        return (unsigned long) gd;
     }
 
-    ret_p = (unsigned int *) str2uint(argv[1]);
-    return (int) (*ret_p);
+    ret_p = (unsigned long *) str2ulong(argv[1]);
+    return (*ret_p);
 }

@@ -2,7 +2,7 @@
 #include "u-boot.h"
 #include "str2uint.h"
 
-int main(int argc, char *argv[])
+unsigned long main(int argc, char *argv[])
 {
     int status;
     jt_funcs_t *jt;

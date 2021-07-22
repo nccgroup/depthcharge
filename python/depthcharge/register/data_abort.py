@@ -25,7 +25,7 @@ class DataAbortRegisterReader(RegisterReader):
     @classmethod
     def rank(cls, **_kwargs):
         # Rebooting the platform isn't ideal, but it's better than
-        # requiring a write operation (e.g. GoRegisterReader)
+        # requiring a write operation (ranked 10 or lower)
         return 20
 
     def __init__(self, ctx, **kwargs):

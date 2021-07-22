@@ -124,7 +124,7 @@ def _find_gd_env_buf(gd_address: int, gd_mem: bytes, new_gd_offset: int, arch):
     valid_count = 0
     env_buf_offset = 0
 
-    for i, value in enumerate(gd_mem):
+    for i, value in enumerate(gd_mem[search_offset:]):
 
         # I've only ever seen this contain printable ASCII characters and '\0'
         if value != 0x00 and value not in range(0x20, 0x80):
@@ -139,7 +139,7 @@ def _find_gd_env_buf(gd_address: int, gd_mem: bytes, new_gd_offset: int, arch):
 
         valid_count += 1
         if valid_count == 32:
-            return env_buf_offset
+            return env_buf_offset + search_offset
 
     raise ValueError('Failed to located gd->env_buf[32]')
 

@@ -19,7 +19,7 @@ class MdCrashRegisterReader(DataAbortRegisterReader):
     """
 
     _required = {
-        'arch': 'ARM',
+        'arch': ['ARM', 'AARCH64'],
         'commands': ['md'],
         'crash_or_reboot': True,
     }
@@ -41,7 +41,7 @@ class MmCrashRegisterReader(DataAbortRegisterReader):
     """
 
     _required = {
-        'arch': 'ARM',
+        'arch': ['ARM', 'AARCH64'],
         'commands': ['mm'],
         'crash_or_reboot': True,
     }
@@ -58,7 +58,7 @@ class MwCrashRegisterReader(DataAbortRegisterReader):
     """
 
     _required = {
-        'arch': 'ARM',
+        'arch': ['ARM', 'AARCH64'],
         'commands': ['mm'],
         'crash_or_reboot': True,
     }
@@ -75,7 +75,7 @@ class NmCrashRegisterReader(DataAbortRegisterReader):
     """
 
     _required = {
-        'arch': 'ARM',
+        'arch': ['ARM', 'AARCH64'],
         'commands': ['nm'],
         'crash_or_reboot': True,
     }

@@ -26,7 +26,7 @@ class CpCrashMemoryReader(DataAbortMemoryReader):
     """
 
     _required = {
-        'arch': 'arm',
+        'arch': ['arm', 'aarch64'],
         'commands': ['cp'],
         'crash_or_reboot': True,
     }

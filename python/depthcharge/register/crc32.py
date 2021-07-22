@@ -16,7 +16,7 @@ class CRC32CrashRegisterReader(DataAbortRegisterReader):
     """
 
     _required = {
-        'arch': 'ARM',
+        'arch': ['ARM', 'AARCH64'],
         'commands': ['crc32'],
         'crash_or_reboot': True
     }

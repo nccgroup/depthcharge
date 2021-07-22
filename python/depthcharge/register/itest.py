@@ -16,7 +16,7 @@ class ItestCrashRegisterReader(DataAbortRegisterReader):
     """
 
     _required = {
-        'arch': 'ARM',
+        'arch': ['ARM', 'AARCH64'],
         'commands': ['itest'],
         'crash_or_reboot': True,
     }

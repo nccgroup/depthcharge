@@ -16,7 +16,7 @@ class FDTCrashRegisterReader(DataAbortRegisterReader):
     """
 
     _required = {
-        'arch': 'ARM',
+        'arch': ['ARM', 'AARCH64'],
         'commands': ['fdt'],
         'crash_or_reboot': True,
     }

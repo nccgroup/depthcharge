@@ -16,7 +16,7 @@ class SetexprCrashRegisterReader(DataAbortRegisterReader):
     """
 
     _required = {
-        'arch': 'ARM',
+        'arch': ['ARM', 'AARCH64'],
         'commands': ['setexpr'],
         'crash_or_reboot': True,
     }

@@ -4,12 +4,6 @@
 #include <stdlib.h>
 #include <stdarg.h>
 
-#ifdef ARCH_arm
-#   define DECLARE_GLOBAL_DATA_PTR(gd) register volatile global_data_t *gd asm("r9");
-#else
-#   error "Unsupported architechture"
-#endif
-
 typedef struct {
     unsigned long (*get_version)(void);
     int (*getc)(void);

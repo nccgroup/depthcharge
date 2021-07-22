@@ -150,7 +150,7 @@ class MemoryWordWriter(MemoryWriter):
         i = 0
 
         # Write byte-by-byte until we're word-aligned.
-        while not self._ctx.arch.is_aligned(addr + i):
+        while not self._ctx.arch.is_word_aligned(addr + i):
             self._write_word(addr + i, data[i:i + 1])
             i += 1
 

@@ -133,7 +133,7 @@ def _find_gd_env_buf(gd_address: int, gd_mem: bytes, new_gd_offset: int, arch):
 
         # We expect gd->env_buf[32] to be word-aligned
         if valid_count == 0:
-            if not arch.is_aligned(i):
+            if not arch.is_word_aligned(i):
                 continue
             env_buf_offset = i
 
@@ -212,7 +212,7 @@ def find(gd_address, memory_reader, arch, **kwargs) -> dict:
     # around it by passing jt_addr_mask=0 in the meantime.
     jt_addr_mask = kwargs.get('jt_addr_mask', 0xfffffffffc000000)
 
-    if not arch.is_aligned(gd_address):
+    if not arch.is_word_aligned(gd_address):
         raise ValueError('Global datastructure address must be word-aligned.')
 
     if not arch.multiple_of_word_size(gd_read_size):

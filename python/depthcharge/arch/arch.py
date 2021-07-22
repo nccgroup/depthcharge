@@ -167,9 +167,19 @@ class Architecture(metaclass=ArchitectureProperties):
             yield arch
 
     @classmethod
-    def is_aligned(cls, address):
+    def is_word_aligned(cls, address):
         """
         Returns ``True`` if *address* is word-aligned, and ``False`` otherwise.
+        """
+        return address & (cls._word_size - 1) == 0
+
+    @classmethod
+    def is_allowed_access(cls, address, size):
+        """
+        Returns ``True`` if accessing *address* is permitted with respect to alignment requirements.
+
+        The base implementation performs an address mask check for a minimum alignment requirement.
+        Subclasses should perform a size check, if needed.
         """
         return address & (cls._alignment - 1) == 0
 

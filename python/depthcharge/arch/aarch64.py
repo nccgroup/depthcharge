@@ -22,7 +22,7 @@ class AARCH64(Architecture):
     #  the use of unaligned addresses when accessing normal memory. This
     #  simplifies porting code to A64.
     #
-    _alignment = 1  # AARCH64 supports unaligned accesses
+    _alignment = 1
 
     _word_size = 8
     _phys_size = 8

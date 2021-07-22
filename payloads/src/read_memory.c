@@ -1,23 +1,23 @@
 #include "depthcharge.h"
 #include "u-boot.h"
-#include "str2uint.h"
+#include "str2ulong.h"
 
 unsigned long main(int argc, char *argv[])
 {
     int status;
     jt_funcs_t *jt;
-    unsigned int jt_u;
+    unsigned long jt_ul;
     unsigned long mem_addr, mem_len;
 
     if (argc != 4) {
         return 1;
     }
 
-    jt_u = str2uint(argv[1]);
-    if (jt_u == 0) {
+    jt_ul = str2ulong(argv[1]);
+    if (jt_ul == 0) {
         return 2;
     }
-    jt = (jt_funcs_t*) jt_u;
+    jt = (jt_funcs_t*) jt_ul;
 
     status = jt->strict_strtoul(argv[2], 0, &mem_addr);
     if (status != 0) {

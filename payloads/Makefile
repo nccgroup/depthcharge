@@ -1,5 +1,11 @@
 ARCH ?= arm
 
+ifeq ($(ARCH), arm)
+	CROSS_COMPILE ?= arm-none-eabi-
+else ifeq ($(ARCH), aarch64)
+	CROSS_COMPILE ?= aarch64-none-elf-
+endif
+
 INCLUDE_DIR := include
 OUTPUT_DIR  := output
 
@@ -10,11 +16,10 @@ ASM_OUTPUT	:= $(PAYLOADS:%=$(OUTPUT_DIR)/$(ARCH)-%.asm)
 
 DEBUG ?= n
 
-CROSSCOMPILE := $(ARCH)-none-eabi-
-CC 			 := $(CROSSCOMPILE)gcc
-LD 			 := $(CROSSCOMPILE)ld
-OBJCOPY		 := $(CROSSCOMPILE)objcopy
-OBJDUMP		 := $(CROSSCOMPILE)objdump
+CC			:= $(CROSS_COMPILE)gcc
+LD			:= $(CROSS_COMPILE)ld
+OBJCOPY		:= $(CROSS_COMPILE)objcopy
+OBJDUMP		:= $(CROSS_COMPILE)objdump
 
 CFLAGS = \
 	-Wall -Wextra \

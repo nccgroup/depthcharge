@@ -228,7 +228,8 @@ def find(gd_address, memory_reader, arch, **kwargs) -> dict:
     # First, locate offset to new_gd structure entry, which we expect to
     # be the same gd value we're using in the post-relocation environment
     new_gd_offset = _find_new_gd(gd_address, gd_mem, arch)
-    log.note('Located gd->new_gd @ offset 0x{:x}'.format(new_gd_offset))
+    new_gd_addr = gd_address + new_gd_offset
+    log.note('Located gd->new_gd @ 0x{:x} = gd + 0x{:x}'.format(new_gd_addr, new_gd_offset))
 
     extras = _find_extras(gd_mem, new_gd_offset, arch)
 

@@ -3,7 +3,7 @@
 
 #include "strlen.h"
 
-static inline unsigned long str2uint_hex(const char *s)
+static inline unsigned long str2ulong_hex(const char *s)
 {
     unsigned long value = 0;
 
@@ -28,7 +28,7 @@ static inline unsigned long str2uint_hex(const char *s)
     return value;
 }
 
-static inline unsigned long str2uint_dec(const char *s)
+static inline unsigned long str2ulong_dec(const char *s)
 {
     unsigned long value = 0;
 
@@ -52,14 +52,14 @@ static inline unsigned long str2uint_dec(const char *s)
 // Simple string to unsigned long conversion with an atoi-esque lack of proper
 // input validation and overflow checks. Returns 0 on invalid input and will
 // overflow if input exceeds the size of an unsigned long.
-static inline unsigned long str2uint(const char *s)
+static inline unsigned long str2ulong(const char *s)
 {
     size_t len = strlen(s);
     if (len > 2 && s[0] == '0' && s[1] == 'x') {
         s += 2;
-        return str2uint_hex(s);
+        return str2ulong_hex(s);
     }
-    return str2uint_dec(s);
+    return str2ulong_dec(s);
 }
 
 

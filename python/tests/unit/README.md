@@ -6,5 +6,5 @@ the module.
 To run all tests:
 
 ```
-python3 -m unittest unit_tests
+python3 -m unittest unit
 ```

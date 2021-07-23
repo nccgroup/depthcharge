@@ -26,7 +26,7 @@ class CpCrashMemoryReader(DataAbortMemoryReader):
     """
 
     _required = {
-        'arch': ['arm', 'aarch64'],
+        'arch': ['ARM', 'AARCH64'],
         'commands': ['cp'],
         'crash_or_reboot': True,
     }
@@ -36,7 +36,8 @@ class CpCrashMemoryReader(DataAbortMemoryReader):
         return 3
 
     def _trigger_data_abort(self, address: int, **_kwargs):
-        cmd = 'cp.l {:x} {:x} 1'.format(address, self._crash_addr)
+        mode = 'q' if self._ctx.arch.supports_64bit_data else 'l'
+        cmd = 'cp.{:s} {:x} {:x} 1'.format(mode, address, self._crash_addr)
         return self._ctx.send_command(cmd)
 
 

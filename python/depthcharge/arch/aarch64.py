@@ -29,7 +29,9 @@ class AARCH64(Architecture):
     _word_mask = 0xffffffff_ffffffff
     _endianness = 'little'
     _supports_64bit_data = True
-    _da_crash_addr = 0xffffffff_ffffffff
+
+    # Seems we need this word-aligned for the CpCrashRegisterReader to work...
+    _da_crash_addr = 0xffffffff_fffffff0
 
     _regs = {
         'x0':   {},

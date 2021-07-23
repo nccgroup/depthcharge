@@ -29,13 +29,14 @@ class AARCH64(Architecture):
     _word_mask = 0xffffffff_ffffffff
     _endianness = 'little'
     _supports_64bit_data = True
+    _da_crash_addr = 0xffffffff_ffffffff
 
     _regs = {
         'x0':   {},
         'x1':   {},
         'x2':   {},
         'x3':   {},
-        'x4':   {},
+        'x4':   {'da_data_reg': True},
         'x5':   {},
         'x6':   {},
         'x7':   {},

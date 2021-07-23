@@ -21,9 +21,10 @@ class ARM(Architecture):
     _word_mask = 0xffffffff
     _endianness = 'little'
     _supports_64bit_data = False
+    _da_crash_addr = 1
 
     _regs = {
-        'r0':  {},
+        'r0':  {'da_data_reg': True},
         'r1':  {},
         'r2':  {},
         'r3':  {},

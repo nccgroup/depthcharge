@@ -20,6 +20,8 @@ class ArchitectureProperties(type):
     _endianness = None
     _generic = False
     _regs = None
+    _da_crash_addr = None
+    _da_data_reg = None
 
     @property
     def generic(cls) -> bool:
@@ -108,6 +110,31 @@ class ArchitectureProperties(type):
         """
         for reg, info in cls._regs.items():
             if info.get('gd', False):
+                return reg
+
+        return None
+
+    @property
+    def data_abort_address(cls) -> int:
+        """
+        Address to access in order to induce a data abort.
+
+        None is returned if no such address is supported.
+        """
+        return cls._da_crash_addr
+
+    @property
+    def data_abort_data_reg(cls) -> int:
+        """
+        Register containing a target data word when we've induced a data abort
+        upon a memory write operation.
+
+        None is returned if not applicable.
+
+        Can be overridden by DEPTHCHARGE_DA_REG environment variable.
+        """
+        for reg, info in cls._regs.items():
+            if info.get('da_data_reg') is not None:
                 return reg
 
         return None

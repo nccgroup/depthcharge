@@ -5,6 +5,8 @@
 Defines DataAbortRegisterReader parent class
 """
 
+import os
+
 from .reader import RegisterReader
 
 
@@ -18,6 +20,11 @@ class DataAbortRegisterReader(RegisterReader):
     ``crash_or_reboot=True`` property in their private ``_required`` dictionary
     in order to exclude the operation when a user has indicated that this
     should not be permitted.
+
+    A *da_crash_addr* keyword argument can passed to constructors in order to
+    specify the memory address to access in order to induce a data abort.
+    It defaults to an architecture-specific value. This value can be overridden
+    by a *DEPTHCHARGE_DA_ADDR* environment variable.
     """
 
     _memrd = None
@@ -30,7 +37,15 @@ class DataAbortRegisterReader(RegisterReader):
 
     def __init__(self, ctx, **kwargs):
         super().__init__(ctx, **kwargs)
-        self._crash_addr = kwargs.get('da_crash_addr', 1)
+
+        da_crash_addr_env = os.getenv('DEPTHCHARGE_DA_ADDR')
+        if da_crash_addr_env is not None:
+            self._crash_addr = int(da_crash_addr_env, 0)
+        else:
+            self._crash_addr = kwargs.get('da_crash_addr', ctx.arch.data_abort_address)
+
+        if self._crash_addr is None:
+            raise NotImplementedError('No data abort address is defined')
 
     # This is expected. pylint: disable=no-self-use
     def _trigger_data_abort(self) -> str:

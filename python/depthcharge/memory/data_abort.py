@@ -4,6 +4,7 @@
 Provides DataAbortMemoryReader base class
 """
 
+import os
 import sys
 
 from .reader import MemoryWordReader
@@ -20,8 +21,13 @@ class DataAbortMemoryReader(MemoryWordReader):
     This is a :py:class:`.MemoryWordReader` that extracts memory contents by triggering Data Aborts
     and parsing the relevant value from the register dump printed by U-Boot when this occurs.
 
-    A *da_data_reg* keyword argument should specify the name of the register that is expected to
-    contain memory read contents. It defaults to ``'r0'``, which may be incorrect for your target.
+    A *da_data_reg* keyword argument may be provided to specify the name of the register that is
+    expected to contain memory read contents. It defaults to an architecture-specific value.
+    This value can be overridden by a *DEPTHCHARGE_DA_DATA_REG* environment variable.
+
+    A *da_crash_addr* keyword argument can be used to specify a memory address to access in
+    order to induce a data abort. It defaults to an architecture-specific value.
+    This value can be overridden by a *DEPTHCHARGE_DA_ADDR* environment variable.
 
     Given that this reader causes the platform to reset, it may be the case that the data you're
     attempting to read is overwritten during the crash-reset-init series of operations. Two
@@ -31,7 +37,7 @@ class DataAbortMemoryReader(MemoryWordReader):
        must accept the following parameters: ``(address: int, size: int, pre_info)``
 
        Note that the final argument is any value passed as to this constructor as *da_pre_info*
-       keyword argument. You'll likely want to use a type that can be instatinated early
+       keyword argument. You'll likely want to use a type that can be instantiated early
        and populated later, such as a dictionary. This allows items such as a
        :py:class:`~depthcharge.Depthcharge` context to be added following the completion
        of initialization code.
@@ -44,8 +50,23 @@ class DataAbortMemoryReader(MemoryWordReader):
     """
 
     def __init__(self, ctx, **kwargs):
-        data_reg = kwargs.get('da_data_reg', 'r0')
-        crash_addr = kwargs.get('da_crash_addr', 1)
+        da_data_reg_env = os.getenv('DEPTHCHARGE_DA_DATA_REG')
+        if da_data_reg_env is not None:
+            data_reg = da_data_reg_env
+        else:
+            data_reg = kwargs.get('da_data_reg', ctx.arch.data_abort_data_reg)
+
+        da_crash_addr_env = os.getenv('DEPTHCHARGE_DA_ADDR')
+        if da_crash_addr_env is not None:
+            crash_addr = int(da_crash_addr_env, 0)
+        else:
+            crash_addr = kwargs.get('da_crash_addr', ctx.arch.data_abort_address)
+
+        if data_reg is None:
+            raise NotImplementedError('No data abort register target is defined')
+
+        if crash_addr is None:
+            raise NotImplementedError('No data abort address is defined')
 
         super().__init__(ctx, **kwargs)
 

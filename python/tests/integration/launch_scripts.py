@@ -48,6 +48,8 @@ def run_script(args: list, check=True, **kwargs):
             args.append('--arch')
             args.append(arch)
 
+    log.debug('Running: \n   ' + str(args) + '\n   ' + str(kwargs))
+
     return run(args, **kwargs)
 
 
@@ -522,6 +524,7 @@ def test_read_mem__uboot(state: dict, script: str):
 
     args = [
         script,
+        '-c', state['config_file'],
         '-a', hex(uboot_addr), '-l', str(_READ_SIZE),
         '-f', state['uboot_bin_file'],
         '-A', '-R',

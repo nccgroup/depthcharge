@@ -1131,7 +1131,7 @@ class Depthcharge:
         by class name (str) or an instance of the class. Either a single
         item or a list can be provided.
         """
-        self._payload.insert(name, payload, required_by)
+        self._payloads.insert(name, payload, required_by)
 
     def deploy_payload(self, name: str, **kwargs):
         """

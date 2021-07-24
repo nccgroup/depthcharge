@@ -8,7 +8,7 @@ Defines DataAbortRegisterReader parent class
 import os
 
 from .reader import RegisterReader
-
+from ..operation import OperationNotSupported
 
 class DataAbortRegisterReader(RegisterReader):
     """
@@ -45,7 +45,8 @@ class DataAbortRegisterReader(RegisterReader):
             self._crash_addr = kwargs.get('da_crash_addr', ctx.arch.data_abort_address)
 
         if self._crash_addr is None:
-            raise NotImplementedError('No data abort address is defined')
+            err = 'No data abort address is defined for ' + ctx.arch.description
+            raise OperationNotSupported(self.__class__, err)
 
     # This is expected. pylint: disable=no-self-use
     def _trigger_data_abort(self) -> str:

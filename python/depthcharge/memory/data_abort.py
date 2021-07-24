@@ -8,6 +8,7 @@ import os
 import sys
 
 from .reader import MemoryWordReader
+from ..operation import OperationNotSupported
 
 # TODO: The "Code:" line was added to the U-Boot ARM interrupt code in
 # bd2a13f32959a851d43d9681d9dc9b8bb3eec398, circa May 2018. We can perhaps leverage this to turn
@@ -63,10 +64,12 @@ class DataAbortMemoryReader(MemoryWordReader):
             crash_addr = kwargs.get('da_crash_addr', ctx.arch.data_abort_address)
 
         if data_reg is None:
-            raise NotImplementedError('No data abort register target is defined')
+            err = 'No data abort register target is defined for ' + ctx.arch.description
+            raise OperationNotSupported(self.__class__, err)
 
         if crash_addr is None:
-            raise NotImplementedError('No data abort address is defined')
+            err = 'No data abort address is defined for ' + ctx.arch.description
+            raise OperationNotSupported(self.__class__, err)
 
         super().__init__(ctx, **kwargs)
 

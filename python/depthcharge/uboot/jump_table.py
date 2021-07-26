@@ -9,8 +9,6 @@ import os
 
 from .. import log
 
-from ..operation import OperationFailed
-
 def exports(sys_malloc_simple=False) -> list:
     """
     Return a list of functions exported in U-Boot's "jump table".
@@ -237,9 +235,18 @@ def find(gd_address, memory_reader, arch, **kwargs) -> dict:
     env_buf_offset = _find_gd_env_buf(gd_address, gd_mem, new_gd_offset, arch)
     log.note('Located gd->env_buf[32] @ 0x{:x}'.format(gd_address + env_buf_offset))
 
-    # gd->jt is the field before env_buf
-    expected_masked_addr = gd_address & jt_addr_mask
+    # This address mask check is just intended to provided early warning if
+    # our function pointer deductions are incorrect, which will lead to a crash.
+    #
+    # We'll try to use U-Boot's post relocation address as the basis for our check,
+    # followed by the gd address if the former somehow isn't present. On many devices,
+    # using either here seems to suffice. However, I found that on an AARCH64 AMLogic device
+    # using a fork from 2015, the gd was at 0xd3e2.... whereas the relocaddr was 0xd7e3...,
+    # which was more representative of the jump table entries @ 0xd7e9....
+    check_addr = extras.get('relocaddr', gd_address)
+    expected_masked_addr = check_addr & jt_addr_mask
 
+    # gd->jt is the field before env_buf
     jt_offset = env_buf_offset - arch.word_size
     jt_addr   = arch.ptr_value(gd_mem[jt_offset:])
     log.debug('Exported jumptable potentially @ 0x{:08x}'.format(jt_addr))
@@ -266,7 +273,9 @@ def find(gd_address, memory_reader, arch, **kwargs) -> dict:
         fn_ptr, jump_table_data = arch.ptr_value_adv(jump_table_data)
         if fn_ptr & jt_addr_mask != expected_masked_addr:
             mask_failures += 1
-            msg = '{:s}() function pointer (0x{:08x}) fails address mask check'
+            msg = '{:s}() function pointer (0x{:08x}) failed mask check - may be incorrect.'
+            msg += os.linesep
+            msg += '    ' + '(We may crash the device when we dereference it.)'
             log.warning(msg.format(entry[0], fn_ptr))
 
 
@@ -278,10 +287,5 @@ def find(gd_address, memory_reader, arch, **kwargs) -> dict:
                 'arg_types':    entry[2]
             }
         )
-
-    # Arbitrary threshold
-    if mask_failures > (len(jump_table_entries) / 4):
-        msg = 'Too many jump table entries ({:d} / {:d}) failed address mask checks.'
-        raise OperationFailed(None, msg.format(mask_failures, len(jump_table_entries)))
 
     return jt

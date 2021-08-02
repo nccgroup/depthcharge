@@ -1,3 +1,38 @@
+2021-08-01: Depthcharge Release 0.3.0 ("Danny Nadelko")
+----------------------------------------------------------------------------
+
+Summary:
+
+* Introduced AARCH64 support (#3)
+* Added `Depthcharge.register_payload()` API function (#23)
+* Added icache/dcache flush upon payload deployment (#24)
+* Fixed ARM DataAbort parsing issue when in Thumb mode (#79)
+* Fixed issue displaying multiple DRAM bank info (#81)
+* Documentation updates and fixes
+* Removal of RETURN_REGISTER payload.
+
+Versions:
+
+    Python module (`depthcharge`): 0.3.0
+    Companion Firmware: 0.1.0
+
+Details:
+
+  **Introduced AARCH64 support**
+
+  The depthcharge.arch.AARCH64 class has been introduced to support
+  aarch64 system. A number of fixes and changes throughout the codebase 
+  have been made to accommodate use on 64-bit systems.  
+
+  There remains a known limitation on ARMv8 devices operating in AARCH32 bit
+  mode, where we do not necessary have a generic means to trigger data aborts.
+
+  The RETURN_REGISTER builtin payload and associated GoRegisterReader
+  have been removed, as they ultimately provided little value, while being
+  annoying to add AARCH64-bit support for. The RETURN_MEMORY payload (with no
+  argument) can be used instead to return a gd pointer, if needed.  
+
+
 2020-12-01: Depthcharge Release 0.2.0 ("Clatter and Hiss")
 ----------------------------------------------------------------------------
 

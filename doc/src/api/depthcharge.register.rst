@@ -19,10 +19,6 @@ Base Classes
 Implementations
 ----------------
 
-**RegisterReader**
-
-* :py:class:`GoRegisterReader`
-
 **DataAbortRegisterReader**
 
 * :py:class:`CRC32CrashRegisterReader`
@@ -33,10 +29,6 @@ Implementations
 * :py:class:`MwCrashRegisterReader`
 * :py:class:`NmCrashRegisterReader`
 * :py:class:`SetexprCrashRegisterReader`
-
-.. autoclass:: GoRegisterReader
-    :members:
-    :exclude-members: rank
 
 .. autoclass:: CRC32CrashRegisterReader
     :members:

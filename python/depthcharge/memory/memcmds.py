@@ -59,7 +59,7 @@ class MdMemoryReader(MemoryReader):
         ^
         (?P<addr>[0-9a-fA-F]{8,}):\s+       # Address prefix
         (?P<data>([0-9a-fA-F]+\s)+)         # Data words
-        \s+.{16}                            # ASCII representation
+        \s+.{1,16}                          # ASCII representation
     """, re.VERBOSE)
 
     @classmethod

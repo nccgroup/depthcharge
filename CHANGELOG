@@ -1,3 +1,10 @@
+2022-03-05: Depthcharge Bug Fix Update 0.3.2
+----------------------------------------------------------------------------
+
+Fixed documentation rendering issues resulting from usage of the new 1.0.0
+Sphinx RTD theme release and updated dependency specification accordingly.
+
+
 2022-03-05: Depthcharge Bug Fix Update 0.3.1
 ----------------------------------------------------------------------------
 

@@ -2,7 +2,7 @@
 
 
 This directory contains the source code for Depthcharge's documentation.  
-If you're just looking for documentatoin to reference, see 
+If you're just looking for documentation to reference, see 
 <https://depthcharge.readthedocs.io>.
 
 ## Dependencies
@@ -23,7 +23,7 @@ only in your virtual environment.
 
 ## Build
 
-With the above dependancies satisfied, the documentation can be created by running:
+With the above dependencies satisfied, the documentation can be created by running:
 
 ```
 $ make html

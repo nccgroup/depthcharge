@@ -1,4 +1,4 @@
-Copyright (c) 2019-2020 NCC Group.
+Copyright (c) 2019-2022 NCC Group.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without

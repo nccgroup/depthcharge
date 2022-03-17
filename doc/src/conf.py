@@ -11,7 +11,7 @@ import depthcharge
 # -- Project information -----------------------------------------------------
 
 project = 'Depthcharge'
-copyright = '2019-2020, NCC Group.'
+copyright = '2019-2022, NCC Group.'
 author = 'Jon Szymaniak (NCC Group)'
 
 # The full version, including alpha/beta/rc tags
@@ -23,7 +23,8 @@ release = depthcharge.__version__
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    'sphinx.ext.autodoc'
+    'sphinx.ext.autodoc',
+    'sphinx_rtd_theme'
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -41,16 +42,11 @@ autodoc_member_order = 'bysource'
 html_static_path = ['_static']
 
 # Apply RTD theme overrides
-html_context = {
-    'css_files': [
-        '_static/theme_overrides.css'
-    ],
-}
+html_css_files = ['theme_overrides.css']
 
 html_logo = '../images/depthcharge-500.png'
 
 html_theme = 'sphinx_rtd_theme'
-
 html_theme_options = {
     'logo_only': True
 }

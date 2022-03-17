@@ -82,7 +82,7 @@ setup(
     python_requires='>=3.6, <4',
 
     extras_require={
-        'docs': ['sphinx>=3.0.0', 'sphinx_rtd_theme>=0.4.0']
+        'docs': ['sphinx>=4.4.0', 'sphinx_rtd_theme >=1.0.0, <2.0.0']
     },
 
     zip_safe=False,

@@ -34,6 +34,17 @@ class SecurityImpact(enum.IntFlag):
     The security impact is unclear or otherwise not yet known.
     """
 
+    DOS = (1 << 1)
+    """
+    The system is rendered temporarily inoperable and must be power cycled to recover.
+    """
+
+    PDOS = (1 << 2)
+    """
+    The system is rendered permanently inoperable and cannot be recovered by users.
+    In more severe cases, the system may not be recoverable even with vendor support.
+    """
+
     INFO_LEAK = (1 << 6)
     """
     Behavior discloses information that may aid in reverse engineering efforts or
@@ -113,6 +124,15 @@ class SecurityImpact(enum.IntFlag):
             ret += ('**Increased attack surface:** '
                     "Feature or behavior increases bootloader's attack surface \n"
                     'beyond that which is necessitated by its functional requirements.\n\n')
+
+        if self & self.DOS:
+            ret += ('**Denial of Service:** '
+                    "The system is temporarily rendered inoperable until it's power cycled.\n\n")
+
+        if self & self.PDOS:
+            ret += ('**Persistent Denial of Service:** '
+                    'The system is rendered inoperable and the DOS state persists across power'
+                    'cycles.\n\n')
 
         if self & self.RD_MEM:
             ret += ('**Memory read primitive:** '

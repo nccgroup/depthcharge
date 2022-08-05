@@ -157,4 +157,54 @@ _BUILTIN_DEFS = (
         # See above version comment
         'affected_versions': ('2016.09', '2019.07')
     }),
+
+    ('CONFIG_DOS_PARTITION', True, {
+        'identifier': 'Commit 54193c5d',
+        'summary': 'A stack-based buffer overflow can be induced by a DOS MBR with a large block size.',
+        'impact': SecurityImpact.WR_MEM,
+        'description': dedent("""\
+            A hard-coded MBR block size of 512 results in a stack-based buffer overflow when a DOS
+            partition has larger block sizes (e.g. 2 or 4 KiB). Exploitation of this vulnerability
+            can result in arbitrary code execution, which is most impactful when secure boot
+            functionality otherwise has sought to prevent this.
+
+            This defect was introduced in commit fe8c2806 and fixed in commit 54193c5di. No CVE is
+            currently assigned to this vulnerability.
+
+            More information, including exploitation, can be found in the following blog post:
+            https://fredericb.info/2022/06/breaking-secure-boot-on-google-nest-hub-2nd-gen-to-run-ubuntu.html
+        """),
+
+        'recommendation': 'Update to U-Boot 2011.09 or backport the fix from commit 54193c5d.',
+
+        # Looks like this was introduced prior to the YYYY.MM version scheme.
+        'affected_versions': ('0.0', '2011.09'),
+    }),
+
+
+    ('CONFIG_DOS_PARTITION', True, {
+        'identifier': 'Commit 7aed3d38',
+        'summary': 'A stack-based buffer overflow can be induced by a DOS MBR with a large block size.',
+        'impact': SecurityImpact.WR_MEM,
+        'description': dedent("""\
+            A hard-coded MBR block size of 512 results in a stack-based buffer overflow when a DOS
+            partition has larger block sizes (e.g. 2 or 4 KiB). Exploitation of this vulnerability
+            can result in arbitrary code execution, which is most impactful when secure boot
+            functionality otherwise has sought to prevent this.
+
+            This defect was (re)introduced in commit 8639e34d and fixed in commit 7aed3d38. It is
+            essentially the same vulnerability fixed in commit 54193c5d. No CVE is currently
+            assigned to this vulnerability.
+
+            More information, including exploitation, can be found in the following blog post:
+            https://fredericb.info/2022/06/breaking-secure-boot-on-google-nest-hub-2nd-gen-to-run-ubuntu.html
+        """),
+
+        'recommendation': 'Update to U-Boot 2019.10 or backport the fix from commit 7aed3d38.',
+
+        'affected_versions': ('2018.03-rc2', '2019.10'),
+
+    }),
+
+
 )

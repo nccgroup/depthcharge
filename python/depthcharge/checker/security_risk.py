@@ -142,7 +142,7 @@ class SecurityImpact(enum.IntFlag):
 
         if self & self.WR_MEM:
             ret += ('**Memory write primitive:** '
-                    'Operation can be abused to read write memory at an attacker-controlled \n'
+                    'Operation can be abused to write memory at an attacker-controlled \n'
                     'address, potentially leading to execution of attacker-supplied code.\n\n')
 
         if html:

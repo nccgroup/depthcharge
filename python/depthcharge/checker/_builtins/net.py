@@ -390,4 +390,46 @@ _BUILTIN_DEFS = (
 
         'affected_versions': ('0.0', '2019.07')
     }),
+
+    ('CONFIG_IP_DEFRAG', True, {
+        'identifier': 'CVE-2022-30790',
+        'impact': SecurityImpact.WR_MEM,
+        'summary': 'Hole descriptor overwrite in packet defragmentation leads to arbitrary out of bounds write primitive',
+        'description': dedent("""\
+            A malformed UDP packet can exploit a logical defect in __net_defragment() to perform
+            an arbitrary write to an attacker-controlled offset from the affected hole metadata location.
+            This issue would only be exploitable by a network-adjacent attacker, as the malformed
+            packet would likely be dropped during routing.
+
+            More information can be found in the following NCC Group advisory:
+            https://research.nccgroup.com/2022/06/03/technical-advisory-multiple-vulnerabilities-in-u-boot-cve-2022-30790-cve-2022-30552
+
+        """),
+
+        'recommendation': 'Update to U-Boot 2022.07 or backport the fix from commit b85d130e.',
+
+        'affected_versions': ('2009.11-rc1', '2022.07')
+    }),
+
+    ('CONFIG_IP_DEFRAG', True, {
+        'identifier': 'CVE-2022-30552',
+        'impact': SecurityImpact.DOS,
+        'summary': 'Large buffer overflow leads to DoS in U-Boot IP Packet Defragmentation Code',
+
+        'description': dedent("""\
+            A malformed UDP packet can a length calculation to underflow, resulting in a memcpy()
+            being performed with an extremely large value. The duration of this operation, combined
+            with the substantial memory corruption, result in a denial of service (DoS). This issue
+            would only be exploitable by a network-adjacent attacker, as the malformed packet would
+            likely be dropped during routing.
+
+            More information can be found in the following NCC Group advisory:
+            https://research.nccgroup.com/2022/06/03/technical-advisory-multiple-vulnerabilities-in-u-boot-cve-2022-30790-cve-2022-30552
+
+        """),
+
+        'recommendation': 'Update to U-Boot 2022.07 or backport the fix from commit b85d130e.',
+
+        'affected_versions': ('2009.11-rc1', '2022.07')
+    }),
 )

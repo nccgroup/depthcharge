@@ -33,12 +33,53 @@ _all_versions = (0.0, 9999.99)
 
 _BUILTIN_DEFS = (
 
-    # TODO: CONFIG_ENV_AES
-    # 5eb35220b2cbeac79af8d73c696f5930a755c5bd
-    # CVE-2017-3225 CVE-2017-3226
-    #('CONFIG_ENV_AES', True, {
+    ('CONFIG_ENV_AES', True, {
+        'identifier': 'CVE-2017-3225',
+        'impact': SecurityImpact.INFO_LEAK,
+        'summary': 'AES CBC used with zero IV',
 
-    #}),
+        'description': dedent("""\
+            U-Boot's CONFIG_ENV_AES feature uses AES-CBC with a zero initialization vector. This
+            could allow an attacker to perform dictionary attacks on the encrypted data in order to
+            learn some information about the environment contents.
+        """),
+
+        'recommendation': dedent("""\
+            Do not use CONFIG_ENV_AES. This feature was deprecated and removed in 2017.09.
+
+            U-Boot environments are ill-suited for storing secrets. Consider instead leveraging
+            SoC-specific internal key storage in conjunction with device-unique keys if you believe
+            you have a use-case for CONFIG_ENV_AES.
+        """),
+
+        # This implementation was deprecated and removed.
+        'affected_versions': ('0.0', '2017.09'),
+    }),
+
+    ('CONFIG_ENV_AES', True, {
+        'identifier': 'CVE-2017-3226',
+        'impact': SecurityImpact.INFO_LEAK,
+        'summary': 'Information exposure through timing discrepancy',
+
+        'description': dedent("""\
+            An attacker with physical access to a device using CONFIG_ENV_AES=y may be
+            able to learn information about an encrypted environment through a Vaundenay-style
+            timing attack.
+        """),
+
+        'recommendation': dedent("""\
+            Do not use CONFIG_ENV_AES. This feature was deprecated and removed in 2017.09.
+
+            U-Boot environments are ill-suited for storing secrets. Consider instead leveraging
+            SoC-specific internal key storage in conjunction with device-unique keys if you believe
+            you have a use-case for CONFIG_ENV_AES.
+        """),
+
+        # This implementation was deprecated and removed.
+        'affected_versions': ('0.0', '2017.09'),
+    }),
+
+
 
     ('CONFIG_ENV_IS_IN_EEPROM', True,  {
         'identifier': 'CONFIG_ENV_IS_IN_EEPROM',

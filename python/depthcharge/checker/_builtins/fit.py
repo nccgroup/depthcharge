@@ -64,7 +64,7 @@ _BUILTIN_DEFS = (
         #
         'recommendation': 'Update to U-Boot 2018.09.\n',
 
-        'affected_versions': ('0.0', '2018.09')
+        'affected_versions': ('2013.07-rc1', '2018.09')
     }),
 
     # Vestigial reference design configuration that results in behavior similar to CVE-2018-3968
@@ -134,11 +134,7 @@ _BUILTIN_DEFS = (
 
         """),
 
-        # FIXME: Advisory is a bit iffy on the 2018.03 minimum version, so we just use 0's here.
-        # Need to revisit this when I have time to spend on git archaeology in order to determine
-        # the first relevant version. Presumably there exists a version where the affected FIT
-        # signature or configuration functionally isn't even present, and this will be our minimum.
-        'affected_versions': ('0.0', '2020.04-rc5'),
+        'affected_versions': ('2013.07-rc1', '2020.04-rc5'),
     }),
 
     ('CONFIG_FIT_SIGNATURE', True, {

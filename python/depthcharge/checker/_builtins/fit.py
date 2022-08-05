@@ -118,7 +118,7 @@ _BUILTIN_DEFS = (
                 <https://labs.f-secure.com/advisories/das-u-boot-verified-boot-bypass>
         """),
 
-        'recommendation': dedent("""\'
+        'recommendation': dedent("""\
             Update to U-Boot 2020.04, or otherwise backport fixes merged in commit e0718b3a.
 
             Per the F-Secure advisory, one possible mitigation is to explicitly specify the
@@ -139,5 +139,41 @@ _BUILTIN_DEFS = (
         # the first relevant version. Presumably there exists a version where the affected FIT
         # signature or configuration functionally isn't even present, and this will be our minimum.
         'affected_versions': ('0.0', '2020.04-rc5'),
-    })
+    }),
+
+    ('CONFIG_FIT_SIGNATURE', True, {
+        'identifier': 'CVE-2021-27138',
+        'impact': SecurityImpact.VERIFICATION_BYPASS,
+        'summary': 'FIT signature bypass via unit addresses',
+
+        'description': dedent("""\
+                As of 2017, U-Boot no longer uses unit addresses in FIT images. However, because
+                libfdt can match nodes ignoring any unit addressees, it is possible that signature
+                verification checks the wrong node if one with the same name but different unit
+                address is inserted.
+        """),
+
+        'recommendation': 'Update to U-Boot 2021.04.',
+
+        # FIT images introduced in 782cfbb2
+        'affected_versions': ('2013.07-rc1', '2021.04')
+    }),
+
+    ('CONFIG_FIT_SIGNATURE', True, {
+        'identifier': 'CVE-2021-27097',
+        'impact': SecurityImpact.VERIFICATION_BYPASS,
+        'summary': 'FIT signature bypass via multiple root nodes',
+
+        'description': dedent("""
+            A malformed FIT image, such as one containing multiple root nodes, could cause the
+            wrong parent node to be processed during validation.
+        """),
+
+        'recommendation': 'Update to U-Boot 2021.04 and ensure CONFIG_FIT_FULL_CHECK=y.',
+
+        # FIT images introduced in 782cfbb2
+        'affected_versions': ('2013.07-rc1', '2021.04')
+    }),
+
+    # TODO: Can we catch CONFIG_FIT_SIGNATURE=y && CONFIG_FULL_CHECK not defined
 )

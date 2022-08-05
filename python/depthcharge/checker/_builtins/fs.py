@@ -206,5 +206,19 @@ _BUILTIN_DEFS = (
 
     }),
 
+    ('CONFIG_CMD_GPT', True, {
+        'identifier': 'CVE-2020-8432',
+        'summary': 'Double-free in do_rename_gpt_parts function',
+        'impact': SecurityImpact.WR_MEM,
+        'description': dedent("""\
+            Induced failures in do_rename_gpt_parts() may result in a double-free.  In general,
+            double-free vulnerabilities can provide an attackers with an arbitrary write primitive
+            that could lead to malicious code execution.
+        """),
 
+        'recommendation': 'Update to U-Boot 2020.04 or backport the fix from commit 5749faa3.',
+
+        # Command introduced in commit , issue fixed in 5749faa3
+        'affected_versions': ('2013.01-rc2', '2020.04')
+    }),
 )

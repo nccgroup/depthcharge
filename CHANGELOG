@@ -1,3 +1,17 @@
+2022-07-05: Depthcharge Release 0.4.0 ("Entertainment!")
+----------------------------------------------------------------------------
+
+Added a handful of configuration checker builtins covering:
+
+* CVE-2022-30552 and CVE-2022-30790 (#97)
+* CVE-2021-27138 and CVE-2021-27097 (#99)
+* No CVE: part_test_dos() stack overflow (#98)
+* CVE-2020-8432
+* CVE-2017-3225 and CVE-2017-3226
+* CONFIG_ENV_IS_IN_* items (#90)
+* CONFIG_FIT_SIGNATURE=y without CONFIG_FIT_FULL_CHECK=y
+
+
 2022-03-05: Depthcharge Bug Fix Update 0.3.2
 ----------------------------------------------------------------------------
 

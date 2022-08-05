@@ -14,6 +14,10 @@ def _enabled_with_legacy_image(value: str, config: dict):
     return value and config.get('CONFIG_LEGACY_IMAGE_FORMAT', False)
 
 
+def _enabled_without_full_check(value: str, config: dict):
+    return value and not config.get('CONFIG_FIT_FULL_CHECK', False)
+
+
 _BUILTIN_DEFS = (
     ('CONFIG_FIT_SIGNATURE', True, {
         'identifier': 'CVE-2018-3968',
@@ -171,5 +175,20 @@ _BUILTIN_DEFS = (
         'affected_versions': ('2013.07-rc1', '2021.04')
     }),
 
-    # TODO: Can we catch CONFIG_FIT_SIGNATURE=y && CONFIG_FULL_CHECK not defined
+    ('CONFIG_FIT_SIGNATURE', _enabled_without_full_check, {
+        'identifier': 'CONFIG_FIT_FULL_CHECK',
+        'impact': SecurityImpact.VERIFICATION_BYPASS,
+        'summary': 'Full FIT validation checks are not enabled',
+        'description': dedent("""\
+            CONFIG_FIT_SIGNATURE=y is intended to imply CONFIG_FIT_FULL_CHECK=y, but
+            CONFIG_FIT_FULL_CHECK does not appear to be enabled in the analyzed config file. The
+            "full check" is necessary to avoid security risks (e.g. verification bypasses)
+            resulting from malformed FIT constructs that can otherwise be rejected.
+        """),
+
+        'recommendation': 'Ensure CONFIG_FIT_FULL_CHECK=y.',
+
+        # This needs to be enabled in 2021.04-rc2 onward
+        'affected_versions': ('2021.04-rc2', '9999.99')
+    })
 )

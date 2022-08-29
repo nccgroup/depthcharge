@@ -295,11 +295,13 @@ class Depthcharge:
         # variable read from the target device or using a user-provided address
         try:
             payload_map_base = self._resolve_payload_base()
-        except OperationFailed:
+        except OperationFailed as e:
             self._allow_deploy_exec = False
             self._skip_deploy = False
             payload_map_base = 0
-            log.warning('Disabling payload deployemnt and execution due to error(s).')
+
+            # Be a bit more helpful when loadaddr isn't in the environment
+            log.warning('Disabling payload deployemnt and execution due to error: ' + str(e))
 
         self._payloads = PayloadMap(self.arch, payload_map_base,
                                     skip_deploy=self._skip_deployment)
@@ -334,6 +336,7 @@ class Depthcharge:
                 self._payload_base = int(expanded, 0)
             except KeyError:
                 msg = 'Environment variable used for payload_base does not exist: {:s}'
+                msg += '\n    You will need to manually specify -X payload_base=<address> to address this.'
                 raise OperationFailed(msg.format(self._payload_base))
             except ValueError:
                 msg = 'Encountered invalid expansion of payload_base: ' + expanded

@@ -17,6 +17,7 @@ from .fit       import _BUILTIN_DEFS as _FIT_DEFS
 from .fs        import _BUILTIN_DEFS as _FS_DEFS
 from .lib       import _BUILTIN_DEFS as _LIB_DEFS
 from .net       import _BUILTIN_DEFS as _NET_DEFS
+from .usb       import _BUILTIN_DEFS as _USB_DEFS
 
 # Aggregate builtins into a main set of definitions
 _BUILTIN_DEFS = (
@@ -25,7 +26,8 @@ _BUILTIN_DEFS = (
     _FIT_DEFS +
     _FS_DEFS +
     _LIB_DEFS +
-    _NET_DEFS
+    _NET_DEFS +
+    _USB_DEFS
 )
 
 # Fill empty source field.

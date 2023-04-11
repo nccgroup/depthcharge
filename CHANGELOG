@@ -1,3 +1,10 @@
+2023-04-11: Depthcharge Release 0.5.0 ("Food for Thought")
+----------------------------------------------------------------------------
+
+* Added checker for CVE-2022-2347
+* Added more helpful warning message resulting from a lack of a loadaddr
+
+
 2022-07-05: Depthcharge Release 0.4.0 ("Entertainment!")
 ----------------------------------------------------------------------------
 
